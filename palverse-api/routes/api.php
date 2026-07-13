@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Admin\CityController as AdminCityController;
 use App\Http\Controllers\Api\V1\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Api\V1\Admin\StoreSubscriptionController as AdminStoreSubscriptionController;
 use App\Http\Controllers\Api\V1\Admin\SubscriptionPlanController as AdminSubscriptionPlanController;
+use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Merchant\DashboardController;
@@ -173,6 +174,23 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/stores-by-city', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'storesByCity']);
                 Route::get('/subscriptions-by-plan', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'subscriptionsByPlan']);
                 Route::get('/trends', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'trends']);
+            });
+
+            // Users
+            Route::prefix('users')->group(function (): void {
+                Route::get('/', [UserController::class, 'index'])->middleware('permission:users.view');
+                Route::post('/merchants', [UserController::class, 'storeMerchant'])->middleware('permission:users.manage');
+                Route::get('/{publicId}', [UserController::class, 'show'])->middleware('permission:users.view');
+                Route::put('/{publicId}', [UserController::class, 'update'])->middleware('permission:users.manage');
+                Route::patch('/{publicId}/activate', [UserController::class, 'activate'])->middleware('permission:users.manage');
+                Route::patch('/{publicId}/deactivate', [UserController::class, 'deactivate'])->middleware('permission:users.manage');
+                Route::patch('/{publicId}/suspend', [UserController::class, 'suspend'])->middleware('permission:users.manage');
+                Route::patch('/{publicId}/roles', [UserController::class, 'updateRoles'])->middleware('permission:users.manage');
+                Route::post('/{publicId}/revoke-tokens', [UserController::class, 'revokeTokens'])->middleware('permission:users.manage');
+                Route::post('/{publicId}/reset-password', [UserController::class, 'resetPassword'])->middleware('permission:users.manage');
+
+                Route::get('/{publicId}/stores', [UserController::class, 'stores'])->middleware('permission:users.view');
+                Route::get('/{publicId}/subscriptions', [UserController::class, 'subscriptions'])->middleware('permission:users.view');
             });
 
             // Categories

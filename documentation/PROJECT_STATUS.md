@@ -32,6 +32,7 @@ Project foundation and documentation.
 - [x] Dashboard Statistics Module (Admin & Merchant)
 - [x] Advanced Search and Suggestions Module
 - [x] System Settings, Static Pages, and FAQs Module
+- [x] Admin User and Merchant Management Module
 
 ## In Progress
 

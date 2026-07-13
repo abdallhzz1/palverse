@@ -42,6 +42,30 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'status' => UserStatus::Inactive,
+            'deactivated_at' => now(),
         ]);
+    }
+
+    public function suspended(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => UserStatus::Suspended,
+            'suspended_at' => now(),
+            'suspension_reason' => 'Violation of terms',
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('admin');
+        });
+    }
+
+    public function merchant(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('merchant');
+        });
     }
 }
