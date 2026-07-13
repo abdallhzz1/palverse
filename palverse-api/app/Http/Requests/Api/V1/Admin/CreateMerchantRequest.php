@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Api\V1\Admin;
 
+use App\Support\PasswordRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 
 class CreateMerchantRequest extends FormRequest
 {
@@ -20,7 +20,7 @@ class CreateMerchantRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:30', 'unique:users,phone'],
             'preferred_locale' => ['nullable', 'string', Rule::in(['ar', 'en'])],
-            'password' => ['required', 'string', 'confirmed', Password::min(10)->mixedCase()->numbers()],
+            'password' => ['required', 'string', 'confirmed', PasswordRules::default()],
         ];
     }
 }

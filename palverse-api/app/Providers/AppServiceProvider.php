@@ -23,5 +23,38 @@ class AppServiceProvider extends ServiceProvider
                 $email.'|'.$request->ip()
             );
         });
+
+        RateLimiter::for('merchant-registration', function (Request $request): Limit {
+            return Limit::perMinute(5)->by($request->ip())->response(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many registration attempts. Please try again later.',
+                    'error' => ['code' => 'TOO_MANY_REQUESTS', 'details' => []],
+                    'meta' => [],
+                ], 429);
+            });
+        });
+
+        RateLimiter::for('forgot-password', function (Request $request): Limit {
+            return Limit::perMinute(5)->by($request->ip())->response(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many requests. Please try again later.',
+                    'error' => ['code' => 'TOO_MANY_REQUESTS', 'details' => []],
+                    'meta' => [],
+                ], 429);
+            });
+        });
+
+        RateLimiter::for('password-reset', function (Request $request): Limit {
+            return Limit::perMinute(10)->by($request->ip())->response(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many requests. Please try again later.',
+                    'error' => ['code' => 'TOO_MANY_REQUESTS', 'details' => []],
+                    'meta' => [],
+                ], 429);
+            });
+        });
     }
 }

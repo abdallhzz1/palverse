@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\V1\Admin\SubscriptionPlanController as AdminSubscri
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\V1\Auth\RegisterMerchantController;
+use App\Http\Controllers\Api\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\V1\Merchant\DashboardController;
 use App\Http\Controllers\Api\V1\Merchant\OfferController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
@@ -50,6 +53,18 @@ Route::prefix('v1')->group(function (): void {
     Route::prefix('auth')->group(function (): void {
         Route::post('/login', [AuthController::class, 'login'])
             ->middleware('throttle:login');
+
+        // Public merchant self-registration (5 req/min per IP)
+        Route::post('/register/merchant', RegisterMerchantController::class)
+            ->middleware('throttle:merchant-registration');
+
+        // Forgot password – anti-enumeration, always generic response (5 req/min per IP)
+        Route::post('/forgot-password', ForgotPasswordController::class)
+            ->middleware('throttle:forgot-password');
+
+        // Reset password with broker-issued token (10 req/min per IP)
+        Route::post('/reset-password', ResetPasswordController::class)
+            ->middleware('throttle:password-reset');
 
         Route::middleware('auth:sanctum')->group(function (): void {
             Route::get('/me', [AuthController::class, 'me']);

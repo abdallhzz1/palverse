@@ -6,6 +6,7 @@ enum AuditAction: string
 {
     // Users
     case UserCreated = 'user.created';
+    case UserRegistered = 'user.registered';
     case UserUpdated = 'user.updated';
     case UserActivated = 'user.activated';
     case UserDeactivated = 'user.deactivated';
@@ -13,6 +14,7 @@ enum AuditAction: string
     case UserRolesUpdated = 'user.roles_updated';
     case UserTokensRevoked = 'user.tokens_revoked';
     case UserPasswordReset = 'user.password_reset';
+    case UserPasswordResetSelfService = 'user.password_reset_self_service';
 
     // Stores
     case StoreCreated = 'store.created';

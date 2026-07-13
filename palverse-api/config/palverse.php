@@ -61,6 +61,21 @@ return [
     */
     'public_web_url' => env('PALVERSE_PUBLIC_WEB_URL', 'http://localhost:3000'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Auth / Password Recovery Configuration
+    |--------------------------------------------------------------------------
+    */
+    'auth' => [
+        // URL on the frontend where the reset-password page lives.
+        // The reset token and email are appended as query parameters.
+        // Example: http://localhost:3000/reset-password?token=xxx&email=user@example.com
+        'frontend_reset_password_url' => env(
+            'PALVERSE_FRONTEND_RESET_PASSWORD_URL',
+            'http://localhost:3000/reset-password'
+        ),
+    ],
+
     'qr' => [
         'default_size' => (int) env('QR_DEFAULT_SIZE', 512),
         'min_size' => (int) env('QR_MIN_SIZE', 128),

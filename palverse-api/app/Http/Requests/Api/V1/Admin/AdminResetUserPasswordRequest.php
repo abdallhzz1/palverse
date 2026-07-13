@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Api\V1\Admin;
 
+use App\Support\PasswordRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 class AdminResetUserPasswordRequest extends FormRequest
 {
@@ -15,7 +15,7 @@ class AdminResetUserPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password' => ['required', 'string', 'confirmed', Password::min(10)->mixedCase()->numbers()],
+            'password' => ['required', 'string', 'confirmed', PasswordRules::default()],
             'revoke_tokens' => ['nullable', 'boolean'],
         ];
     }
