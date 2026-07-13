@@ -123,3 +123,7 @@ Merchants can update a rejected store. Upon update, the store's status automatic
 ## ADR-023: Zone-City Validation Constraint
 
 When creating or updating a store, the API will strictly validate that the selected zone structurally belongs to the selected city. Mismatched inputs will be rejected with `422 Unprocessable Entity`.
+
+## ADR-024: Media Limits and Physical Deletion
+
+A store is strictly limited to 1 logo, 1 cover, and 10 gallery images. To prevent orphan files, whenever media records are replaced or completely deleted, the associated physical files are removed from disk, ensuring storage resources are managed efficiently.

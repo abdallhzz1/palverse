@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
+use App\Http\Controllers\Api\V1\Merchant\StoreMediaController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
 use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
@@ -65,6 +66,15 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/{publicId}', [MerchantStoreController::class, 'show']);
                 Route::put('/{publicId}', [MerchantStoreController::class, 'update']);
                 Route::get('/{publicId}/status', [MerchantStoreController::class, 'status']);
+
+                // Media
+                Route::post('/{publicId}/logo', [StoreMediaController::class, 'storeLogo']);
+                Route::delete('/{publicId}/logo', [StoreMediaController::class, 'destroyLogo']);
+                Route::post('/{publicId}/cover', [StoreMediaController::class, 'storeCover']);
+                Route::delete('/{publicId}/cover', [StoreMediaController::class, 'destroyCover']);
+                Route::post('/{publicId}/gallery', [StoreMediaController::class, 'storeGallery']);
+                Route::delete('/{publicId}/gallery/{mediaPublicId}', [StoreMediaController::class, 'destroyGallery']);
+                Route::patch('/{publicId}/gallery/reorder', [StoreMediaController::class, 'reorderGallery']);
             });
         });
 

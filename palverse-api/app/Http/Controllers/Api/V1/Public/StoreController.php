@@ -15,7 +15,7 @@ class StoreController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Store::publicVisible()->with(['category', 'city', 'zone']);
+        $query = Store::publicVisible()->with(['category', 'city', 'zone', 'logo', 'cover']);
 
         if ($request->filled('query')) {
             $q = $request->input('query');
@@ -72,7 +72,7 @@ class StoreController extends Controller
     public function show(string $slug): JsonResponse
     {
         $store = Store::publicVisible()
-            ->with(['category', 'city', 'zone'])
+            ->with(['category', 'city', 'zone', 'logo', 'cover', 'gallery'])
             ->where('slug', $slug)
             ->first();
 

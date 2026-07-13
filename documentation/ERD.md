@@ -137,12 +137,22 @@ erDiagram
     STORES ||--o{ STORE_MEDIA : "holds"
     STORE_MEDIA {
         uint id PK
+        ulid public_id UK
         uint store_id FK "stores.id"
+        string type "enum(logo, cover, gallery)"
         string file_path
-        string media_type "enum(logo, cover, gallery)"
-        tinyint sort_order
+        string disk
+        string original_name
+        string mime_type
+        uint file_size
+        uint width
+        uint height
+        uint sort_order
+        string alt_text_ar
+        string alt_text_en
         timestamp created_at
         timestamp updated_at
+        timestamp deleted_at
     }
 
     STORES ||--o{ OFFERS : "promotes"

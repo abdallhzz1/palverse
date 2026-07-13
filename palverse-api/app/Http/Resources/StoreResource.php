@@ -52,6 +52,9 @@ class StoreResource extends JsonResource
             ]),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'logo' => new StoreMediaResource($this->whenLoaded('logo')),
+            'cover' => new StoreMediaResource($this->whenLoaded('cover')),
+            'gallery' => StoreMediaResource::collection($this->whenLoaded('gallery')),
         ];
     }
 

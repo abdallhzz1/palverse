@@ -149,12 +149,22 @@ This document details the database dictionary for all tables in the Palverse Min
 | Column Name | Suggested MySQL Type | Nullable / Required | Default Value | Keys & Constraints | Index | Validation Notes | Example Value |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | `INT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `121` |
+| `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
 | `store_id` | `INT UNSIGNED` | Required | *None* | FK (`stores.id`) | Yes | Cascade on delete | `42` |
-| `file_path` | `VARCHAR(191)` | Required | *None* | *None* | No | Storage file path | `stores/logos/logo_42.png` |
-| `media_type` | `VARCHAR(20)` | Required | *None* | *None* | Yes | `logo`/`cover`/`gallery` | `gallery` |
-| `sort_order` | `TINYINT UNSIGNED`| Required | `0` | *None* | No | Between 0 and 10 | `3` |
+| `type` | `VARCHAR(20)` | Required | *None* | *None* | Yes | `logo`/`cover`/`gallery` | `gallery` |
+| `file_path` | `VARCHAR(191)` | Required | *None* | *None* | No | Storage file path | `stores/.../logo.png` |
+| `disk` | `VARCHAR(50)` | Required | `public` | *None* | No | Storage disk | `public` |
+| `original_name`| `VARCHAR(191)` | Nullable | `NULL` | *None* | No | Original file name | `my_logo.png` |
+| `mime_type` | `VARCHAR(50)` | Nullable | `NULL` | *None* | No | MIME type | `image/png` |
+| `file_size` | `BIGINT UNSIGNED` | Nullable | `NULL` | *None* | No | File size in bytes | `204800` |
+| `width` | `INT UNSIGNED` | Nullable | `NULL` | *None* | No | Image width | `800` |
+| `height` | `INT UNSIGNED` | Nullable | `NULL` | *None* | No | Image height | `600` |
+| `sort_order` | `INT UNSIGNED` | Required | `0` | *None* | Yes | Order in gallery | `3` |
+| `alt_text_ar` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | Arabic alt text | `صورة المتجر` |
+| `alt_text_en` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | English alt text | `Store image` |
 | `created_at` | `TIMESTAMP` | Nullable | `CURRENT_TIMESTAMP` | *None* | No | *None* | `2026-07-13 19:30:00` |
 | `updated_at` | `TIMESTAMP` | Nullable | `NULL` | *None* | No | *None* | `2026-07-13 19:30:00` |
+| `deleted_at` | `TIMESTAMP` | Nullable | `NULL` | *None* | Yes | Soft delete | `NULL` |
 
 ---
 
