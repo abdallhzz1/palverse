@@ -19,19 +19,21 @@ Project foundation and documentation.
 - [x] API specification documented
 - [x] API response standard documented
 - [x] API endpoint matrix documented
+- [x] Laravel backend initialization
+- [x] Database migrations
+- [x] Authentication (Sanctum)
+- [x] Roles and permissions (Spatie)
+- [x] Store core, approval, and media modules
+- [x] Store working hours & social links
+- [x] Offers module
+- [x] Manual store subscriptions & plans
+- [x] In-app notifications module
+- [x] Store QR Code and Deep Link Module
 
 ## In Progress
 
-- [x] Laravel backend initialization
+- [ ] Next.js web application frontend
 
 ## Not Started
 
-- [x] Database migrations
-- [x] Authentication
-- [x] Roles and permissions
-- [x] Store management API
-- [x] Store media API
-- [x] Store working hours and social links APIs
-- [x] Offers API
-- [ ] Next.js application
-- [ ] Flutter application
+- [ ] Flutter mobile application

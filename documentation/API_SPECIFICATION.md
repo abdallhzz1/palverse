@@ -232,6 +232,22 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **Actor**: Public Visitor
 *   **Success Response (HTTP 200)**: returns basic key-value settings.
 
+### PUB-11: Get Store Links
+*   **Endpoint ID**: PUB-11
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/stores/{slug}/links`
+*   **Purpose**: Get the canonical web URL and deep link for a visible store.
+*   **Actor**: Public Visitor
+*   **Success Response (HTTP 200)**: returns link details (web_url, deep_link, qr_svg_url).
+
+### PUB-12: Get Store QR Code
+*   **Endpoint ID**: PUB-12
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/stores/{slug}/qr`
+*   **Purpose**: Dynamically generate and stream SVG/PNG QR code encoding the store's web URL.
+*   **Actor**: Public Visitor
+*   **Success Response (HTTP 200)**: returns binary SVG/PNG stream.
+
 ---
 
 ## 2. Authentication Endpoints
@@ -434,21 +450,21 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **Actor**: Merchant
 *   **Success Response (HTTP 200)**: returns active plan details, start/end dates.
 
-### MER-08: Get QR Code Link
+### MER-08: Get Owned Store Links
 *   **Endpoint ID**: MER-08
 *   **HTTP Method**: `GET`
-*   **URL**: `/api/v1/merchant/stores/{uuid}/qr-code`
-*   **Purpose**: Get QR code URL and image source paths.
+*   **URL**: `/api/v1/merchant/stores/{uuid}/links`
+*   **Purpose**: Get web and deep links for merchant's owned store.
 *   **Actor**: Merchant
-*   **Success Response (HTTP 200)**: returns slug link and generated QR image path.
+*   **Success Response (HTTP 200)**: returns link details (web_url, deep_link, qr_svg_url).
 
-### MER-09: Download QR Image File
+### MER-09: Get Owned Store QR Code
 *   **Endpoint ID**: MER-09
 *   **HTTP Method**: `GET`
-*   **URL**: `/api/v1/merchant/stores/{uuid}/qr-code/download`
-*   **Purpose**: Download the generated high-res QR code image.
+*   **URL**: `/api/v1/merchant/stores/{uuid}/qr`
+*   **Purpose**: Generate and stream SVG/PNG QR code for merchant's owned store.
 *   **Actor**: Merchant
-*   **Success Response (HTTP 200)**: returns binary file download stream (PNG).
+*   **Success Response (HTTP 200)**: returns binary SVG/PNG stream.
 
 ---
 
@@ -998,3 +1014,19 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
     }
     ```
 *   **Success Response (HTTP 200)**: settings saved.
+
+### ADM-46: Get Store Links
+*   **Endpoint ID**: ADM-46
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/stores/{uuid}/links`
+*   **Purpose**: Get canonical web and deep links for any store.
+*   **Actor**: Admin
+*   **Success Response (HTTP 200)**: returns link details (web_url, deep_link, qr_svg_url).
+
+### ADM-47: Get Store QR Code
+*   **Endpoint ID**: ADM-47
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/stores/{uuid}/qr`
+*   **Purpose**: Generate and stream SVG/PNG QR code for any store.
+*   **Actor**: Admin
+*   **Success Response (HTTP 200)**: returns binary SVG/PNG stream.

@@ -53,4 +53,19 @@ return [
         'max_per_page' => 100,
         'subscription_expiring_days' => (int) env('SUBSCRIPTION_EXPIRING_DAYS', 7),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Store Links & QR Configuration
+    |--------------------------------------------------------------------------
+    */
+    'public_web_url' => env('PALVERSE_PUBLIC_WEB_URL', 'http://localhost:3000'),
+
+    'qr' => [
+        'default_size' => (int) env('QR_DEFAULT_SIZE', 512),
+        'min_size' => (int) env('QR_MIN_SIZE', 128),
+        'max_size' => (int) env('QR_MAX_SIZE', 1024),
+        'default_format' => env('QR_DEFAULT_FORMAT', 'svg'),
+        'error_correction' => env('QR_ERROR_CORRECTION', 'L'),
+    ],
 ];

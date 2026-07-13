@@ -14,6 +14,8 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **PUB-08** | GET | `/api/v1/search` | Visitor | Guest | None | Store | MVP | No | Yes | Active |
 | **PUB-09** | GET | `/api/v1/home` | Visitor | Guest | None | Home | MVP | No | No | Active |
 | **PUB-10** | GET | `/api/v1/platform-settings/public` | Visitor | Guest | None | Settings | MVP | No | No | Active |
+| **PUB-11** | GET | `/api/v1/stores/{slug}/links` | Visitor | Guest | None | Store | MVP | No | No | Active |
+| **PUB-12** | GET | `/api/v1/stores/{slug}/qr` | Visitor | Guest | None | Store | MVP | No | No | Active |
 | **ATH-01** | POST | `/api/v1/auth/login` | User | Guest | None | User | MVP | No | No | Active |
 | **ATH-02** | POST | `/api/v1/auth/logout` | User | User | Sanctum | User | MVP | No | No | Active |
 | **ATH-03** | GET | `/api/v1/auth/me` | User | User | Sanctum | User | MVP | No | No | Active |
@@ -27,8 +29,8 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **MER-05** | PUT | `/api/v1/merchant/stores/{uuid}` | Merchant | Merchant | Sanctum | Store | MVP | Yes | No | Active |
 | **MER-06** | GET | `/api/v1/merchant/stores/{uuid}/status` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
 | **MER-07** | GET | `/api/v1/merchant/stores/{uuid}/subscription` | Merchant | Merchant | Sanctum | Subscription | MVP | No | No | Active |
-| **MER-08** | GET | `/api/v1/merchant/stores/{uuid}/qr-code` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
-| **MER-09** | GET | `/api/v1/merchant/stores/{uuid}/qr-code/download` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
+| **MER-08** | GET | `/api/v1/merchant/stores/{uuid}/links` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
+| **MER-09** | GET | `/api/v1/merchant/stores/{uuid}/qr` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
 | **MER-10** | POST | `/api/v1/merchant/stores/{uuid}/logo` | Merchant | Merchant | Sanctum | Media | MVP | Yes | No | Active |
 | **MER-11** | DELETE | `/api/v1/merchant/stores/{uuid}/logo` | Merchant | Merchant | Sanctum | Media | MVP | Yes | No | Active |
 | **MER-12** | POST | `/api/v1/merchant/stores/{uuid}/cover` | Merchant | Merchant | Sanctum | Media | MVP | Yes | No | Active |
@@ -93,3 +95,6 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **ADM-43** | PATCH | `/api/v1/admin/offers/{uuid}/activate` | Admin | Admin | Sanctum | Offer | MVP | Yes | No | Active |
 | **ADM-44** | PATCH | `/api/v1/admin/offers/{uuid}/deactivate` | Admin | Admin | Sanctum | Offer | MVP | Yes | No | Active |
 | **ADM-45** | DELETE | `/api/v1/admin/offers/{uuid}` | Admin | Admin | Sanctum | Offer | MVP | Yes | No | Active |
+| **ADM-46** | GET | `/api/v1/admin/stores/{uuid}/links` | Admin | Admin | Sanctum | Store | MVP | No | No | Active |
+| **ADM-47** | GET | `/api/v1/admin/stores/{uuid}/qr` | Admin | Admin | Sanctum | Store | MVP | No | No | Active |
+

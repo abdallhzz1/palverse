@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\Api\V1\OfferResource;
+use App\Services\StoreLinkService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -10,6 +11,9 @@ class StoreResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $linkService = app(StoreLinkService::class);
+        $isList = $request->is('*/stores') || $request->is('*/stores/');
+
         return [
             'public_id' => $this->public_id,
             'name_ar' => $this->name_ar,
@@ -17,6 +21,9 @@ class StoreResource extends JsonResource
             'description_ar' => $this->description_ar,
             'description_en' => $this->description_en,
             'slug' => $this->slug,
+            'web_url' => $this->when($this->slug !== null, fn () => $linkService->generateWebUrl($this->resource)),
+            'deep_link' => $this->when($this->slug !== null, fn () => $linkService->generateDeepLink($this->resource)),
+            'qr_url' => $this->when($this->slug !== null && ! $isList, fn () => route('api.v1.public.stores.qr', ['slug' => $this->slug])),
             'phone' => $this->phone,
             'whatsapp' => $this->whatsapp,
             'email' => $this->email,

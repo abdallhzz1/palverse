@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
 use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
+use App\Http\Controllers\Api\V1\Public\StoreLinkController;
 use App\Http\Controllers\Api\V1\Public\SubscriptionPlanController as PublicSubscriptionPlanController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -76,6 +77,8 @@ Route::prefix('v1')->group(function (): void {
 
     Route::prefix('stores')->group(function (): void {
         Route::get('/', [PublicStoreController::class, 'index']);
+        Route::get('/{slug}/links', [StoreLinkController::class, 'links']);
+        Route::get('/{slug}/qr', [StoreLinkController::class, 'qr'])->name('api.v1.public.stores.qr');
         Route::get('/{slug}', [PublicStoreController::class, 'show']);
         Route::get('/{slug}/offers', [PublicStoreController::class, 'offers']);
     });
@@ -121,6 +124,10 @@ Route::prefix('v1')->group(function (): void {
                 // Subscriptions
                 Route::get('/{publicId}/subscription', [MerchantStoreSubscriptionController::class, 'show']);
                 Route::get('/{publicId}/subscriptions', [MerchantStoreSubscriptionController::class, 'index']);
+
+                // Links & QR Code
+                Route::get('/{storePublicId}/links', [App\Http\Controllers\Api\V1\Merchant\StoreLinkController::class, 'links']);
+                Route::get('/{storePublicId}/qr', [App\Http\Controllers\Api\V1\Merchant\StoreLinkController::class, 'qr']);
             });
         });
 
@@ -154,6 +161,8 @@ Route::prefix('v1')->group(function (): void {
             // Stores
             Route::prefix('stores')->group(function (): void {
                 Route::get('/', [AdminStoreController::class, 'index']);
+                Route::get('/{publicId}/links', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'links']);
+                Route::get('/{publicId}/qr', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'qr']);
                 Route::get('/{publicId}', [AdminStoreController::class, 'show']);
                 Route::patch('/{publicId}/approve', [AdminStoreController::class, 'approve']);
                 Route::patch('/{publicId}/reject', [AdminStoreController::class, 'reject']);

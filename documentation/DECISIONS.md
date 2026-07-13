@@ -127,3 +127,9 @@ When creating or updating a store, the API will strictly validate that the selec
 ## ADR-024: Media Limits and Physical Deletion
 
 A store is strictly limited to 1 logo, 1 cover, and 10 gallery images. To prevent orphan files, whenever media records are replaced or completely deleted, the associated physical files are removed from disk, ensuring storage resources are managed efficiently.
+
+---
+
+## ADR-025: Store QR Code and Deep Linking
+
+QR codes will encode the canonical public HTTPS URL (`/stores/{slug}`). Deep links will use the custom scheme (`palverse://stores/{slug}`). QR codes will be generated dynamically on demand to ensure they reflect the current environment configuration without storing stagnant files in MySQL or disk storage. If a store lacks a permanent slug (such as pending stores), QR generation will not be available.

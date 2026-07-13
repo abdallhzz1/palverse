@@ -184,4 +184,16 @@ class Store extends Model
     {
         return $this->hasOne(StoreSubscription::class)->latestOfMany('starts_at');
     }
+
+    public function isPubliclyVisible(): bool
+    {
+        $hasActiveSubscription = $this->relationLoaded('currentSubscription')
+            ? $this->currentSubscription !== null
+            : $this->currentSubscription()->exists();
+
+        return $this->status === StoreStatus::APPROVED
+            && $this->is_active
+            && $hasActiveSubscription
+            && ! $this->trashed();
+    }
 }
