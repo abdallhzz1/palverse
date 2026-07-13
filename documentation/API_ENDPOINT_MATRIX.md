@@ -38,6 +38,11 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **MER-16** | PATCH | `/api/v1/merchant/stores/{uuid}/gallery/reorder` | Merchant | Merchant | Sanctum | Media | MVP | No | No | Active |
 | **MER-17** | GET | `/api/v1/merchant/stores/{uuid}/working-hours` | Merchant | Merchant | Sanctum | Hours | MVP | No | No | Active |
 | **MER-18** | PUT | `/api/v1/merchant/stores/{uuid}/working-hours` | Merchant | Merchant | Sanctum | Hours | MVP | Yes | No | Active |
+| **MER-S01**| GET | `/api/v1/merchant/stores/{uuid}/social-links` | Merchant | Merchant | Sanctum | Social | MVP | No | No | Active |
+| **MER-S02**| POST | `/api/v1/merchant/stores/{uuid}/social-links` | Merchant | Merchant | Sanctum | Social | MVP | Yes | No | Active |
+| **MER-S03**| GET | `/api/v1/merchant/stores/{uuid}/social-links/{socialLinkUuid}` | Merchant | Merchant | Sanctum | Social | MVP | No | No | Active |
+| **MER-S04**| PUT | `/api/v1/merchant/stores/{uuid}/social-links/{socialLinkUuid}` | Merchant | Merchant | Sanctum | Social | MVP | Yes | No | Active |
+| **MER-S05**| DELETE | `/api/v1/merchant/stores/{uuid}/social-links/{socialLinkUuid}` | Merchant | Merchant | Sanctum | Social | MVP | Yes | No | Active |
 | **MER-19** | GET | `/api/v1/merchant/stores/{uuid}/offers` | Merchant | Merchant | Sanctum | Offer | MVP | No | Yes | Active |
 | **MER-20** | POST | `/api/v1/merchant/stores/{uuid}/offers` | Merchant | Merchant | Sanctum | Offer | MVP | Yes | No | Active |
 | **MER-21** | GET | `/api/v1/merchant/stores/{uuid}/offers/{offer_uuid}` | Merchant | Merchant | Sanctum | Offer | MVP | No | No | Active |

@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
 use App\Http\Controllers\Api\V1\Merchant\StoreMediaController;
+use App\Http\Controllers\Api\V1\Merchant\StoreSocialLinkController;
+use App\Http\Controllers\Api\V1\Merchant\StoreWorkingHoursController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
 use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
@@ -75,6 +77,17 @@ Route::prefix('v1')->group(function (): void {
                 Route::post('/{publicId}/gallery', [StoreMediaController::class, 'storeGallery']);
                 Route::delete('/{publicId}/gallery/{mediaPublicId}', [StoreMediaController::class, 'destroyGallery']);
                 Route::patch('/{publicId}/gallery/reorder', [StoreMediaController::class, 'reorderGallery']);
+
+                // Working Hours
+                Route::get('/{publicId}/working-hours', [StoreWorkingHoursController::class, 'show']);
+                Route::put('/{publicId}/working-hours', [StoreWorkingHoursController::class, 'update']);
+
+                // Social Links
+                Route::get('/{publicId}/social-links', [StoreSocialLinkController::class, 'index']);
+                Route::post('/{publicId}/social-links', [StoreSocialLinkController::class, 'store']);
+                Route::get('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'show']);
+                Route::put('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'update']);
+                Route::delete('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'destroy']);
             });
         });
 

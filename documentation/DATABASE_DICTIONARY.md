@@ -176,10 +176,12 @@ This document details the database dictionary for all tables in the Palverse Min
 | Column Name | Suggested MySQL Type | Nullable / Required | Default Value | Keys & Constraints | Index | Validation Notes | Example Value |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | `INT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `311` |
+| `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
 | `store_id` | `INT UNSIGNED` | Required | *None* | FK (`stores.id`) | Yes | Cascade on delete | `42` |
 | `day_of_week` | `TINYINT UNSIGNED`| Required | *None* | *None* | No | Range `0` (Sun) to `6` (Sat) | `1` |
-| `open_time` | `TIME` | Nullable | `NULL` | *None* | No | `HH:MM:SS` format | `08:00:00` |
-| `close_time` | `TIME` | Nullable | `NULL` | *None* | No | `HH:MM:SS` format | `22:00:00` |
+| `period_index`| `TINYINT UNSIGNED`| Required | `1` | *None* | No | Period index for the day | `1` |
+| `opens_at` | `TIME` | Nullable | `NULL` | *None* | No | `HH:MM:SS` format | `08:00:00` |
+| `closes_at` | `TIME` | Nullable | `NULL` | *None* | No | `HH:MM:SS` format | `22:00:00` |
 | `is_closed` | `TINYINT(1)` | Required | `0` | *None* | No | Boolean status flag | `0` |
 | `created_at` | `TIMESTAMP` | Nullable | `CURRENT_TIMESTAMP` | *None* | No | *None* | `2026-07-13 19:30:00` |
 | `updated_at` | `TIMESTAMP` | Nullable | `NULL` | *None* | No | *None* | `2026-07-13 19:30:00` |
@@ -187,21 +189,23 @@ This document details the database dictionary for all tables in the Palverse Min
 ---
 
 ## 11. Table: `store_social_links`
-*   **Purpose**: Contains contact details and external social links for stores.
-*   **Soft Delete Support**: No.
+*   **Purpose**: Contains external social links for stores.
+*   **Soft Delete Support**: Yes.
 *   **Public Exposure Rule**: Displayed publicly on store profile.
 
 | Column Name | Suggested MySQL Type | Nullable / Required | Default Value | Keys & Constraints | Index | Validation Notes | Example Value |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | `INT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `42` |
-| `store_id` | `INT UNSIGNED` | Required | *None* | FK (`stores.id`) | Unique Constraint | Yes | Unique per store | `42` |
-| `phone` | `VARCHAR(30)` | Nullable | `NULL` | *None* | No | Valid phone format | `+970599000000` |
-| `whatsapp` | `VARCHAR(30)` | Nullable | `NULL` | *None* | No | Valid phone format | `+970599000000` |
-| `website` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | Valid HTTP URL | `https://al-yasmin.ps` |
-| `facebook` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | Valid Facebook URL | `https://facebook.com/...`|
-| `instagram` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | Valid Instagram URL | `https://instagram.com/...`|
+| `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
+| `store_id` | `INT UNSIGNED` | Required | *None* | FK (`stores.id`) | Yes | Cascade on delete | `42` |
+| `platform` | `VARCHAR(50)` | Required | *None* | *None* | No | Platform Enum | `facebook` |
+| `url` | `VARCHAR(191)` | Required | *None* | *None* | No | Valid URL | `https://facebook.com/x`|
+| `username` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | Username | `mystore`|
+| `sort_order` | `INT UNSIGNED` | Required | `0` | *None* | Yes | Ordering | `1` |
+| `is_active` | `TINYINT(1)` | Required | `1` | *None* | Yes | Active toggle | `1` |
 | `created_at` | `TIMESTAMP` | Nullable | `CURRENT_TIMESTAMP` | *None* | No | *None* | `2026-07-13 19:30:00` |
 | `updated_at` | `TIMESTAMP` | Nullable | `NULL` | *None* | No | *None* | `2026-07-13 19:30:00` |
+| `deleted_at` | `TIMESTAMP` | Nullable | `NULL` | *None* | Yes | Soft delete mark | `NULL` |
 
 ---
 

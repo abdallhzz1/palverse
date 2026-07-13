@@ -72,7 +72,7 @@ class StoreController extends Controller
     public function show(string $slug): JsonResponse
     {
         $store = Store::publicVisible()
-            ->with(['category', 'city', 'zone', 'logo', 'cover', 'gallery'])
+            ->with(['category', 'city', 'zone', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks'])
             ->where('slug', $slug)
             ->first();
 

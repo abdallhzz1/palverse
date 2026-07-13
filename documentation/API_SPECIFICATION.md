@@ -520,7 +520,7 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 
 ---
 
-## 5. Merchant Working Hours Endpoints
+## 5. Merchant Working Hours & Social Links Endpoints
 
 ### MER-17: Get Working Hours
 *   **Endpoint ID**: MER-17
@@ -528,7 +528,7 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **URL**: `/api/v1/merchant/stores/{uuid}/working-hours`
 *   **Purpose**: Retrieve working hours schedule list.
 *   **Actor**: Merchant (Owner)
-*   **Success Response (HTTP 200)**: returns weekly schedule details.
+*   **Success Response (HTTP 200)**: returns weekly schedule details, grouped by day.
 
 ### MER-18: Save Working Hours
 *   **Endpoint ID**: MER-18
@@ -539,13 +539,80 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **Request Body**:
     ```json
     {
-      "hours": [
-        {"day": 0, "open": "08:00:00", "close": "22:00:00", "is_closed": false},
-        {"day": 1, "open": null, "close": null, "is_closed": true}
+      "days": [
+        {
+          "day_of_week": 0,
+          "is_closed": false,
+          "periods": [
+            {"opens_at": "09:00", "closes_at": "17:00"}
+          ]
+        },
+        {
+          "day_of_week": 1,
+          "is_closed": true,
+          "periods": []
+        }
       ]
     }
     ```
 *   **Success Response (HTTP 200)**: schedule updated.
+
+### MER-S01: List Social Links
+*   **Endpoint ID**: MER-S01
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/merchant/stores/{uuid}/social-links`
+*   **Purpose**: Get all social links for the store.
+*   **Actor**: Merchant (Owner)
+*   **Success Response (HTTP 200)**: returns list of social links.
+
+### MER-S02: Add Social Link
+*   **Endpoint ID**: MER-S02
+*   **HTTP Method**: `POST`
+*   **URL**: `/api/v1/merchant/stores/{uuid}/social-links`
+*   **Purpose**: Add a new social link.
+*   **Actor**: Merchant (Owner)
+*   **Request Body**:
+    ```json
+    {
+      "platform": "facebook",
+      "url": "https://facebook.com/mystore",
+      "username": "mystore",
+      "sort_order": 1,
+      "is_active": true
+    }
+    ```
+*   **Success Response (HTTP 201)**: social link created.
+
+### MER-S03: Get Social Link Details
+*   **Endpoint ID**: MER-S03
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/merchant/stores/{uuid}/social-links/{socialLinkUuid}`
+*   **Purpose**: Get details of a single social link.
+*   **Actor**: Merchant (Owner)
+*   **Success Response (HTTP 200)**: returns details.
+
+### MER-S04: Update Social Link
+*   **Endpoint ID**: MER-S04
+*   **HTTP Method**: `PUT`
+*   **URL**: `/api/v1/merchant/stores/{uuid}/social-links/{socialLinkUuid}`
+*   **Purpose**: Update an existing social link.
+*   **Actor**: Merchant (Owner)
+*   **Request Body**:
+    ```json
+    {
+      "url": "https://facebook.com/mynewstore",
+      "is_active": false
+    }
+    ```
+*   **Success Response (HTTP 200)**: social link updated.
+
+### MER-S05: Delete Social Link
+*   **Endpoint ID**: MER-S05
+*   **HTTP Method**: `DELETE`
+*   **URL**: `/api/v1/merchant/stores/{uuid}/social-links/{socialLinkUuid}`
+*   **Purpose**: Delete a social link.
+*   **Actor**: Merchant (Owner)
+*   **Success Response (HTTP 200)**: social link deleted.
 
 ---
 

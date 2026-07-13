@@ -109,26 +109,30 @@ erDiagram
         timestamp deleted_at
     }
 
-    STORES ||--o| STORE_SOCIAL_LINKS : "owns"
+    STORES ||--o{ STORE_SOCIAL_LINKS : "owns"
     STORE_SOCIAL_LINKS {
         uint id PK
+        ulid public_id UK
         uint store_id FK "stores.id"
-        string phone
-        string whatsapp
-        string website
-        string facebook
-        string instagram
+        string platform
+        string url
+        string username
+        uint sort_order
+        boolean is_active
         timestamp created_at
         timestamp updated_at
+        timestamp deleted_at
     }
 
     STORES ||--o{ STORE_WORKING_HOURS : "operates"
     STORE_WORKING_HOURS {
         uint id PK
+        ulid public_id UK
         uint store_id FK "stores.id"
         tinyint day_of_week "0=Sunday..6=Saturday"
-        time open_time
-        time close_time
+        tinyint period_index
+        time opens_at
+        time closes_at
         boolean is_closed
         timestamp created_at
         timestamp updated_at

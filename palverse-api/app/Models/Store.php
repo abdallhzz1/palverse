@@ -135,6 +135,16 @@ class Store extends Model
         return $this->hasMany(StoreMedia::class)->gallery()->ordered();
     }
 
+    public function workingHours(): HasMany
+    {
+        return $this->hasMany(StoreWorkingHour::class)->ordered();
+    }
+
+    public function socialLinks(): HasMany
+    {
+        return $this->hasMany(StoreSocialLink::class)->ordered();
+    }
+
     public function scopeOwnedBy(Builder $query, User $user): Builder
     {
         return $query->where('owner_id', $user->id);
