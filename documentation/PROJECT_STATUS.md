@@ -16,16 +16,19 @@ Project foundation and documentation.
 - [x] Database ERD documented
 - [x] Database dictionary documented
 - [x] Database rules documented
+- [x] API specification documented
+- [x] API response standard documented
+- [x] API endpoint matrix documented
 
 ## In Progress
 
-- [ ] API specification
 - [ ] Laravel backend initialization
 
 ## Not Started
 
-- [ ] Laravel backend
-- [ ] Next.js website
+- [ ] Database migrations
+- [ ] Authentication
+- [ ] Roles and permissions
+- [ ] Store management API
+- [ ] Next.js application
 - [ ] Flutter application
-- [ ] Testing
-- [ ] Deployment

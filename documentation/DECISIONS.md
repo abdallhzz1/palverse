@@ -83,3 +83,31 @@ Files are stored using Laravel Storage. The database stores paths and metadata, 
 ## ADR-013: Store Status History
 
 Approval, rejection, activation, and deactivation actions must be recorded in a status history table.
+
+## ADR-014: API Versioning
+
+All Palverse API endpoints will be versioned under `/api/v1`.
+
+## ADR-015: API Response Format
+
+All API responses will use a consistent JSON response structure for success and error cases.
+
+## ADR-016: Public Resource Identifiers
+
+Public and protected API routes will use ULIDs or UUIDs instead of exposing internal numeric IDs.
+
+## ADR-017: Merchant Authorization
+
+Merchant access to stores will be enforced using Laravel Policies, not only route middleware or frontend filtering.
+
+## ADR-018: Public Store Visibility
+
+A store is publicly visible only when it is approved, active, not deleted, and has a valid active subscription.
+
+## ADR-019: API Pagination
+
+All collection endpoints must support pagination. Default and maximum page sizes will be configurable.
+
+## ADR-020: API Error Codes
+
+Machine-readable error codes will be stable and independent from localized human-readable messages.
