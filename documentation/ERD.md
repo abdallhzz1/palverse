@@ -182,25 +182,39 @@ erDiagram
         timestamp deleted_at
     }
 
-    SUBSCRIPTION_PLANS ||--o{ SUBSCRIPTIONS : "defines"
+    SUBSCRIPTION_PLANS ||--o{ STORE_SUBSCRIPTIONS : "defines"
     SUBSCRIPTION_PLANS {
         uint id PK
-        string name_ar UK
-        string name_en UK
+        string code UK
+        string name_ar
+        string name_en
+        text description_ar
+        text description_en
         decimal price
+        string currency "ILS"
         uint duration_days
+        uint max_offers
+        uint max_gallery_images
+        boolean is_active
+        uint sort_order
         timestamp created_at
         timestamp updated_at
+        timestamp deleted_at
     }
 
-    STORES ||--o{ SUBSCRIPTIONS : "subscribes"
-    SUBSCRIPTIONS {
+    STORES ||--o{ STORE_SUBSCRIPTIONS : "subscribes"
+    STORE_SUBSCRIPTIONS {
         uint id PK
+        ulid public_id UK
         uint store_id FK "stores.id"
-        uint plan_id FK "subscription_plans.id"
-        date start_date
-        date end_date
-        boolean is_active
+        uint subscription_plan_id FK "subscription_plans.id"
+        string status "enum(pending, active, expired, cancelled)"
+        datetime starts_at
+        datetime ends_at
+        decimal price_snapshot
+        string currency_snapshot "ILS"
+        string plan_name_ar_snapshot
+        string plan_name_en_snapshot
         timestamp created_at
         timestamp updated_at
     }

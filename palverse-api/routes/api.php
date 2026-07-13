@@ -3,16 +3,20 @@
 use App\Http\Controllers\Api\V1\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\V1\Admin\CityController as AdminCityController;
 use App\Http\Controllers\Api\V1\Admin\StoreController as AdminStoreController;
+use App\Http\Controllers\Api\V1\Admin\StoreSubscriptionController as AdminStoreSubscriptionController;
+use App\Http\Controllers\Api\V1\Admin\SubscriptionPlanController as AdminSubscriptionPlanController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Merchant\OfferController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
 use App\Http\Controllers\Api\V1\Merchant\StoreMediaController;
 use App\Http\Controllers\Api\V1\Merchant\StoreSocialLinkController;
+use App\Http\Controllers\Api\V1\Merchant\StoreSubscriptionController as MerchantStoreSubscriptionController;
 use App\Http\Controllers\Api\V1\Merchant\StoreWorkingHoursController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
 use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
+use App\Http\Controllers\Api\V1\Public\SubscriptionPlanController as PublicSubscriptionPlanController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +48,11 @@ Route::prefix('v1')->group(function (): void {
     });
 
     // ─── Public endpoints (no authentication required) ─────────────────────────
+    Route::prefix('subscription-plans')->group(function (): void {
+        Route::get('/', [PublicSubscriptionPlanController::class, 'index']);
+        Route::get('/{code}', [PublicSubscriptionPlanController::class, 'show']);
+    });
+
     Route::prefix('categories')->group(function (): void {
         Route::get('/', [PublicCategoryController::class, 'index']);
         Route::get('/{slug}', [PublicCategoryController::class, 'show']);
@@ -97,6 +106,10 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'show']);
                 Route::put('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'update']);
                 Route::delete('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'destroy']);
+
+                // Subscriptions
+                Route::get('/{publicId}/subscription', [MerchantStoreSubscriptionController::class, 'show']);
+                Route::get('/{publicId}/subscriptions', [MerchantStoreSubscriptionController::class, 'index']);
             });
         });
 
@@ -145,5 +158,24 @@ Route::prefix('v1')->group(function (): void {
                 Route::patch('/{publicId}/deactivate', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'deactivate']);
                 Route::delete('/{publicId}', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'destroy']);
             });
+
+            // Subscription Plans
+            Route::prefix('subscription-plans')->group(function (): void {
+                Route::get('/', [AdminSubscriptionPlanController::class, 'index']);
+                Route::post('/', [AdminSubscriptionPlanController::class, 'store']);
+                Route::get('/{publicId}', [AdminSubscriptionPlanController::class, 'show']);
+                Route::put('/{publicId}', [AdminSubscriptionPlanController::class, 'update']);
+                Route::delete('/{publicId}', [AdminSubscriptionPlanController::class, 'destroy']);
+            });
+
+            // Store Subscriptions
+            Route::prefix('subscriptions')->group(function (): void {
+                Route::get('/', [AdminStoreSubscriptionController::class, 'index']);
+                Route::post('/assign', [AdminStoreSubscriptionController::class, 'assign']);
+                Route::get('/{publicId}', [AdminStoreSubscriptionController::class, 'show']);
+                Route::patch('/{publicId}/cancel', [AdminStoreSubscriptionController::class, 'cancel']);
+            });
+
+            Route::get('stores/{storePublicId}/subscriptions', [AdminStoreSubscriptionController::class, 'storeSubscriptions']);
         });
 });

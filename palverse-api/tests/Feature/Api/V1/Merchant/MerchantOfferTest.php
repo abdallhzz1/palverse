@@ -28,8 +28,9 @@ class MerchantOfferTest extends TestCase
         $this->merchant = User::factory()->create();
         $this->merchant->assignRole('merchant');
 
-        $this->store = Store::factory()->create([
+        $this->store = Store::factory()->withSubscription()->create([
             'owner_id' => $this->merchant->id,
+            'name_en' => 'Store 1',
             'status' => 'approved',
             'is_active' => true,
         ]);

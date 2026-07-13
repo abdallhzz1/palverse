@@ -31,8 +31,8 @@ class AdminOfferTest extends TestCase
         $this->merchant = User::factory()->create();
         $this->merchant->assignRole('merchant');
 
-        $this->store = Store::factory()->create([
-            'owner_id' => $this->merchant->id,
+        $this->store = Store::factory()->withSubscription()->create([
+            'name_en' => 'Store 1',
             'status' => 'approved',
             'is_active' => true,
         ]);

@@ -28,8 +28,10 @@ class MerchantStoreMediaTest extends TestCase
         $this->merchant = User::factory()->create();
         $this->merchant->assignRole('merchant');
 
-        $this->store = Store::factory()->create([
+        $this->store = Store::factory()->withSubscription()->create([
             'owner_id' => $this->merchant->id,
+            'status' => 'approved',
+            'is_active' => true,
         ]);
 
         Storage::fake('public');

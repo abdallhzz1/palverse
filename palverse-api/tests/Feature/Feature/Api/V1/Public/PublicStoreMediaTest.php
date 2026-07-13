@@ -13,21 +13,26 @@ class PublicStoreMediaTest extends TestCase
 
     public function test_public_store_detail_includes_media(): void
     {
-        $store = Store::factory()->approved()->active()->create([
-            'slug' => 'test-store-media',
+        $store = Store::factory()->approved()->active()->withSubscription()->create([
+            'slug' => 'media-store',
         ]);
 
         StoreMedia::factory()->logo()->create(['store_id' => $store->id, 'file_path' => 'logo.jpg']);
         StoreMedia::factory()->cover()->create(['store_id' => $store->id, 'file_path' => 'cover.jpg']);
-        StoreMedia::factory()->gallery()->create(['store_id' => $store->id, 'file_path' => 'gal1.jpg', 'sort_order' => 1]);
+        StoreMedia::factory()->gallery()->create(['store_id' => $store->id, 'file_path' => 'gallery1.jpg', 'sort_order' => 1]);
         StoreMedia::factory()->gallery()->create(['store_id' => $store->id, 'file_path' => 'gal2.jpg', 'sort_order' => 2]);
 
-        $response = $this->getJson('/api/v1/stores/test-store-media')
-            ->assertOk();
+        $response = $this->getJson("/api/v1/stores/{$store->slug}");
 
-        $response->assertJsonPath('data.logo.url', url('storage/logo.jpg'));
-        $response->assertJsonPath('data.cover.url', url('storage/cover.jpg'));
+        $response->assertStatus(200);
+        $this->assertArrayHasKey('logo', $response->json('data'));
+        $this->assertArrayHasKey('cover', $response->json('data'));
+        $this->assertArrayHasKey('gallery', $response->json('data'));
         $this->assertCount(2, $response->json('data.gallery'));
+
+        $this->assertEquals(url('storage/logo.jpg'), $response->json('data.logo.url'));
+        $this->assertEquals(url('storage/cover.jpg'), $response->json('data.cover.url'));
+        $this->assertEquals(url('storage/gallery1.jpg'), $response->json('data.gallery.0.url'));
 
         // original_name should NOT be exposed publicly by default
         $response->assertJsonMissingPath('data.logo.original_name');
@@ -39,7 +44,7 @@ class PublicStoreMediaTest extends TestCase
 
     public function test_public_store_list_includes_logo_and_cover(): void
     {
-        $store = Store::factory()->approved()->active()->create();
+        $store = Store::factory()->approved()->active()->withSubscription()->create();
 
         StoreMedia::factory()->logo()->create(['store_id' => $store->id, 'file_path' => 'logo.jpg']);
         StoreMedia::factory()->cover()->create(['store_id' => $store->id, 'file_path' => 'cover.jpg']);

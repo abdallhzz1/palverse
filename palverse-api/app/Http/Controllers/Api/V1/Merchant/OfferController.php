@@ -70,6 +70,26 @@ class OfferController extends Controller
 
         Gate::authorize('update', $store);
 
+        $subscription = $store->currentSubscription;
+        if (! $subscription) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An active subscription is required to add offers.',
+                'error' => ['code' => 'SUBSCRIPTION_REQUIRED', 'details' => []],
+                'meta' => [],
+            ], 403);
+        }
+
+        $maxOffers = $subscription->plan->max_offers;
+        if ($maxOffers !== null && $store->offers()->count() >= $maxOffers) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have reached the maximum number of offers allowed for your subscription plan.',
+                'error' => ['code' => 'MAX_OFFERS_REACHED', 'details' => []],
+                'meta' => [],
+            ], 403);
+        }
+
         $data = $request->validated();
         $image = $request->file('image');
 

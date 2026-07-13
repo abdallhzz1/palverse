@@ -26,8 +26,8 @@ class PublicOfferTest extends TestCase
         $this->merchant = User::factory()->create();
         $this->merchant->assignRole('merchant');
 
-        $this->store = Store::factory()->approved()->create([
-            'owner_id' => $this->merchant->id,
+        $this->store = Store::factory()->approved()->withSubscription()->create([
+            'slug' => 'test-store',
         ]);
     }
 

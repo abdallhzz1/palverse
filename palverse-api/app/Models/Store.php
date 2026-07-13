@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StoreStatus;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -106,8 +107,9 @@ class Store extends Model
 
     public function scopePublicVisible(Builder $query): Builder
     {
-        // TODO: Valid subscription will become part of publicVisible later in Phase 2
-        return $query->approved()->active();
+        return $query->approved()
+            ->active()
+            ->whereHas('currentSubscription');
     }
 
     public function scopeOrdered(Builder $query): Builder
@@ -158,5 +160,28 @@ class Store extends Model
     public function activeOffers(): HasMany
     {
         return $this->offers()->active()->currentlyValid()->ordered();
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(StoreSubscription::class);
+    }
+
+    public function currentSubscription(): HasOne
+    {
+        return $this->hasOne(StoreSubscription::class)
+            ->ofMany(
+                ['starts_at' => 'max'],
+                function (Builder $query) {
+                    $query->where('status', SubscriptionStatus::ACTIVE->value)
+                        ->where('starts_at', '<=', now())
+                        ->where('ends_at', '>=', now());
+                }
+            );
+    }
+
+    public function latestSubscription(): HasOne
+    {
+        return $this->hasOne(StoreSubscription::class)->latestOfMany('starts_at');
     }
 }

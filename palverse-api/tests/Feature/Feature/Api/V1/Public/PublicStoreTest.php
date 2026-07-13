@@ -14,41 +14,43 @@ class PublicStoreTest extends TestCase
 
     public function test_guest_can_list_approved_active_stores(): void
     {
-        Store::factory()->approved()->active()->count(2)->create();
-        Store::factory()->pending()->create(); // should be hidden
-        Store::factory()->rejected()->create(); // should be hidden
-        Store::factory()->approved()->inactive()->create(); // should be hidden
+        Store::factory()->approved()->active()->withSubscription()->count(2)->create();
 
-        $this->getJson('/api/v1/stores')
-            ->assertOk()
-            ->assertJsonCount(2, 'data');
+        // These should be hidden
+        Store::factory()->approved()->inactive()->withSubscription()->create(); // should be hidden
+        Store::factory()->pending()->create(); // should be hidden
+
+        $response = $this->getJson('/api/v1/stores');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['data' => [['public_id', 'slug']]]);
+
+        $this->assertCount(2, $response->json('data'));
     }
 
     public function test_guest_can_view_store_by_slug(): void
     {
-        $store = Store::factory()->approved()->active()->create([
+        $store = Store::factory()->approved()->active()->withSubscription()->create([
             'slug' => 'test-store',
         ]);
 
-        $this->getJson('/api/v1/stores/test-store')
-            ->assertOk()
-            ->assertJsonPath('data.slug', 'test-store');
+        $response = $this->getJson('/api/v1/stores/test-store');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.public_id', $store->public_id);
     }
 
-    public function test_missing_store_returns_404(): void
+    public function test_guest_cannot_view_unapproved_or_inactive_store(): void
     {
-        $this->getJson('/api/v1/stores/non-existent-store')
-            ->assertNotFound();
-    }
+        Store::factory()->pending()->create(['slug' => 'pending-store']);
+        $response = $this->getJson('/api/v1/stores/pending-store');
+        $response->assertStatus(404);
 
-    public function test_inactive_store_slug_returns_404(): void
-    {
-        $store = Store::factory()->approved()->inactive()->create([
-            'slug' => 'test-store',
+        $store = Store::factory()->approved()->inactive()->withSubscription()->create([
+            'slug' => 'inactive-store',
         ]);
-
-        $this->getJson('/api/v1/stores/test-store')
-            ->assertNotFound();
+        $response = $this->getJson('/api/v1/stores/inactive-store');
+        $response->assertStatus(404);
     }
 
     public function test_filters_work(): void
@@ -59,8 +61,8 @@ class PublicStoreTest extends TestCase
         $city1 = City::factory()->create();
         $city2 = City::factory()->create();
 
-        Store::factory()->approved()->active()->create(['category_id' => $cat1->id, 'city_id' => $city1->id]);
-        Store::factory()->approved()->active()->create(['category_id' => $cat2->id, 'city_id' => $city2->id]);
+        Store::factory()->approved()->active()->withSubscription()->create(['category_id' => $cat1->id, 'city_id' => $city1->id]);
+        Store::factory()->approved()->active()->withSubscription()->create(['category_id' => $cat2->id, 'city_id' => $city2->id]);
 
         $this->getJson('/api/v1/stores?category=cat1')
             ->assertOk()

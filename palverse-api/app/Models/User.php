@@ -59,6 +59,16 @@ class User extends Authenticatable
         return $this->hasMany(Store::class, 'owner_id');
     }
 
+    public function subscriptionsAssigned(): HasMany
+    {
+        return $this->hasMany(StoreSubscription::class, 'assigned_by');
+    }
+
+    public function subscriptionsCancelled(): HasMany
+    {
+        return $this->hasMany(StoreSubscription::class, 'cancelled_by');
+    }
+
     public function storesApproved(): HasMany
     {
         return $this->hasMany(Store::class, 'approved_by');

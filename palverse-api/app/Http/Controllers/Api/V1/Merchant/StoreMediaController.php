@@ -131,6 +131,29 @@ class StoreMediaController extends Controller
             ], 403);
         }
 
+        $subscription = $store->currentSubscription;
+        if (! $subscription) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An active subscription is required to add gallery images.',
+                'error' => ['code' => 'SUBSCRIPTION_REQUIRED', 'details' => []],
+                'meta' => [],
+            ], 403);
+        }
+
+        $maxGalleryImages = $subscription->plan->max_gallery_images;
+        $filesCount = count($request->file('files'));
+        $currentCount = $store->gallery()->count();
+
+        if ($maxGalleryImages !== null && ($currentCount + $filesCount) > $maxGalleryImages) {
+            return response()->json([
+                'success' => false,
+                'message' => "You have reached the maximum number of gallery images ($maxGalleryImages) allowed for your subscription plan.",
+                'error' => ['code' => 'MAX_GALLERY_IMAGES_REACHED', 'details' => []],
+                'meta' => [],
+            ], 403);
+        }
+
         try {
             $mediaList = $this->mediaService->uploadGallery($store, $request->file('files'));
 

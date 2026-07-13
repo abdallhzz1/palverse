@@ -3,9 +3,12 @@
 namespace Database\Factories;
 
 use App\Enums\StoreStatus;
+use App\Enums\SubscriptionStatus;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Store;
+use App\Models\StoreSubscription;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Zone;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -77,5 +80,36 @@ class StoreFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
+    }
+
+    public function withSubscription(): static
+    {
+        return $this->afterCreating(function (Store $store) {
+            $plan = SubscriptionPlan::firstOrCreate(
+                ['code' => 'PREMIUM_TEST'],
+                [
+                    'name_ar' => 'Test Plan',
+                    'name_en' => 'Test Plan EN',
+                    'price' => 10,
+                    'currency' => 'ILS',
+                    'duration_days' => 30,
+                    'max_offers' => 100,
+                    'max_gallery_images' => 100,
+                    'is_active' => true,
+                ]
+            );
+
+            StoreSubscription::create([
+                'store_id' => $store->id,
+                'subscription_plan_id' => $plan->id,
+                'status' => SubscriptionStatus::ACTIVE->value,
+                'starts_at' => now()->subDay(),
+                'ends_at' => now()->addDays(30),
+                'price_snapshot' => $plan->price,
+                'currency_snapshot' => $plan->currency ?? 'ILS',
+                'plan_name_ar_snapshot' => $plan->name_ar,
+                'plan_name_en_snapshot' => $plan->name_en,
+            ]);
+        });
     }
 }
