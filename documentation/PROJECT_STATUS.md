@@ -12,12 +12,15 @@ Project foundation and documentation.
 - [x] System architecture documented
 - [x] Business rules documented
 - [x] Technical decisions documented
+- [x] User flows documented
+- [x] Database ERD documented
+- [x] Database dictionary documented
+- [x] Database rules documented
 
 ## In Progress
 
-- [ ] User flows
-- [ ] Database ERD
 - [ ] API specification
+- [ ] Laravel backend initialization
 
 ## Not Started
 

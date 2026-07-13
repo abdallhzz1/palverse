@@ -51,3 +51,35 @@ This document details the critical technological decisions, design patterns, and
 ## 8. Real-time Notifications Engine
 *   **Decision**: Firebase Cloud Messaging (FCM).
 *   **Rationale**: The industry-standard tool for cross-platform push notifications on iOS and Android with simple server-side integration.
+
+## ADR-006: Database Engine
+
+MySQL will be used as the primary relational database.
+
+## ADR-007: Public Identifiers
+
+Internal numeric IDs may be used for database relations, while ULIDs or UUIDs will be used as public identifiers where records may be exposed externally.
+
+## ADR-008: Store Ownership
+
+Each store has one primary merchant owner in the MVP. Future support for multiple managers may be added through a separate pivot table.
+
+## ADR-009: Store Slug
+
+A permanent unique slug is generated when a store is approved. It must not change automatically when the store name changes.
+
+## ADR-010: Monetary Values
+
+All monetary values will be stored using DECIMAL columns and an explicit currency code.
+
+## ADR-011: Localization
+
+Arabic fields are required for business content. English fields are nullable in the MVP.
+
+## ADR-012: Media Storage
+
+Files are stored using Laravel Storage. The database stores paths and metadata, not binary file contents.
+
+## ADR-013: Store Status History
+
+Approval, rejection, activation, and deactivation actions must be recorded in a status history table.
