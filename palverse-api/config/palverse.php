@@ -81,4 +81,18 @@ return [
         'breakdown_default_limit' => 10,
         'breakdown_max_limit' => 50,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search Configuration
+    |--------------------------------------------------------------------------
+    */
+    'search' => [
+        'max_query_length' => (int) env('SEARCH_MAX_QUERY_LENGTH', 100),
+        'min_query_length_suggestions' => (int) env('SEARCH_MIN_QUERY_LENGTH_SUGGESTIONS', 2),
+        'default_limit' => (int) env('SEARCH_DEFAULT_LIMIT', 20),
+        'max_limit' => (int) env('SEARCH_MAX_LIMIT', 100),
+        'suggestions_default_limit' => 8,
+        'suggestions_max_limit' => 20,
+    ],
 ];

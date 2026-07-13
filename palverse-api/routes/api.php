@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\Merchant\StoreWorkingHoursController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
+use App\Http\Controllers\Api\V1\Public\SearchSuggestionController;
 use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
 use App\Http\Controllers\Api\V1\Public\StoreLinkController;
 use App\Http\Controllers\Api\V1\Public\SubscriptionPlanController as PublicSubscriptionPlanController;
@@ -76,10 +77,13 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/{publicId}/zones', [PublicCityController::class, 'zones']);
     });
 
+    Route::get('/search/suggestions', [SearchSuggestionController::class, 'suggest']);
+
     Route::prefix('stores')->group(function (): void {
         Route::get('/', [PublicStoreController::class, 'index']);
         Route::get('/{slug}/links', [StoreLinkController::class, 'links']);
         Route::get('/{slug}/qr', [StoreLinkController::class, 'qr'])->name('api.v1.public.stores.qr');
+        Route::get('/{slug}/related', [PublicStoreController::class, 'related']);
         Route::get('/{slug}', [PublicStoreController::class, 'show']);
         Route::get('/{slug}/offers', [PublicStoreController::class, 'offers']);
     });

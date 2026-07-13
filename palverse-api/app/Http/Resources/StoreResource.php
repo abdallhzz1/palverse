@@ -65,6 +65,7 @@ class StoreResource extends JsonResource
             'gallery' => StoreMediaResource::collection($this->whenLoaded('gallery')),
             'offers' => OfferResource::collection($this->whenLoaded('activeOffers')),
             'offers_count' => $this->whenCounted('activeOffers'),
+            'current_offers_count' => $this->whenCounted('activeOffers'),
         ];
     }
 
