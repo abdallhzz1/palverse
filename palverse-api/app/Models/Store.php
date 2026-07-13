@@ -149,4 +149,14 @@ class Store extends Model
     {
         return $query->where('owner_id', $user->id);
     }
+
+    public function offers(): HasMany
+    {
+        return $this->hasMany(Offer::class);
+    }
+
+    public function activeOffers(): HasMany
+    {
+        return $this->offers()->active()->currentlyValid()->ordered();
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Api\V1\OfferResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -55,6 +56,8 @@ class StoreResource extends JsonResource
             'logo' => new StoreMediaResource($this->whenLoaded('logo')),
             'cover' => new StoreMediaResource($this->whenLoaded('cover')),
             'gallery' => StoreMediaResource::collection($this->whenLoaded('gallery')),
+            'offers' => OfferResource::collection($this->whenLoaded('activeOffers')),
+            'offers_count' => $this->whenCounted('activeOffers'),
         ];
     }
 

@@ -31,5 +31,7 @@ Project foundation and documentation.
 - [x] Roles and permissions
 - [x] Store management API
 - [x] Store media API
+- [x] Store working hours and social links APIs
+- [x] Offers API
 - [ ] Next.js application
 - [ ] Flutter application

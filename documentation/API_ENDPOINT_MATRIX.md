@@ -88,3 +88,8 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **ADM-38** | PATCH | `/api/v1/admin/subscriptions/{id}/cancel` | Admin | Admin | Sanctum | Subscription | MVP | Yes | No | Active |
 | **ADM-39** | GET | `/api/v1/admin/settings` | Admin | Admin | Sanctum | Settings | MVP | No | No | Active |
 | **ADM-40** | PUT | `/api/v1/admin/settings` | Admin | Admin | Sanctum | Settings | MVP | Yes | No | Active |
+| **ADM-41** | GET | `/api/v1/admin/offers` | Admin | Admin | Sanctum | Offer | MVP | No | Yes | Active |
+| **ADM-42** | GET | `/api/v1/admin/offers/{uuid}` | Admin | Admin | Sanctum | Offer | MVP | No | No | Active |
+| **ADM-43** | PATCH | `/api/v1/admin/offers/{uuid}/activate` | Admin | Admin | Sanctum | Offer | MVP | Yes | No | Active |
+| **ADM-44** | PATCH | `/api/v1/admin/offers/{uuid}/deactivate` | Admin | Admin | Sanctum | Offer | MVP | Yes | No | Active |
+| **ADM-45** | DELETE | `/api/v1/admin/offers/{uuid}` | Admin | Admin | Sanctum | Offer | MVP | Yes | No | Active |

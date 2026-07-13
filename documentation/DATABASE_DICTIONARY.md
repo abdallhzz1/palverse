@@ -217,14 +217,21 @@ This document details the database dictionary for all tables in the Palverse Min
 | Column Name | Suggested MySQL Type | Nullable / Required | Default Value | Keys & Constraints | Index | Validation Notes | Example Value |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | `INT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `112` |
-| `uuid` | `CHAR(36)` | Required | *None* | Unique Constraint | Yes | Valid UUID v4 | `d55b85a3-8356-4226-89d7-8d076f8e79cb` |
+| `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
 | `store_id` | `INT UNSIGNED` | Required | *None* | FK (`stores.id`) | Yes | Cascade on delete | `42` |
 | `title_ar` | `VARCHAR(191)` | Required | *None* | *None* | No | Arabic text | `خصم 20% على المعجنات` |
 | `title_en` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | English text | `20% Off Pastries` |
-| `description_ar`| `TEXT` | Required | *None* | *None* | No | Arabic text | `يسري العرض حتى نهاية الأسبوع`|
+| `description_ar`| `TEXT` | Nullable | `NULL` | *None* | No | Arabic text | `يسري العرض حتى نهاية الأسبوع`|
 | `description_en`| `TEXT` | Nullable | `NULL` | *None* | No | English text | `Valid until weekend` |
-| `start_date` | `DATE` | Required | *None* | *None* | Yes | `YYYY-MM-DD` | `2026-07-14` |
-| `end_date` | `DATE` | Required | *None* | *None* | Yes | `YYYY-MM-DD` | `2026-07-21` |
+| `price` | `DECIMAL(10, 2)`| Nullable | `NULL` | *None* | No | Current Price | `50.00` |
+| `old_price` | `DECIMAL(10, 2)`| Nullable | `NULL` | *None* | No | Old Price | `100.00` |
+| `currency` | `CHAR(3)` | Required | `'ILS'` | *None* | No | Currency Code | `ILS` |
+| `image_path` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | Path | `offers/1.jpg` |
+| `image_disk` | `VARCHAR(50)` | Nullable | `NULL` | *None* | No | Disk | `public` |
+| `starts_at` | `DATETIME` | Nullable | `NULL` | *None* | Yes | `YYYY-MM-DD HH:MM:SS` | `2026-07-14 10:00:00` |
+| `ends_at` | `DATETIME` | Nullable | `NULL` | *None* | Yes | `YYYY-MM-DD HH:MM:SS` | `2026-07-21 10:00:00` |
+| `is_active` | `TINYINT(1)` | Required | `1` | *None* | Yes | Active Status | `1` |
+| `sort_order` | `INT UNSIGNED` | Required | `0` | *None* | Yes | Sorting | `0` |
 | `created_at` | `TIMESTAMP` | Nullable | `CURRENT_TIMESTAMP` | *None* | No | *None* | `2026-07-13 19:30:00` |
 | `updated_at` | `TIMESTAMP` | Nullable | `NULL` | *None* | No | *None* | `2026-07-13 19:30:00` |
 | `deleted_at` | `TIMESTAMP` | Nullable | `NULL` | *None* | Yes | *None* | `NULL` |

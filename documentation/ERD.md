@@ -162,14 +162,21 @@ erDiagram
     STORES ||--o{ OFFERS : "promotes"
     OFFERS {
         uint id PK
-        uuid uuid UK
+        ulid public_id UK
         uint store_id FK "stores.id"
         string title_ar
         string title_en
         text description_ar
         text description_en
-        date start_date
-        date end_date
+        decimal price
+        decimal old_price
+        string currency "ILS"
+        string image_path
+        string image_disk
+        datetime starts_at
+        datetime ends_at
+        boolean is_active
+        uint sort_order
         timestamp created_at
         timestamp updated_at
         timestamp deleted_at

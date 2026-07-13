@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Admin\CityController as AdminCityController;
 use App\Http\Controllers\Api\V1\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Merchant\OfferController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
 use App\Http\Controllers\Api\V1\Merchant\StoreMediaController;
 use App\Http\Controllers\Api\V1\Merchant\StoreSocialLinkController;
@@ -56,6 +57,7 @@ Route::prefix('v1')->group(function (): void {
     Route::prefix('stores')->group(function (): void {
         Route::get('/', [PublicStoreController::class, 'index']);
         Route::get('/{slug}', [PublicStoreController::class, 'show']);
+        Route::get('/{slug}/offers', [PublicStoreController::class, 'offers']);
     });
 
     // ─── Merchant (Sanctum + merchant role/permissions required) ───────────────
@@ -88,6 +90,13 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'show']);
                 Route::put('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'update']);
                 Route::delete('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'destroy']);
+
+                // Offers
+                Route::get('/{publicId}/offers', [OfferController::class, 'index']);
+                Route::post('/{publicId}/offers', [OfferController::class, 'store']);
+                Route::get('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'show']);
+                Route::put('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'update']);
+                Route::delete('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'destroy']);
             });
         });
 
@@ -126,6 +135,15 @@ Route::prefix('v1')->group(function (): void {
                 Route::patch('/{publicId}/reject', [AdminStoreController::class, 'reject']);
                 Route::patch('/{publicId}/activate', [AdminStoreController::class, 'activate']);
                 Route::patch('/{publicId}/deactivate', [AdminStoreController::class, 'deactivate']);
+            });
+
+            // Offers
+            Route::prefix('offers')->group(function (): void {
+                Route::get('/', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'index']);
+                Route::get('/{publicId}', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'show']);
+                Route::patch('/{publicId}/activate', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'activate']);
+                Route::patch('/{publicId}/deactivate', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'deactivate']);
+                Route::delete('/{publicId}', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'destroy']);
             });
         });
 });

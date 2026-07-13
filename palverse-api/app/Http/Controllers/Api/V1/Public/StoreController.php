@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\OfferResource;
 use App\Http\Resources\StoreResource;
 use App\Models\Category;
 use App\Models\City;
@@ -72,7 +73,13 @@ class StoreController extends Controller
     public function show(string $slug): JsonResponse
     {
         $store = Store::publicVisible()
-            ->with(['category', 'city', 'zone', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks'])
+            ->with([
+                'category', 'city', 'zone', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks',
+                'activeOffers' => function ($query) {
+                    $query->limit(5);
+                },
+            ])
+            ->withCount('activeOffers')
             ->where('slug', $slug)
             ->first();
 
@@ -93,6 +100,35 @@ class StoreController extends Controller
             'message' => 'تم جلب بيانات المتجر بنجاح.',
             'data' => new StoreResource($store),
             'meta' => [],
+        ]);
+    }
+
+    public function offers(Request $request, string $slug): JsonResponse
+    {
+        $store = Store::publicVisible()
+            ->where('slug', $slug)
+            ->first();
+
+        if (! $store) {
+            return response()->json([
+                'success' => false,
+                'message' => 'المتجر غير موجود أو غير متاح.',
+                'error' => [
+                    'code' => 'STORE_NOT_FOUND',
+                    'details' => [],
+                ],
+                'meta' => [],
+            ], 404);
+        }
+
+        $perPage = $request->input('per_page', 15);
+        $offers = $store->activeOffers()->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم جلب العروض بنجاح.',
+            'data' => OfferResource::collection($offers)->response()->getData(true)['data'],
+            'meta' => OfferResource::collection($offers)->response()->getData(true)['meta'],
         ]);
     }
 }

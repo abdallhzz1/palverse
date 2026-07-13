@@ -24,4 +24,21 @@ return [
             'jpg',
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Offers Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure the limits and rules for offers.
+    |
+    */
+
+    'offers' => [
+        'default_currency' => env('DEFAULT_CURRENCY', 'ILS'),
+        'limits' => [
+            'offer_image_max_kb' => (int) env('OFFER_IMAGE_MAX_KB', 4096), // 4MB
+            'merchant_offer_limit_per_store' => (int) env('MERCHANT_OFFER_LIMIT_PER_STORE', 50),
+        ],
+    ],
 ];
