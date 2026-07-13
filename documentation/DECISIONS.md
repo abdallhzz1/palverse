@@ -133,3 +133,9 @@ A store is strictly limited to 1 logo, 1 cover, and 10 gallery images. To preven
 ## ADR-025: Store QR Code and Deep Linking
 
 QR codes will encode the canonical public HTTPS URL (`/stores/{slug}`). Deep links will use the custom scheme (`palverse://stores/{slug}`). QR codes will be generated dynamically on demand to ensure they reflect the current environment configuration without storing stagnant files in MySQL or disk storage. If a store lacks a permanent slug (such as pending stores), QR generation will not be available.
+
+---
+
+## ADR-026: Dashboard Statistics Period and Zero-Filling
+
+The Dashboard Statistics Module will support pre-defined periods (`today`, `last_7_days`, `last_30_days`, `current_month`, `previous_month`, `current_year`) and custom ranges up to 366 days. In trend queries, values will be zero-filled in PHP post-database query to ensure chronological stability and continuity across charts. Subscriptions that are past their expiration date but not yet modified by the scheduler are counted as effectively expired in stats. Profile completeness is evaluated using an equal weighting model of 7 checks. Ready checks determine blocking reasons such as pending approval, inactivity, or missing subscription.

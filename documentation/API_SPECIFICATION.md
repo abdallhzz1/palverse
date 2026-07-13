@@ -341,23 +341,28 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 ### MER-01: Get Merchant Dashboard Summary
 *   **Endpoint ID**: MER-01
 *   **HTTP Method**: `GET`
-*   **URL**: `/api/v1/merchant/dashboard`
-*   **Purpose**: Retrieve stats, owned stores list overview, and alert states.
+*   **URL**: `/api/v1/merchant/dashboard/summary`
+*   **Purpose**: Retrieve scoped store, subscription, offer, notification stats, and action required counts.
 *   **Actor**: Merchant
 *   **Authentication Requirement**: Yes (Sanctum + Role: Merchant).
-*   **Success Response (HTTP 200)**:
-    ```json
-    {
-      "success": true,
-      "message": "Dashboard data retrieved.",
-      "data": {
-        "stores_count": 1,
-        "stores": [
-          {"slug": "al-yasmin", "status": "approved", "is_active": true}
-        ]
-      }
-    }
-    ```
+*   **Success Response (HTTP 200)**: returns summary statistics.
+
+### MER-01b: Get Merchant Dashboard Recent Activity
+*   **Endpoint ID**: MER-01b
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/merchant/dashboard/recent-activity`
+*   **Purpose**: Retrieve limited recent stores, offers, subscriptions, and notifications.
+*   **Actor**: Merchant
+*   **Success Response (HTTP 200)**: returns recent activity arrays.
+
+### MER-01c: Get Merchant Store Dashboard
+*   **Endpoint ID**: MER-01c
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/merchant/stores/{storePublicId}/dashboard`
+*   **Purpose**: Retrieve store-level stats, subscription details, offers, profile completeness, and readiness.
+*   **Actor**: Merchant (Owner)
+*   **Success Response (HTTP 200)**: returns store completion percentage and readiness blocking reasons.
+
 
 ### MER-02: Get Owned Stores
 *   **Endpoint ID**: MER-02
@@ -692,14 +697,39 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 
 ## 7. Administration Endpoints
 
-### ADM-01: Admin Dashboard Statistics
+### ADM-01: Admin Dashboard Summary
 *   **Endpoint ID**: ADM-01
 *   **HTTP Method**: `GET`
-*   **URL**: `/api/v1/admin/dashboard`
-*   **Purpose**: Get stats on stores, pending counts, active counts, and platform users.
+*   **URL**: `/api/v1/admin/dashboard/summary`
+*   **Purpose**: Get stats on users, stores, offers, subscriptions, taxonomy, and notifications.
 *   **Actor**: Administrator
 *   **Authentication Requirement**: Yes (Sanctum + Role: Admin).
 *   **Success Response (HTTP 200)**: returns statistics values.
+
+### ADM-01b: Admin Dashboard Recent Activity
+*   **Endpoint ID**: ADM-01b
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/dashboard/recent-activity`
+*   **Purpose**: Get recent activity logs for stores, assignments, cancellations, and offers.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns activity arrays.
+
+### ADM-01c: Admin Dashboard Breakdowns
+*   **Endpoint ID**: ADM-01c
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/dashboard/stores-by-status`, `/subscriptions-by-status`, `/stores-by-category`, `/stores-by-city`, `/subscriptions-by-plan`
+*   **Purpose**: Eagerly aggregate store or subscription counts by statuses, categories, cities, or plans.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns sorted breakdown lists.
+
+### ADM-01d: Admin Dashboard Trends
+*   **Endpoint ID**: ADM-01d
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/dashboard/trends`
+*   **Purpose**: Chronologically list aggregated store, offer, subscription, or user registrations grouped by day, week, or month.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns zero-filled trend arrays.
+
 
 ### ADM-02: List Users
 *   **Endpoint ID**: ADM-02

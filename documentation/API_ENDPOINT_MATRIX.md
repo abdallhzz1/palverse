@@ -22,7 +22,9 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **ATH-04** | POST | `/api/v1/auth/forgot-password` | User | Guest | None | User | MVP | No | No | Active |
 | **ATH-05** | POST | `/api/v1/auth/reset-password` | User | Guest | None | User | MVP | No | No | Active |
 | **ATH-06** | POST | `/api/v1/auth/change-password` | User | User | Sanctum | User | MVP | No | No | Active |
-| **MER-01** | GET | `/api/v1/merchant/dashboard` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
+| **MER-01** | GET | `/api/v1/merchant/dashboard/summary` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
+| **MER-01b**| GET | `/api/v1/merchant/dashboard/recent-activity` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
+| **MER-01c**| GET | `/api/v1/merchant/stores/{uuid}/dashboard` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
 | **MER-02** | GET | `/api/v1/merchant/stores` | Merchant | Merchant | Sanctum | Store | MVP | No | Yes | Active |
 | **MER-03** | POST | `/api/v1/merchant/stores` | Merchant | Merchant | Sanctum | Store | MVP | Yes | No | Active |
 | **MER-04** | GET | `/api/v1/merchant/stores/{uuid}` | Merchant | Merchant | Sanctum | Store | MVP | No | No | Active |
@@ -50,7 +52,14 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **MER-21** | GET | `/api/v1/merchant/stores/{uuid}/offers/{offer_uuid}` | Merchant | Merchant | Sanctum | Offer | MVP | No | No | Active |
 | **MER-22** | PUT | `/api/v1/merchant/stores/{uuid}/offers/{offer_uuid}` | Merchant | Merchant | Sanctum | Offer | MVP | Yes | No | Active |
 | **MER-23** | DELETE | `/api/v1/merchant/stores/{uuid}/offers/{offer_uuid}` | Merchant | Merchant | Sanctum | Offer | MVP | Yes | No | Active |
-| **ADM-01** | GET | `/api/v1/admin/dashboard` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01** | GET | `/api/v1/admin/dashboard/summary` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01b**| GET | `/api/v1/admin/dashboard/recent-activity` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01c**| GET | `/api/v1/admin/dashboard/stores-by-status` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01d**| GET | `/api/v1/admin/dashboard/subscriptions-by-status` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01e**| GET | `/api/v1/admin/dashboard/stores-by-category` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01f**| GET | `/api/v1/admin/dashboard/stores-by-city` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01g**| GET | `/api/v1/admin/dashboard/subscriptions-by-plan` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
+| **ADM-01h**| GET | `/api/v1/admin/dashboard/trends` | Admin | Admin | Sanctum | Dashboard | MVP | No | No | Active |
 | **ADM-02** | GET | `/api/v1/admin/users` | Admin | Admin | Sanctum | User | MVP | No | Yes | Active |
 | **ADM-03** | GET | `/api/v1/admin/users/{uuid}` | Admin | Admin | Sanctum | User | MVP | No | No | Active |
 | **ADM-04** | PATCH | `/api/v1/admin/users/{uuid}/status` | Admin | Admin | Sanctum | User | MVP | Yes | No | Active |

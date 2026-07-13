@@ -68,4 +68,17 @@ return [
         'default_format' => env('QR_DEFAULT_FORMAT', 'svg'),
         'error_correction' => env('QR_ERROR_CORRECTION', 'L'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard Configuration
+    |--------------------------------------------------------------------------
+    */
+    'dashboard' => [
+        'max_custom_range_days' => (int) env('DASHBOARD_MAX_CUSTOM_RANGE_DAYS', 366),
+        'recent_activity_default_limit' => 10,
+        'recent_activity_max_limit' => 50,
+        'breakdown_default_limit' => 10,
+        'breakdown_max_limit' => 50,
+    ],
 ];

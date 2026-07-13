@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Admin\StoreSubscriptionController as AdminStoreS
 use App\Http\Controllers\Api\V1\Admin\SubscriptionPlanController as AdminSubscriptionPlanController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Merchant\DashboardController;
 use App\Http\Controllers\Api\V1\Merchant\OfferController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
 use App\Http\Controllers\Api\V1\Merchant\StoreMediaController;
@@ -87,9 +88,14 @@ Route::prefix('v1')->group(function (): void {
     Route::prefix('merchant')
         ->middleware(['auth:sanctum']) // Role/permission is handled by Policies and route scopes
         ->group(function (): void {
+            // Dashboard
+            Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+            Route::get('/dashboard/recent-activity', [DashboardController::class, 'recentActivity']);
+
             Route::prefix('stores')->group(function (): void {
                 Route::get('/', [MerchantStoreController::class, 'index']);
                 Route::post('/', [MerchantStoreController::class, 'store']);
+                Route::get('/{storePublicId}/dashboard', [DashboardController::class, 'storeDashboard']);
                 Route::get('/{publicId}', [MerchantStoreController::class, 'show']);
                 Route::put('/{publicId}', [MerchantStoreController::class, 'update']);
                 Route::get('/{publicId}/status', [MerchantStoreController::class, 'status']);
@@ -135,6 +141,17 @@ Route::prefix('v1')->group(function (): void {
     Route::prefix('admin')
         ->middleware(['auth:sanctum', 'role:admin'])
         ->group(function (): void {
+            // Dashboard
+            Route::prefix('dashboard')->group(function (): void {
+                Route::get('/summary', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'summary']);
+                Route::get('/recent-activity', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'recentActivity']);
+                Route::get('/stores-by-status', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'storesByStatus']);
+                Route::get('/subscriptions-by-status', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'subscriptionsByStatus']);
+                Route::get('/stores-by-category', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'storesByCategory']);
+                Route::get('/stores-by-city', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'storesByCity']);
+                Route::get('/subscriptions-by-plan', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'subscriptionsByPlan']);
+                Route::get('/trends', [App\Http\Controllers\Api\V1\Admin\DashboardController::class, 'trends']);
+            });
 
             // Categories
             Route::get('/categories', [AdminCategoryController::class, 'index']);

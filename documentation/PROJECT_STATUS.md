@@ -29,6 +29,7 @@ Project foundation and documentation.
 - [x] Manual store subscriptions & plans
 - [x] In-app notifications module
 - [x] Store QR Code and Deep Link Module
+- [x] Dashboard Statistics Module (Admin & Merchant)
 
 ## In Progress
 
