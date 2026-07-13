@@ -238,12 +238,41 @@ erDiagram
         timestamp created_at
     }
 
-    SETTINGS {
+    SYSTEM_SETTINGS {
         uint id PK
-        string key UK
+        ulid public_id UK
+        string group
+        string key
         text value
-        timestamp created_at
-        timestamp updated_at
+        string type
+        boolean is_public
+        string description_ar
+        string description_en
+    }
+
+    STATIC_PAGES {
+        uint id PK
+        ulid public_id UK
+        string slug UK
+        string title_ar
+        string title_en
+        text content_ar
+        text content_en
+        boolean is_published
+        datetime published_at
+        uint sort_order
+    }
+
+    FAQS {
+        uint id PK
+        ulid public_id UK
+        string question_ar
+        string question_en
+        text answer_ar
+        text answer_en
+        string category
+        boolean is_active
+        uint sort_order
     }
 ```
 
@@ -279,7 +308,8 @@ erDiagram
 *   `stores`, `categories`, `cities`, `zones`
 *   `store_media`, `store_working_hours`, `store_social_links`
 *   `offers`, `subscription_plans`, `subscriptions`
-*   `settings`, `store_status_history`, `store_rejection_reasons`
+*   `system_settings`, `static_pages`, `faqs`
+*   `store_status_history`, `store_rejection_reasons`
 
 ### Phase 2 Tables (Excluded from MVP database)
 *   `representative_assignments` (Sales Representative territory logs)

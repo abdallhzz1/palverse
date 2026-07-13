@@ -139,3 +139,15 @@ QR codes will encode the canonical public HTTPS URL (`/stores/{slug}`). Deep lin
 ## ADR-026: Dashboard Statistics Period and Zero-Filling
 
 The Dashboard Statistics Module will support pre-defined periods (`today`, `last_7_days`, `last_30_days`, `current_month`, `previous_month`, `current_year`) and custom ranges up to 366 days. In trend queries, values will be zero-filled in PHP post-database query to ensure chronological stability and continuity across charts. Subscriptions that are past their expiration date but not yet modified by the scheduler are counted as effectively expired in stats. Profile completeness is evaluated using an equal weighting model of 7 checks. Ready checks determine blocking reasons such as pending approval, inactivity, or missing subscription.
+
+---
+
+## ADR-027: Advanced Store Search and Suggestions
+*   **Decision**: MySQL-based search using `LIKE` query fallback generator with Arabic Alef/Yeh wildcards (`_`). Suggestions are queried concurrently for stores, categories, and geographic locations, and ranked in PHP (exact match -> starts-with -> priority order) to enforce a unified limit.
+*   **Rationale**: Ensures database-agnostic matching for Arabic query variants in both SQLite (testing) and MySQL (production) without custom DB-specific collations. Keeps controllers thin.
+
+---
+
+## ADR-028: System Settings, Static Pages, and FAQs
+*   **Decision**: Settings are stored in a dedicated `system_settings` table (excluding environment secrets/keys) with type casting. Static pages content is sanitized using a lightweight regex sanitizer in `StaticPageService` to block executable HTML scripts and iframes. Bootstrap data is exposed through a lightweight public endpoint cacheable for 5 minutes.
+*   **Rationale**: Protects platform security, prevents binary bloat, and optimizes initial application bootstrap payload size.

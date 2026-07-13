@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             AdminUserSeeder::class,
             SubscriptionPlanSeeder::class,
+            SystemSettingSeeder::class,
+            StaticPageSeeder::class,
         ]);
     }
 }

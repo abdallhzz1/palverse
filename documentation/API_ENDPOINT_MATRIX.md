@@ -106,4 +106,26 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **ADM-45** | DELETE | `/api/v1/admin/offers/{uuid}` | Admin | Admin | Sanctum | Offer | MVP | Yes | No | Active |
 | **ADM-46** | GET | `/api/v1/admin/stores/{uuid}/links` | Admin | Admin | Sanctum | Store | MVP | No | No | Active |
 | **ADM-47** | GET | `/api/v1/admin/stores/{uuid}/qr` | Admin | Admin | Sanctum | Store | MVP | No | No | Active |
+| **ADM-48** | GET | `/api/v1/admin/settings/{group}` | Admin | Admin | Sanctum | Settings | MVP | No | No | Active |
+| **ADM-49** | PUT | `/api/v1/admin/settings/{group}` | Admin | Admin | Sanctum | Settings | MVP | Yes | No | Active |
+| **ADM-50** | GET | `/api/v1/admin/pages` | Admin | Admin | Sanctum | Pages | MVP | No | Yes | Active |
+| **ADM-51** | POST | `/api/v1/admin/pages` | Admin | Admin | Sanctum | Pages | MVP | Yes | No | Active |
+| **ADM-52** | GET | `/api/v1/admin/pages/{publicId}` | Admin | Admin | Sanctum | Pages | MVP | No | No | Active |
+| **ADM-53** | PUT | `/api/v1/admin/pages/{publicId}` | Admin | Admin | Sanctum | Pages | MVP | Yes | No | Active |
+| **ADM-54** | DELETE | `/api/v1/admin/pages/{publicId}` | Admin | Admin | Sanctum | Pages | MVP | Yes | No | Active |
+| **ADM-55** | PATCH | `/api/v1/admin/pages/{publicId}/publish` | Admin | Admin | Sanctum | Pages | MVP | Yes | No | Active |
+| **ADM-56** | PATCH | `/api/v1/admin/pages/{publicId}/unpublish` | Admin | Admin | Sanctum | Pages | MVP | Yes | No | Active |
+| **ADM-57** | GET | `/api/v1/admin/faqs` | Admin | Admin | Sanctum | FAQ | MVP | No | Yes | Active |
+| **ADM-58** | POST | `/api/v1/admin/faqs` | Admin | Admin | Sanctum | FAQ | MVP | Yes | No | Active |
+| **ADM-59** | GET | `/api/v1/admin/faqs/{publicId}` | Admin | Admin | Sanctum | FAQ | MVP | No | No | Active |
+| **ADM-60** | PUT | `/api/v1/admin/faqs/{publicId}` | Admin | Admin | Sanctum | FAQ | MVP | Yes | No | Active |
+| **ADM-61** | DELETE | `/api/v1/admin/faqs/{publicId}` | Admin | Admin | Sanctum | FAQ | MVP | Yes | No | Active |
+| **PUB-20** | GET | `/api/v1/settings` | Public | Guest | None | Settings | MVP | No | No | Active |
+| **PUB-21** | GET | `/api/v1/settings/{group}` | Public | Guest | None | Settings | MVP | No | No | Active |
+| **PUB-22** | GET | `/api/v1/pages` | Public | Guest | None | Pages | MVP | No | Yes | Active |
+| **PUB-23** | GET | `/api/v1/pages/{slug}` | Public | Guest | None | Pages | MVP | No | No | Active |
+| **PUB-24** | GET | `/api/v1/faqs` | Public | Guest | None | FAQ | MVP | No | Yes | Active |
+| **PUB-25** | GET | `/api/v1/bootstrap` | Public | Guest | None | Bootstrap | MVP | No | No | Active |
+| **PUB-26** | GET | `/api/v1/search/suggestions` | Public | Guest | None | Search | MVP | No | No | Active |
+
 

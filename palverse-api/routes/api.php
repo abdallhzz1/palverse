@@ -15,12 +15,16 @@ use App\Http\Controllers\Api\V1\Merchant\StoreSocialLinkController;
 use App\Http\Controllers\Api\V1\Merchant\StoreSubscriptionController as MerchantStoreSubscriptionController;
 use App\Http\Controllers\Api\V1\Merchant\StoreWorkingHoursController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\Public\BootstrapController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
+use App\Http\Controllers\Api\V1\Public\FaqController;
 use App\Http\Controllers\Api\V1\Public\SearchSuggestionController;
+use App\Http\Controllers\Api\V1\Public\StaticPageController;
 use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
 use App\Http\Controllers\Api\V1\Public\StoreLinkController;
 use App\Http\Controllers\Api\V1\Public\SubscriptionPlanController as PublicSubscriptionPlanController;
+use App\Http\Controllers\Api\V1\Public\SystemSettingController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -76,6 +80,20 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/', [PublicCityController::class, 'index']);
         Route::get('/{publicId}/zones', [PublicCityController::class, 'zones']);
     });
+
+    Route::get('/bootstrap', [BootstrapController::class, '__invoke']);
+
+    Route::prefix('settings')->group(function (): void {
+        Route::get('/', [SystemSettingController::class, 'index']);
+        Route::get('/{group}', [SystemSettingController::class, 'show']);
+    });
+
+    Route::prefix('pages')->group(function (): void {
+        Route::get('/', [StaticPageController::class, 'index']);
+        Route::get('/{slug}', [StaticPageController::class, 'show']);
+    });
+
+    Route::get('/faqs', [FaqController::class, 'index']);
 
     Route::get('/search/suggestions', [SearchSuggestionController::class, 'suggest']);
 
@@ -218,5 +236,33 @@ Route::prefix('v1')->group(function (): void {
             });
 
             Route::get('stores/{storePublicId}/subscriptions', [AdminStoreSubscriptionController::class, 'storeSubscriptions']);
+
+            // Settings
+            Route::prefix('settings')->group(function (): void {
+                Route::get('/', [App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'index']);
+                Route::get('/{group}', [App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'show']);
+                Route::put('/', [App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'update']);
+                Route::put('/{group}', [App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'updateGroup']);
+            });
+
+            // Static Pages
+            Route::prefix('pages')->group(function (): void {
+                Route::get('/', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'index']);
+                Route::post('/', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'store']);
+                Route::get('/{publicId}', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'show']);
+                Route::put('/{publicId}', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'update']);
+                Route::delete('/{publicId}', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'destroy']);
+                Route::patch('/{publicId}/publish', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'publish']);
+                Route::patch('/{publicId}/unpublish', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'unpublish']);
+            });
+
+            // FAQs
+            Route::prefix('faqs')->group(function (): void {
+                Route::get('/', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'index']);
+                Route::post('/', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'store']);
+                Route::get('/{publicId}', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'show']);
+                Route::put('/{publicId}', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'update']);
+                Route::delete('/{publicId}', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'destroy']);
+            });
         });
 });

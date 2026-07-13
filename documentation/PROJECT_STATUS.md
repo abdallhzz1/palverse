@@ -30,6 +30,8 @@ Project foundation and documentation.
 - [x] In-app notifications module
 - [x] Store QR Code and Deep Link Module
 - [x] Dashboard Statistics Module (Admin & Merchant)
+- [x] Advanced Search and Suggestions Module
+- [x] System Settings, Static Pages, and FAQs Module
 
 ## In Progress
 

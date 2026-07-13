@@ -329,3 +329,62 @@ This document details the database dictionary for all tables in the Palverse Min
 | `permission_id`| `INT UNSIGNED` | Required | *None* | FK (`permissions.id`) | Yes | Cascade on delete | `3` |
 | `role_id` | `INT UNSIGNED` | Required | *None* | FK (`roles.id`), PK | Yes | Cascade on delete | `2` |
 
+---
+
+## 19. Table: `system_settings`
+*   **Purpose**: Stores dynamic global application settings.
+*   **Soft Delete Support**: No.
+*   **Public Exposure Rule**: Public settings retrieved by public visitors.
+
+| Column Name | Suggested MySQL Type | Nullable / Required | Default Value | Keys & Constraints | Index | Validation Notes | Example Value |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `BIGINT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `1` |
+| `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
+| `group` | `VARCHAR(191)` | Required | *None* | *None* | Yes | Group code | `general` |
+| `key` | `VARCHAR(191)` | Required | *None* | *None* | No | Unique in group | `platform_name_ar` |
+| `value` | `LONGTEXT` | Nullable | `NULL` | *None* | No | Setting value | `بالفيرس` |
+| `type` | `VARCHAR(50)` | Required | *None* | *None* | No | Type of value | `string` |
+| `is_public` | `TINYINT(1)` | Required | `0` | *None* | Yes | Public toggle | `1` |
+| `description_ar` | `VARCHAR(191)`| Nullable | `NULL` | *None* | No | Arabic label | `اسم المنصة` |
+| `description_en` | `VARCHAR(191)`| Nullable | `NULL` | *None* | No | English label | `Platform name` |
+
+---
+
+## 20. Table: `static_pages`
+*   **Purpose**: Manages public content pages like About Us or Privacy Policy.
+*   **Soft Delete Support**: Yes.
+*   **Public Exposure Rule**: Published pages are public.
+
+| Column Name | Suggested MySQL Type | Nullable / Required | Default Value | Keys & Constraints | Index | Validation Notes | Example Value |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `BIGINT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `1` |
+| `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
+| `slug` | `VARCHAR(191)` | Required | *None* | Unique Constraint | Yes | URL slug format | `about-us` |
+| `title_ar` | `VARCHAR(191)` | Required | *None* | *None* | No | Arabic title | `من نحن` |
+| `title_en` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | English title | `About Us` |
+| `content_ar` | `LONGTEXT` | Required | *None* | *None* | No | Arabic content | `...` |
+| `content_en` | `LONGTEXT` | Nullable | `NULL` | *None* | No | English content | `...` |
+| `is_published`| `TINYINT(1)` | Required | `0` | *None* | Yes | Published toggle | `1` |
+| `published_at`| `DATETIME` | Nullable | `NULL` | *None* | No | Publish timestamp| `2026-07-14 00:00` |
+| `sort_order` | `INT UNSIGNED` | Required | `0` | *None* | No | Ordering weight | `1` |
+
+---
+
+## 21. Table: `faqs`
+*   **Purpose**: Manages public Frequently Asked Questions (FAQs).
+*   **Soft Delete Support**: Yes.
+*   **Public Exposure Rule**: Active FAQs are public.
+
+| Column Name | Suggested MySQL Type | Nullable / Required | Default Value | Keys & Constraints | Index | Validation Notes | Example Value |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `BIGINT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `1` |
+| `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
+| `question_ar`| `VARCHAR(500)` | Required | *None* | *None* | No | Arabic question | `كيف أسجل؟` |
+| `question_en`| `VARCHAR(500)` | Nullable | `NULL` | *None* | No | English question | `How to register?`|
+| `answer_ar` | `TEXT` | Required | *None* | *None* | No | Arabic answer | `...` |
+| `answer_en` | `TEXT` | Nullable | `NULL` | *None* | No | English answer | `...` |
+| `category` | `VARCHAR(191)` | Nullable | `NULL` | *None* | Yes | Category group | `general` |
+| `is_active` | `TINYINT(1)` | Required | `1` | *None* | Yes | Active toggle | `1` |
+| `sort_order` | `INT UNSIGNED` | Required | `0` | *None* | No | Ordering weight | `1` |
+
+

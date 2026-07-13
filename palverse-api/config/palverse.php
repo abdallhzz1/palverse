@@ -95,4 +95,58 @@ return [
         'suggestions_default_limit' => 8,
         'suggestions_max_limit' => 20,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Settings Configuration
+    |--------------------------------------------------------------------------
+    */
+    'settings' => [
+        'whitelisted_keys' => [
+            'general' => [
+                'platform_name_ar',
+                'platform_name_en',
+                'platform_description_ar',
+                'platform_description_en',
+                'default_currency',
+                'default_language',
+                'supported_languages',
+                'timezone',
+            ],
+            'branding' => [
+                'logo_url',
+                'logo_dark_url',
+                'favicon_url',
+                'primary_color',
+                'secondary_color',
+            ],
+            'contact' => [
+                'support_email',
+                'support_phone',
+                'support_whatsapp',
+                'address_ar',
+                'address_en',
+            ],
+            'social' => [
+                'facebook_url',
+                'instagram_url',
+                'tiktok_url',
+                'linkedin_url',
+                'youtube_url',
+                'x_url',
+            ],
+            'application' => [
+                'android_app_url',
+                'ios_app_url',
+                'minimum_android_version',
+                'minimum_ios_version',
+            ],
+            'maintenance' => [
+                'maintenance_message_ar',
+                'maintenance_message_en',
+                'registration_enabled',
+                'merchant_registration_enabled',
+            ],
+        ],
+    ],
 ];

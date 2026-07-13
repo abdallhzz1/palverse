@@ -59,3 +59,7 @@ This document outlines the design standards, conventions, indexing rules, data i
 
 *   **Database Transactions**: Multi-table write actions (such as store approval inserting history logs, or subscription plan upgrades) must be executed inside a database transaction block (`DB::beginTransaction`). If any part of the query fails, changes are rolled back.
 *   **Authentication Token Security**: Sanctum session hashes are stored in `personal_access_tokens` as hashed keys. Raw tokens are never stored inside database columns.
+*   **System Settings Validation**: Critical settings are whitelisted in configuration. Raw database values must be typed and validated (e.g. valid emails, URLs) before updates are persisted. Secrets like passwords or API tokens must never be stored in the settings table.
+*   **Static Page Sanitation**: Content fields stored in `static_pages` must be sanitized before storage using regex replacement in the service layer to strip dangerous tags (`<script>`, `<iframe>`) and inline event handlers to prevent XSS attacks.
+*   **FAQ Active Scope**: FAQs support categorization and order weight. Public queries must strictly scope results to `is_active = true` and ordered by `sort_order`.
+

@@ -1060,3 +1060,104 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **Purpose**: Generate and stream SVG/PNG QR code for any store.
 *   **Actor**: Admin
 *   **Success Response (HTTP 200)**: returns binary SVG/PNG stream.
+
+---
+
+## 12. Static Pages & FAQ Endpoints
+
+### PUB-22: List Static Pages (Public)
+*   **Endpoint ID**: PUB-22
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/pages`
+*   **Purpose**: Get published static page summaries.
+*   **Actor**: Public Visitor
+*   **Success Response (HTTP 200)**: returns list of slug, title, and excerpt.
+
+### PUB-23: Get Static Page Detail (Public)
+*   **Endpoint ID**: PUB-23
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/pages/{slug}`
+*   **Purpose**: Get detailed content of a published page.
+*   **Actor**: Public Visitor
+*   **Success Response (HTTP 200)**: returns full page details.
+
+### PUB-24: Get FAQs (Public)
+*   **Endpoint ID**: PUB-24
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/faqs`
+*   **Purpose**: Get active FAQs filtered optionally by category or search query.
+*   **Actor**: Public Visitor
+*   **Success Response (HTTP 200)**: returns list of FAQs.
+
+### PUB-25: Public Bootstrap
+*   **Endpoint ID**: PUB-25
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/bootstrap`
+*   **Purpose**: Get startup payload containing safe public settings, active categories, cities, and published page links.
+*   **Actor**: Public Visitor
+*   **Success Response (HTTP 200)**: returns lightweight boot state.
+
+### ADM-50: List Static Pages (Admin)
+*   **Endpoint ID**: ADM-50
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/pages`
+*   **Purpose**: Search, filter, and paginate static pages.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns paginated pages.
+
+### ADM-51: Create Static Page (Admin)
+*   **Endpoint ID**: ADM-51
+*   **HTTP Method**: `POST`
+*   **URL**: `/api/v1/admin/pages`
+*   **Purpose**: Create a new static page with sanitized content.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 201)**: returns created page.
+
+### ADM-52: Get Static Page details (Admin)
+*   **Endpoint ID**: ADM-52
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/pages/{publicId}`
+*   **Purpose**: Retrieve full static page details.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns page.
+
+### ADM-53: Update Static Page (Admin)
+*   **Endpoint ID**: ADM-53
+*   **HTTP Method**: `PUT`
+*   **URL**: `/api/v1/admin/pages/{publicId}`
+*   **Purpose**: Update details of a static page.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns updated page.
+
+### ADM-54: Delete Static Page (Admin)
+*   **Endpoint ID**: ADM-54
+*   **HTTP Method**: `DELETE`
+*   **URL**: `/api/v1/admin/pages/{publicId}`
+*   **Purpose**: Soft delete a static page.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns success message.
+
+### ADM-57: List FAQs (Admin)
+*   **Endpoint ID**: ADM-57
+*   **HTTP Method**: `GET`
+*   **URL**: `/api/v1/admin/faqs`
+*   **Purpose**: List all FAQs with administrative filters.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns paginated FAQs.
+
+### ADM-58: Create FAQ (Admin)
+*   **Endpoint ID**: ADM-58
+*   **HTTP Method**: `POST`
+*   **URL**: `/api/v1/admin/faqs`
+*   **Purpose**: Create a new FAQ entry.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 201)**: returns created FAQ.
+
+### ADM-61: Delete FAQ (Admin)
+*   **Endpoint ID**: ADM-61
+*   **HTTP Method**: `DELETE`
+*   **URL**: `/api/v1/admin/faqs/{publicId}`
+*   **Purpose**: Soft delete an FAQ entry.
+*   **Actor**: Administrator
+*   **Success Response (HTTP 200)**: returns success message.
+
