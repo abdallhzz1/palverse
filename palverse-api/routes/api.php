@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\AuditLogController;
 use App\Http\Controllers\Api\V1\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\V1\Admin\CityController as AdminCityController;
 use App\Http\Controllers\Api\V1\Admin\StoreController as AdminStoreController;
@@ -281,6 +282,12 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/{publicId}', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'show']);
                 Route::put('/{publicId}', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'update']);
                 Route::delete('/{publicId}', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'destroy']);
+            });
+
+            // Audit Logs
+            Route::prefix('audit-logs')->group(function (): void {
+                Route::get('/', [AuditLogController::class, 'index']);
+                Route::get('/{publicId}', [AuditLogController::class, 'show']);
             });
         });
 });

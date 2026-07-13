@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\Offer;
 use App\Models\Store;
 use Illuminate\Http\UploadedFile;
@@ -11,6 +12,8 @@ use Illuminate\Support\Str;
 
 class OfferService
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     public function createOffer(Store $store, array $data, ?UploadedFile $image = null): Offer
     {
         return DB::transaction(function () use ($store, $data, $image) {
@@ -26,6 +29,12 @@ class OfferService
 
             $offer->save();
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::OfferCreated,
+                subject: $offer,
+                newValues: $data
+            );
+
             return $offer;
         });
     }
@@ -33,6 +42,7 @@ class OfferService
     public function updateOffer(Offer $offer, array $data, ?UploadedFile $image = null, bool $removeImage = false): Offer
     {
         return DB::transaction(function () use ($offer, $data, $image, $removeImage) {
+            $oldValues = $offer->only(array_keys($data));
             $offer->fill($data);
 
             if ($image) {
@@ -52,6 +62,13 @@ class OfferService
 
             $offer->save();
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::OfferUpdated,
+                subject: $offer,
+                oldValues: $oldValues,
+                newValues: $data
+            );
+
             return $offer;
         });
     }
@@ -64,7 +81,16 @@ class OfferService
                 Storage::disk($offer->image_disk)->delete($offer->image_path);
             }
 
-            return $offer->delete();
+            $deleted = $offer->delete();
+
+            if ($deleted) {
+                $this->auditLogService->recordFromRequest(
+                    action: AuditAction::OfferDeleted,
+                    subject: $offer
+                );
+            }
+
+            return $deleted;
         });
     }
 }

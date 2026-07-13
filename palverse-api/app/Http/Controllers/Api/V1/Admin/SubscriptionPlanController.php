@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\AdminSubscriptionPlanIndexRequest;
 use App\Http\Requests\Api\V1\Admin\StoreSubscriptionPlanRequest;
 use App\Http\Requests\Api\V1\Admin\UpdateSubscriptionPlanRequest;
 use App\Http\Resources\Api\V1\SubscriptionPlanResource;
 use App\Models\SubscriptionPlan;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionPlanController extends Controller
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     public function index(AdminSubscriptionPlanIndexRequest $request): JsonResponse
     {
         $this->authorize('viewAny', SubscriptionPlan::class);
@@ -51,6 +55,12 @@ class SubscriptionPlanController extends Controller
 
         $plan = SubscriptionPlan::create($request->validated());
 
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::SubscriptionPlanCreated,
+            subject: $plan,
+            newValues: $plan->only(['code', 'name_ar', 'name_en', 'price', 'duration_days', 'is_active'])
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Subscription plan created successfully.',
@@ -78,7 +88,15 @@ class SubscriptionPlanController extends Controller
         $this->authorize('update', SubscriptionPlan::class);
 
         $plan = SubscriptionPlan::where('public_id', $publicId)->firstOrFail();
+        $oldValues = $plan->only(array_keys($request->validated()));
         $plan->update($request->validated());
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::SubscriptionPlanUpdated,
+            subject: $plan,
+            oldValues: $oldValues,
+            newValues: $request->validated()
+        );
 
         return response()->json([
             'success' => true,
@@ -93,6 +111,13 @@ class SubscriptionPlanController extends Controller
         $this->authorize('delete', SubscriptionPlan::class);
 
         $plan = SubscriptionPlan::where('public_id', $publicId)->firstOrFail();
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::SubscriptionPlanDeleted,
+            subject: $plan,
+            oldValues: $plan->only(['code', 'name_ar', 'name_en'])
+        );
+
         $plan->delete();
 
         return response()->json([

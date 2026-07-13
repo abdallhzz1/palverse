@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\AdminFaqIndexRequest;
 use App\Http\Requests\Api\V1\Admin\StoreFaqRequest;
 use App\Http\Requests\Api\V1\Admin\UpdateFaqRequest;
 use App\Http\Resources\Api\V1\FaqResource;
 use App\Models\Faq;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 
 class FaqController extends Controller
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     /**
      * List FAQs for admin.
      */
@@ -59,6 +63,12 @@ class FaqController extends Controller
     {
         $faq = Faq::create($request->validated());
 
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::FaqCreated,
+            subject: $faq,
+            newValues: $faq->only(['question_ar', 'question_en'])
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'تم إنشاء السؤال الشائع بنجاح.',
@@ -101,7 +111,15 @@ class FaqController extends Controller
             ], 404);
         }
 
+        $oldValues = $faq->only(array_keys($request->validated()));
         $faq->update($request->validated());
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::FaqUpdated,
+            subject: $faq,
+            oldValues: $oldValues,
+            newValues: $request->validated()
+        );
 
         return response()->json([
             'success' => true,
@@ -125,6 +143,12 @@ class FaqController extends Controller
         }
 
         $faq->delete();
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::FaqDeleted,
+            subject: $faq,
+            oldValues: $faq->only(['question_ar', 'question_en'])
+        );
 
         return response()->json([
             'success' => true,

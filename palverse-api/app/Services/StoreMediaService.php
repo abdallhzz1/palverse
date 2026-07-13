@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\StoreMediaType;
 use App\Models\Store;
 use App\Models\StoreMedia;
@@ -12,6 +13,8 @@ use Illuminate\Support\Str;
 
 class StoreMediaService
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     /**
      * Uploads or replaces a store logo safely.
      */
@@ -25,6 +28,12 @@ class StoreMediaService
             if ($oldLogo) {
                 $oldLogo->delete(); // Soft deletes and observer deletes physical file
             }
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreLogoUploaded,
+                subject: $store,
+                metadata: ['media_public_id' => $media->public_id]
+            );
 
             return $media;
         });
@@ -43,6 +52,12 @@ class StoreMediaService
             if ($oldCover) {
                 $oldCover->delete();
             }
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreCoverUploaded,
+                subject: $store,
+                metadata: ['media_public_id' => $media->public_id]
+            );
 
             return $media;
         });
@@ -70,6 +85,12 @@ class StoreMediaService
                 $uploadedMedia[] = $media;
             }
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreGalleryUploaded,
+                subject: $store,
+                metadata: ['uploaded_count' => count($uploadedMedia)]
+            );
+
             return $uploadedMedia;
         });
     }
@@ -81,6 +102,18 @@ class StoreMediaService
     {
         DB::transaction(function () use ($media) {
             $media->delete();
+
+            $action = match ($media->type) {
+                StoreMediaType::LOGO->value => AuditAction::StoreLogoDeleted,
+                StoreMediaType::COVER->value => AuditAction::StoreCoverDeleted,
+                default => AuditAction::StoreGalleryDeleted,
+            };
+
+            $this->auditLogService->recordFromRequest(
+                action: $action,
+                subject: $media->store, // Need to ensure relation is loaded or available
+                oldValues: ['media_public_id' => $media->public_id]
+            );
         });
     }
 
@@ -95,6 +128,12 @@ class StoreMediaService
                     ->where('public_id', $item['media_public_id'])
                     ->update(['sort_order' => $item['sort_order']]);
             }
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreGalleryReordered,
+                subject: $store,
+                metadata: ['items' => $items]
+            );
         });
     }
 

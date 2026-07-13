@@ -42,6 +42,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
             'settings.view',
             'settings.manage',
+
+            'audit_logs.view',
         ];
 
         foreach ($permissions as $permissionName) {

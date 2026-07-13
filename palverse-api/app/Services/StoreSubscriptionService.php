@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\SubscriptionStatus;
 use App\Models\Store;
 use App\Models\StoreSubscription;
@@ -17,9 +18,12 @@ class StoreSubscriptionService
 {
     private NotificationService $notificationService;
 
-    public function __construct(NotificationService $notificationService)
+    private AuditLogService $auditLogService;
+
+    public function __construct(NotificationService $notificationService, AuditLogService $auditLogService)
     {
         $this->notificationService = $notificationService;
+        $this->auditLogService = $auditLogService;
     }
 
     public function assignSubscription(Store $store, SubscriptionPlan $plan, User $assignedBy, ?\DateTimeInterface $startsAt = null, ?\DateTimeInterface $endsAt = null, ?string $notes = null): StoreSubscription
@@ -65,6 +69,18 @@ class StoreSubscriptionService
 
             $this->notificationService->send($store->owner, new SubscriptionAssignedNotification($subscription));
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::SubscriptionAssigned,
+                subject: $subscription,
+                newValues: [
+                    'store_public_id' => $store->public_id,
+                    'plan_public_id' => $plan->public_id,
+                    'status' => SubscriptionStatus::ACTIVE->value,
+                    'starts_at' => $subscription->starts_at?->toIso8601String(),
+                    'ends_at' => $subscription->ends_at?->toIso8601String(),
+                ]
+            );
+
             return $subscription;
         });
     }
@@ -84,6 +100,13 @@ class StoreSubscriptionService
             ]);
 
             $this->notificationService->send($subscription->store->owner, new SubscriptionCancelledNotification($subscription));
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::SubscriptionCancelled,
+                subject: $subscription,
+                oldValues: ['status' => SubscriptionStatus::ACTIVE->value],
+                newValues: ['status' => SubscriptionStatus::CANCELLED->value, 'cancellation_reason' => $reason]
+            );
 
             return $subscription;
         });
@@ -108,6 +131,13 @@ class StoreSubscriptionService
             $notification = new SubscriptionExpiredNotification($subscription);
             // Use the notification's metadata event key for deduplication
             $this->notificationService->send($subscription->store->owner, $notification, $notification->toArray($subscription->store->owner)['metadata']['event_key']);
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::SubscriptionExpired,
+                subject: $subscription,
+                oldValues: ['status' => SubscriptionStatus::ACTIVE->value],
+                newValues: ['status' => SubscriptionStatus::EXPIRED->value]
+            );
 
             return $subscription;
         });

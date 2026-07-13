@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\Store;
 use App\Models\StoreWorkingHour;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,8 @@ use Illuminate\Support\Str;
 
 class StoreWorkingHoursService
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     /**
      * Replaces the entire working hours schedule for a store.
      */
@@ -57,6 +60,12 @@ class StoreWorkingHoursService
             }
 
             StoreWorkingHour::insert($insertData);
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreWorkingHoursUpdated,
+                subject: $store,
+                metadata: ['days_count' => count($days)]
+            );
         });
     }
 }

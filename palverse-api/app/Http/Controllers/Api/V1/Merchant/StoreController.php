@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Merchant;
 
+use App\Enums\AuditAction;
 use App\Enums\StoreStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Merchant\StoreMerchantStoreRequest;
@@ -11,12 +12,15 @@ use App\Models\Category;
 use App\Models\City;
 use App\Models\Store;
 use App\Models\Zone;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StoreController extends Controller
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     public function index(Request $request): JsonResponse
     {
         $stores = Store::with(['category', 'city', 'zone'])
@@ -74,6 +78,17 @@ class StoreController extends Controller
                 'created_at' => now(),
             ]);
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreCreated,
+                subject: $store,
+                newValues: $store->only(['name_ar', 'name_en', 'phone', 'email', 'status', 'is_active', 'category_id', 'city_id', 'zone_id'])
+            );
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreSubmitted,
+                subject: $store,
+                newValues: ['status' => StoreStatus::PENDING->value, 'reason' => 'Store submitted for review']
+            );
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -120,6 +135,9 @@ class StoreController extends Controller
 
         DB::beginTransaction();
         try {
+            $fillables = ['name_ar', 'name_en', 'description_ar', 'description_en', 'phone', 'whatsapp', 'email', 'website', 'address_ar', 'address_en', 'latitude', 'longitude'];
+            $oldValues = $store->only(array_merge($fillables, ['category_id', 'city_id', 'zone_id']));
+
             if (isset($validated['category_public_id'])) {
                 $store->category_id = Category::where('public_id', $validated['category_public_id'])->first()->id;
             }
@@ -130,19 +148,20 @@ class StoreController extends Controller
                 $store->zone_id = Zone::where('public_id', $validated['zone_public_id'])->first()->id;
             }
 
-            $fillables = ['name_ar', 'name_en', 'description_ar', 'description_en', 'phone', 'whatsapp', 'email', 'website', 'address_ar', 'address_en', 'latitude', 'longitude'];
             foreach ($fillables as $field) {
                 if (array_key_exists($field, $validated)) {
                     $store->$field = $validated[$field];
                 }
             }
 
+            $resubmitted = false;
             if ($store->status === StoreStatus::REJECTED) {
                 $oldStatus = $store->status->value;
                 $store->status = StoreStatus::PENDING;
                 $store->rejection_reason = null;
                 $store->rejected_at = null;
                 $store->rejected_by = null;
+                $resubmitted = true;
 
                 DB::table('store_status_history')->insert([
                     'store_id' => $store->id,
@@ -156,6 +175,24 @@ class StoreController extends Controller
             }
 
             $store->save();
+
+            $newValues = $store->only(array_keys($oldValues));
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreUpdated,
+                subject: $store,
+                oldValues: $oldValues,
+                newValues: $newValues
+            );
+
+            if ($resubmitted) {
+                $this->auditLogService->recordFromRequest(
+                    action: AuditAction::StoreSubmitted,
+                    subject: $store,
+                    oldValues: ['status' => StoreStatus::REJECTED->value],
+                    newValues: ['status' => StoreStatus::PENDING->value]
+                );
+            }
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

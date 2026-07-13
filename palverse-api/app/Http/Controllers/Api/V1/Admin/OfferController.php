@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\AdminOfferIndexRequest;
 use App\Http\Resources\Api\V1\OfferResource;
 use App\Models\Offer;
+use App\Services\AuditLogService;
 use App\Services\OfferService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
@@ -15,7 +17,7 @@ class OfferController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(private OfferService $offerService) {}
+    public function __construct(private OfferService $offerService, private AuditLogService $auditLogService) {}
 
     public function index(AdminOfferIndexRequest $request): JsonResponse
     {
@@ -88,6 +90,13 @@ class OfferController extends Controller
         $offer->is_active = true;
         $offer->save();
 
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::OfferActivated,
+            subject: $offer,
+            oldValues: ['is_active' => false],
+            newValues: ['is_active' => true]
+        );
+
         return response()->json([
             'success' => true,
             'message' => __('Offer activated successfully.'),
@@ -103,6 +112,13 @@ class OfferController extends Controller
 
         $offer->is_active = false;
         $offer->save();
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::OfferDeactivated,
+            subject: $offer,
+            oldValues: ['is_active' => true],
+            newValues: ['is_active' => false]
+        );
 
         return response()->json([
             'success' => true,

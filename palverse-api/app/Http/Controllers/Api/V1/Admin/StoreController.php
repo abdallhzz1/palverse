@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Enums\AuditAction;
 use App\Enums\StoreStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\Store\AdminStoreIndexRequest;
@@ -16,6 +17,7 @@ use App\Notifications\StoreActivatedNotification;
 use App\Notifications\StoreApprovedNotification;
 use App\Notifications\StoreDeactivatedNotification;
 use App\Notifications\StoreRejectedNotification;
+use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use App\Services\StoreSlugService;
 use Illuminate\Http\JsonResponse;
@@ -26,9 +28,12 @@ class StoreController extends Controller
 {
     private NotificationService $notificationService;
 
-    public function __construct(NotificationService $notificationService)
+    private AuditLogService $auditLogService;
+
+    public function __construct(NotificationService $notificationService, AuditLogService $auditLogService)
     {
         $this->notificationService = $notificationService;
+        $this->auditLogService = $auditLogService;
     }
 
     public function index(AdminStoreIndexRequest $request): JsonResponse
@@ -173,6 +178,13 @@ class StoreController extends Controller
 
             $this->notificationService->send($store->owner, new StoreApprovedNotification($store));
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreApproved,
+                subject: $store,
+                oldValues: ['status' => $oldStatus],
+                newValues: ['status' => StoreStatus::APPROVED->value]
+            );
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -239,6 +251,13 @@ class StoreController extends Controller
 
             $this->notificationService->send($store->owner, new StoreRejectedNotification($store, $validated['rejection_reason']));
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreRejected,
+                subject: $store,
+                oldValues: ['status' => $oldStatus],
+                newValues: ['status' => StoreStatus::REJECTED->value, 'rejection_reason' => $validated['rejection_reason']]
+            );
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -299,6 +318,13 @@ class StoreController extends Controller
             ]);
 
             $this->notificationService->send($store->owner, new StoreActivatedNotification($store));
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreActivated,
+                subject: $store,
+                oldValues: ['is_active' => false],
+                newValues: ['is_active' => true]
+            );
         });
 
         return response()->json([
@@ -345,6 +371,13 @@ class StoreController extends Controller
             ]);
 
             $this->notificationService->send($store->owner, new StoreDeactivatedNotification($store));
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreDeactivated,
+                subject: $store,
+                oldValues: ['is_active' => true],
+                newValues: ['is_active' => false]
+            );
         });
 
         return response()->json([

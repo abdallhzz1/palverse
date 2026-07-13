@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\Store;
 use App\Models\StoreSocialLink;
 use Illuminate\Support\Facades\DB;
 
 class StoreSocialLinkService
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     /**
      * Creates a social link ensuring only one active link per platform per store.
      */
@@ -28,7 +31,7 @@ class StoreSocialLinkService
                 }
             }
 
-            return StoreSocialLink::create([
+            $link = StoreSocialLink::create([
                 'store_id' => $store->id,
                 'platform' => $data['platform'],
                 'url' => $data['url'],
@@ -36,6 +39,14 @@ class StoreSocialLinkService
                 'sort_order' => $data['sort_order'] ?? 0,
                 'is_active' => $isActive,
             ]);
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreSocialLinkCreated,
+                subject: $store,
+                newValues: ['platform' => $data['platform'], 'url' => $data['url']]
+            );
+
+            return $link;
         });
     }
 
@@ -60,7 +71,15 @@ class StoreSocialLinkService
                 }
             }
 
+            $oldValues = $link->only(['platform', 'url', 'username', 'is_active']);
             $link->update($data);
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreSocialLinkUpdated,
+                subject: $link->store,
+                oldValues: $oldValues,
+                newValues: $link->only(['platform', 'url', 'username', 'is_active'])
+            );
 
             return $link;
         });
@@ -71,6 +90,17 @@ class StoreSocialLinkService
      */
     public function deleteLink(StoreSocialLink $link): void
     {
-        $link->delete();
+        DB::transaction(function () use ($link) {
+            $store = $link->store;
+            $platform = $link->platform?->value ?? $link->platform;
+
+            $link->delete();
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreSocialLinkDeleted,
+                subject: $store,
+                oldValues: ['platform' => $platform]
+            );
+        });
     }
 }

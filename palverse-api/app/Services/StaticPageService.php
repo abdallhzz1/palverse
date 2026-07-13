@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\StaticPage;
 use Illuminate\Support\Facades\DB;
 
 class StaticPageService
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     /**
      * Create a static page.
      */
@@ -26,7 +29,15 @@ class StaticPageService
                 $data['content_en'] = $this->sanitizeHtml($data['content_en']);
             }
 
-            return StaticPage::create($data);
+            $page = StaticPage::create($data);
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::PageCreated,
+                subject: $page,
+                newValues: $page->only(['slug', 'title_ar', 'title_en', 'is_published']) // Omitting huge content payloads
+            );
+
+            return $page;
         });
     }
 
@@ -50,7 +61,19 @@ class StaticPageService
                 $data['content_en'] = $this->sanitizeHtml($data['content_en']);
             }
 
+            $oldValues = $page->only(array_keys($data));
             $page->update($data);
+
+            // Filter out content from being stored entirely unless necessary, or just store safe keys
+            $safeOld = collect($oldValues)->except(['content_ar', 'content_en'])->toArray();
+            $safeNew = collect($data)->except(['content_ar', 'content_en'])->toArray();
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::PageUpdated,
+                subject: $page,
+                oldValues: $safeOld,
+                newValues: $safeNew
+            );
 
             return $page;
         });
@@ -85,11 +108,19 @@ class StaticPageService
     public function publish(StaticPage $page): StaticPage
     {
         return DB::transaction(function () use ($page) {
+            $oldStatus = $page->is_published;
             $page->is_published = true;
             if (empty($page->published_at)) {
                 $page->published_at = now();
             }
             $page->save();
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::PagePublished,
+                subject: $page,
+                oldValues: ['is_published' => $oldStatus],
+                newValues: ['is_published' => true]
+            );
 
             return $page;
         });
@@ -101,18 +132,31 @@ class StaticPageService
     public function unpublish(StaticPage $page): StaticPage
     {
         return DB::transaction(function () use ($page) {
+            $oldStatus = $page->is_published;
             $page->is_published = false;
             $page->save();
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::PageUnpublished,
+                subject: $page,
+                oldValues: ['is_published' => $oldStatus],
+                newValues: ['is_published' => false]
+            );
 
             return $page;
         });
     }
 
-    /**
-     * Delete a static page.
-     */
     public function deletePage(StaticPage $page): void
     {
-        $page->delete();
+        DB::transaction(function () use ($page) {
+            $page->delete();
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::PageDeleted,
+                subject: $page,
+                oldValues: $page->only(['slug', 'title_en', 'title_ar'])
+            );
+        });
     }
 }

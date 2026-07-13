@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\SystemSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class SystemSettingService
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     /**
      * Get a setting by group and key.
      */
@@ -41,6 +44,7 @@ class SystemSettingService
     {
         DB::transaction(function () use ($settingsData) {
             $whitelist = config('palverse.settings.whitelisted_keys', []);
+            $changes = [];
 
             foreach ($settingsData as $group => $keys) {
                 if (! isset($whitelist[$group])) {
@@ -59,14 +63,42 @@ class SystemSettingService
                     $setting = SystemSetting::where('group', $group)->where('key', $key)->first();
                     if ($setting) {
                         $this->validateSettingValue($value, $setting->type);
+
+                        $oldVal = $setting->castValue();
                         $setting->setTypedValue($value);
-                        $setting->save();
+                        $newVal = $setting->castValue();
+
+                        if ($oldVal !== $newVal) {
+                            $setting->save();
+
+                            $changes[] = [
+                                'group' => $group,
+                                'key' => $key,
+                                'old' => $oldVal,
+                                'new' => $newVal,
+                            ];
+                        }
                     }
                 }
             }
 
             // Invalidate cache on update
             Cache::forget('palverse.public_settings');
+
+            if (count($changes) > 0) {
+                $oldValues = [];
+                $newValues = [];
+                foreach ($changes as $c) {
+                    $oldValues[$c['group'].'.'.$c['key']] = $c['old'];
+                    $newValues[$c['group'].'.'.$c['key']] = $c['new'];
+                }
+
+                $this->auditLogService->recordFromRequest(
+                    action: AuditAction::SettingUpdated,
+                    oldValues: $oldValues,
+                    newValues: $newValues
+                );
+            }
         });
     }
 

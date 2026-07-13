@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,8 @@ use InvalidArgumentException;
 
 class UserManagementService
 {
+    public function __construct(protected AuditLogService $auditLogService) {}
+
     /**
      * Create a new merchant user.
      */
@@ -31,6 +34,14 @@ class UserManagementService
 
             $user->assignRole('merchant');
 
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::UserCreated,
+                subject: $user,
+                oldValues: [],
+                newValues: $user->only(['name', 'email', 'phone', 'preferred_locale', 'status', 'public_id']),
+                actor: $actor
+            );
+
             return $user;
         });
     }
@@ -41,11 +52,20 @@ class UserManagementService
     public function updateUser(User $user, array $data): User
     {
         return DB::transaction(function () use ($user, $data) {
+            $oldValues = $user->only(array_keys($data));
+
             if (array_key_exists('email', $data) && $data['email'] !== $user->email) {
                 $user->email_verified_at = null;
             }
 
             $user->update($data);
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::UserUpdated,
+                subject: $user,
+                oldValues: $oldValues,
+                newValues: $data
+            );
 
             return $user;
         });
@@ -65,6 +85,8 @@ class UserManagementService
         }
 
         return DB::transaction(function () use ($user, $actor, $reason, $revokeTokens) {
+            $oldStatus = $user->status;
+
             $user->status = UserStatus::Suspended;
             $user->suspended_at = now();
             $user->suspended_by = $actor->id;
@@ -74,6 +96,15 @@ class UserManagementService
             if ($revokeTokens) {
                 $user->tokens()->delete();
             }
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::UserSuspended,
+                subject: $user,
+                oldValues: ['status' => $oldStatus->value],
+                newValues: ['status' => $user->status->value, 'suspension_reason' => $reason],
+                metadata: ['tokens_revoked' => $revokeTokens],
+                actor: $actor
+            );
 
             return $user;
         });
@@ -92,18 +123,27 @@ class UserManagementService
             throw new InvalidArgumentException('USER_ALREADY_INACTIVE');
         }
 
-        return DB::transaction(function () use ($user, $actor, $revokeTokens) {
+        return DB::transaction(function () use ($user, $actor, $revokeTokens, $reason) {
+            $oldStatus = $user->status;
+
             $user->status = UserStatus::Inactive;
             $user->deactivated_at = now();
             $user->deactivated_by = $actor->id;
-
-            // Note: we preserve historical suspension data explicitly, not clearing it.
 
             $user->save();
 
             if ($revokeTokens) {
                 $user->tokens()->delete();
             }
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::UserDeactivated,
+                subject: $user,
+                oldValues: ['status' => $oldStatus->value],
+                newValues: ['status' => $user->status->value, 'reason' => $reason],
+                metadata: ['tokens_revoked' => $revokeTokens],
+                actor: $actor
+            );
 
             return $user;
         });
@@ -119,9 +159,9 @@ class UserManagementService
         }
 
         return DB::transaction(function () use ($user) {
-            $user->status = UserStatus::Active;
+            $oldStatus = $user->status;
 
-            // Clear current blocking statuses
+            $user->status = UserStatus::Active;
             $user->deactivated_at = null;
             $user->deactivated_by = null;
             $user->suspended_at = null;
@@ -129,6 +169,13 @@ class UserManagementService
             $user->suspension_reason = null;
 
             $user->save();
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::UserActivated,
+                subject: $user,
+                oldValues: ['status' => $oldStatus->value],
+                newValues: ['status' => UserStatus::Active->value]
+            );
 
             return $user;
         });
@@ -143,14 +190,23 @@ class UserManagementService
             $hasAdminCurrently = $user->hasRole('admin');
             $willHaveAdmin = in_array('admin', $roles, true);
 
-            // If removing admin role
             if ($hasAdminCurrently && ! $willHaveAdmin) {
                 if (! $user->canBeDisabledBy($actor)) {
                     throw new InvalidArgumentException('LAST_ADMIN_PROTECTION');
                 }
             }
 
+            $oldRoles = $user->roles->pluck('name')->toArray();
+
             $user->syncRoles($roles);
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::UserRolesUpdated,
+                subject: $user,
+                oldValues: ['roles' => $oldRoles],
+                newValues: ['roles' => $roles],
+                actor: $actor
+            );
 
             return $user;
         });
@@ -161,7 +217,15 @@ class UserManagementService
      */
     public function revokeTokens(User $user): int
     {
-        return $user->tokens()->delete();
+        $count = $user->tokens()->delete();
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::UserTokensRevoked,
+            subject: $user,
+            metadata: ['revoked_count' => $count]
+        );
+
+        return $count;
     }
 
     /**
@@ -177,6 +241,12 @@ class UserManagementService
             if ($revokeTokens) {
                 $user->tokens()->delete();
             }
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::UserPasswordReset,
+                subject: $user,
+                metadata: ['tokens_revoked' => $revokeTokens] // no password logged!
+            );
         });
     }
 }
