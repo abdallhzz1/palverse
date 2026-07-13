@@ -7,11 +7,21 @@ use App\Models\Store;
 use App\Models\StoreSubscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use App\Notifications\SubscriptionAssignedNotification;
+use App\Notifications\SubscriptionCancelledNotification;
+use App\Notifications\SubscriptionExpiredNotification;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
 class StoreSubscriptionService
 {
+    private NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function assignSubscription(Store $store, SubscriptionPlan $plan, User $assignedBy, ?\DateTimeInterface $startsAt = null, ?\DateTimeInterface $endsAt = null, ?string $notes = null): StoreSubscription
     {
         if (! $plan->is_active) {
@@ -38,7 +48,7 @@ class StoreSubscriptionService
                 $this->abort(422, 'SUBSCRIPTION_INVALID_DATE_RANGE', 'The end date must be after the start date.');
             }
 
-            return StoreSubscription::create([
+            $subscription = StoreSubscription::create([
                 'store_id' => $store->id,
                 'subscription_plan_id' => $plan->id,
                 'status' => SubscriptionStatus::ACTIVE->value,
@@ -52,6 +62,10 @@ class StoreSubscriptionService
                 'plan_name_ar_snapshot' => $plan->name_ar,
                 'plan_name_en_snapshot' => $plan->name_en,
             ]);
+
+            $this->notificationService->send($store->owner, new SubscriptionAssignedNotification($subscription));
+
+            return $subscription;
         });
     }
 
@@ -68,6 +82,8 @@ class StoreSubscriptionService
                 'cancelled_by' => $cancelledBy->id,
                 'cancellation_reason' => $reason,
             ]);
+
+            $this->notificationService->send($subscription->store->owner, new SubscriptionCancelledNotification($subscription));
 
             return $subscription;
         });
@@ -89,6 +105,10 @@ class StoreSubscriptionService
                 'expired_at' => now(),
             ]);
 
+            $notification = new SubscriptionExpiredNotification($subscription);
+            // Use the notification's metadata event key for deduplication
+            $this->notificationService->send($subscription->store->owner, $notification, $notification->toArray($subscription->store->owner)['metadata']['event_key']);
+
             return $subscription;
         });
     }
@@ -97,7 +117,7 @@ class StoreSubscriptionService
     {
         $count = 0;
 
-        StoreSubscription::where('status', SubscriptionStatus::ACTIVE->value)
+        StoreSubscription::with('store.owner')->where('status', SubscriptionStatus::ACTIVE->value)
             ->where('ends_at', '<', now())
             ->chunkById(100, function ($subscriptions) use (&$count) {
                 foreach ($subscriptions as $subscription) {
@@ -105,6 +125,10 @@ class StoreSubscriptionService
                         'status' => SubscriptionStatus::EXPIRED->value,
                         'expired_at' => now(),
                     ]);
+
+                    $notification = new SubscriptionExpiredNotification($subscription);
+                    $this->notificationService->send($subscription->store->owner, $notification, $notification->toArray($subscription->store->owner)['metadata']['event_key']);
+
                     $count++;
                 }
             });

@@ -12,6 +12,11 @@ use App\Models\City;
 use App\Models\Store;
 use App\Models\User;
 use App\Models\Zone;
+use App\Notifications\StoreActivatedNotification;
+use App\Notifications\StoreApprovedNotification;
+use App\Notifications\StoreDeactivatedNotification;
+use App\Notifications\StoreRejectedNotification;
+use App\Services\NotificationService;
 use App\Services\StoreSlugService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +24,13 @@ use Illuminate\Support\Facades\DB;
 
 class StoreController extends Controller
 {
+    private NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function index(AdminStoreIndexRequest $request): JsonResponse
     {
         $query = Store::with(['category', 'city', 'zone', 'owner']);
@@ -159,6 +171,8 @@ class StoreController extends Controller
                 'created_at' => now(),
             ]);
 
+            $this->notificationService->send($store->owner, new StoreApprovedNotification($store));
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -223,6 +237,8 @@ class StoreController extends Controller
                 'created_at' => now(),
             ]);
 
+            $this->notificationService->send($store->owner, new StoreRejectedNotification($store, $validated['rejection_reason']));
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -250,17 +266,26 @@ class StoreController extends Controller
             ], 403);
         }
 
+        // Must be approved to be activated
         if ($store->status !== StoreStatus::APPROVED) {
             return response()->json([
                 'success' => false,
-                'message' => 'يجب اعتماد المتجر قبل تفعيله.',
+                'message' => 'Store must be approved before activation.',
                 'error' => ['code' => 'STORE_NOT_APPROVED'],
                 'meta' => [],
             ], 409);
         }
 
-        DB::beginTransaction();
-        try {
+        if ($store->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Store is already active.',
+                'error' => ['code' => 'STORE_ALREADY_ACTIVE'],
+                'meta' => [],
+            ], 409);
+        }
+
+        DB::transaction(function () use ($store, $request) {
             $store->is_active = true;
             $store->save();
 
@@ -270,22 +295,18 @@ class StoreController extends Controller
                 'old_status' => $store->status->value,
                 'new_status' => $store->status->value,
                 'action' => 'activated',
-                'reason' => null,
                 'created_at' => now(),
             ]);
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+            $this->notificationService->send($store->owner, new StoreActivatedNotification($store));
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تفعيل المتجر بنجاح.',
-            'data' => new StoreResource($store),
+            'message' => 'Store activated successfully.',
+            'data' => clone new StoreResource($store),
             'meta' => [],
-        ]);
+        ], 200);
     }
 
     public function deactivate(string $publicId, Request $request): JsonResponse
@@ -301,8 +322,16 @@ class StoreController extends Controller
             ], 403);
         }
 
-        DB::beginTransaction();
-        try {
+        if (! $store->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Store is already inactive.',
+                'error' => ['code' => 'STORE_ALREADY_INACTIVE'],
+                'meta' => [],
+            ], 409);
+        }
+
+        DB::transaction(function () use ($store, $request) {
             $store->is_active = false;
             $store->save();
 
@@ -312,21 +341,17 @@ class StoreController extends Controller
                 'old_status' => $store->status->value,
                 'new_status' => $store->status->value,
                 'action' => 'deactivated',
-                'reason' => null,
                 'created_at' => now(),
             ]);
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+            $this->notificationService->send($store->owner, new StoreDeactivatedNotification($store));
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'تم إلغاء تفعيل المتجر بنجاح.',
-            'data' => new StoreResource($store),
+            'message' => 'Store deactivated successfully.',
+            'data' => clone new StoreResource($store),
             'meta' => [],
-        ]);
+        ], 200);
     }
 }

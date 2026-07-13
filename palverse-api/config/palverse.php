@@ -41,4 +41,16 @@ return [
             'merchant_offer_limit_per_store' => (int) env('MERCHANT_OFFER_LIMIT_PER_STORE', 50),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notifications Configuration
+    |--------------------------------------------------------------------------
+    */
+
+    'notifications' => [
+        'per_page' => 20,
+        'max_per_page' => 100,
+        'subscription_expiring_days' => (int) env('SUBSCRIPTION_EXPIRING_DAYS', 7),
+    ],
 ];

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\Merchant\StoreMediaController;
 use App\Http\Controllers\Api\V1\Merchant\StoreSocialLinkController;
 use App\Http\Controllers\Api\V1\Merchant\StoreSubscriptionController as MerchantStoreSubscriptionController;
 use App\Http\Controllers\Api\V1\Merchant\StoreWorkingHoursController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
 use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
@@ -46,6 +47,16 @@ Route::prefix('v1')->group(function (): void {
             Route::post('/logout', [AuthController::class, 'logout']);
         });
     });
+
+    // ─── Notifications (Authenticated User) ───────────────────────────────────
+    Route::prefix('notifications')
+        ->middleware(['auth:sanctum'])
+        ->group(function (): void {
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+            Route::patch('/read-all', [NotificationController::class, 'markAllAsRead']);
+            Route::patch('/{id}/read', [NotificationController::class, 'markAsRead']);
+        });
 
     // ─── Public endpoints (no authentication required) ─────────────────────────
     Route::prefix('subscription-plans')->group(function (): void {

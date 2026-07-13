@@ -73,11 +73,11 @@ class StoreSubscriptionController extends Controller
 
     public function show(string $publicId): JsonResponse
     {
-        $this->authorize('view', StoreSubscription::class);
-
         $subscription = StoreSubscription::with(['plan', 'store', 'assignedBy', 'cancelledBy'])
             ->where('public_id', $publicId)
             ->firstOrFail();
+
+        $this->authorize('view', $subscription);
 
         return response()->json([
             'success' => true,
@@ -118,9 +118,9 @@ class StoreSubscriptionController extends Controller
 
     public function cancel(CancelStoreSubscriptionRequest $request, string $publicId, StoreSubscriptionService $service): JsonResponse
     {
-        $this->authorize('update', StoreSubscription::class);
-
         $subscription = StoreSubscription::where('public_id', $publicId)->firstOrFail();
+
+        $this->authorize('update', $subscription);
 
         $subscription = $service->cancelSubscription(
             subscription: $subscription,
