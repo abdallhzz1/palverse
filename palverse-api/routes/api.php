@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\Api\V1\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\V1\Admin\CityController as AdminCityController;
+use App\Http\Controllers\Api\V1\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
 use App\Http\Controllers\Api\V1\Public\CategoryController as PublicCategoryController;
 use App\Http\Controllers\Api\V1\Public\CityController as PublicCityController;
+use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +50,24 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/{publicId}/zones', [PublicCityController::class, 'zones']);
     });
 
+    Route::prefix('stores')->group(function (): void {
+        Route::get('/', [PublicStoreController::class, 'index']);
+        Route::get('/{slug}', [PublicStoreController::class, 'show']);
+    });
+
+    // ─── Merchant (Sanctum + merchant role/permissions required) ───────────────
+    Route::prefix('merchant')
+        ->middleware(['auth:sanctum']) // Role/permission is handled by Policies and route scopes
+        ->group(function (): void {
+            Route::prefix('stores')->group(function (): void {
+                Route::get('/', [MerchantStoreController::class, 'index']);
+                Route::post('/', [MerchantStoreController::class, 'store']);
+                Route::get('/{publicId}', [MerchantStoreController::class, 'show']);
+                Route::put('/{publicId}', [MerchantStoreController::class, 'update']);
+                Route::get('/{publicId}/status', [MerchantStoreController::class, 'status']);
+            });
+        });
+
     // ─── Administration (Sanctum + admin role required) ────────────────────────
     Route::prefix('admin')
         ->middleware(['auth:sanctum', 'role:admin'])
@@ -73,5 +94,15 @@ Route::prefix('v1')->group(function (): void {
             Route::get('/zones/{publicId}', [AdminZoneController::class, 'show']);
             Route::put('/zones/{publicId}', [AdminZoneController::class, 'update']);
             Route::delete('/zones/{publicId}', [AdminZoneController::class, 'destroy']);
+
+            // Stores
+            Route::prefix('stores')->group(function (): void {
+                Route::get('/', [AdminStoreController::class, 'index']);
+                Route::get('/{publicId}', [AdminStoreController::class, 'show']);
+                Route::patch('/{publicId}/approve', [AdminStoreController::class, 'approve']);
+                Route::patch('/{publicId}/reject', [AdminStoreController::class, 'reject']);
+                Route::patch('/{publicId}/activate', [AdminStoreController::class, 'activate']);
+                Route::patch('/{publicId}/deactivate', [AdminStoreController::class, 'deactivate']);
+            });
         });
 });

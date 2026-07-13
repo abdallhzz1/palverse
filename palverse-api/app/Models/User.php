@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -51,5 +52,20 @@ class User extends Authenticatable
                 $user->public_id = (string) Str::ulid();
             }
         });
+    }
+
+    public function storesOwned(): HasMany
+    {
+        return $this->hasMany(Store::class, 'owner_id');
+    }
+
+    public function storesApproved(): HasMany
+    {
+        return $this->hasMany(Store::class, 'approved_by');
+    }
+
+    public function storesRejected(): HasMany
+    {
+        return $this->hasMany(Store::class, 'rejected_by');
     }
 }

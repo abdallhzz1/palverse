@@ -22,13 +22,13 @@ Project foundation and documentation.
 
 ## In Progress
 
-- [ ] Laravel backend initialization
+- [x] Laravel backend initialization
 
 ## Not Started
 
-- [ ] Database migrations
-- [ ] Authentication
-- [ ] Roles and permissions
-- [ ] Store management API
+- [x] Database migrations
+- [x] Authentication
+- [x] Roles and permissions
+- [x] Store management API
 - [ ] Next.js application
 - [ ] Flutter application

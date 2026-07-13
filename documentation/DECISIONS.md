@@ -111,3 +111,15 @@ All collection endpoints must support pagination. Default and maximum page sizes
 ## ADR-020: API Error Codes
 
 Machine-readable error codes will be stable and independent from localized human-readable messages.
+
+## ADR-021: Temporary Public Visibility
+
+Before the full Subscriptions Module is built, a store is publicly visible simply if it is approved, active, and not soft-deleted. The subscription requirement is temporarily suspended for MVP Core Phase 1.
+
+## ADR-022: Rejected Store Resubmission
+
+Merchants can update a rejected store. Upon update, the store's status automatically resets to `pending`, and the rejection reason/metadata is cleared, generating a new `resubmitted` history log.
+
+## ADR-023: Zone-City Validation Constraint
+
+When creating or updating a store, the API will strictly validate that the selected zone structurally belongs to the selected city. Mismatched inputs will be rejected with `422 Unprocessable Entity`.
