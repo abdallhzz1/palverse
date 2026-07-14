@@ -66,13 +66,13 @@ export function useSubscriptionPlansList(initialParams: SubscriptionPlansListPar
     fetchPlans(params);
   }, [params, fetchPlans]);
 
-  const setFilter = (key: keyof SubscriptionPlansListParams, value: string | number | boolean) => {
+  const setFilter = useCallback((key: keyof SubscriptionPlansListParams, value: string | number | boolean) => {
     setParams(prev => {
       const newParams = { ...prev, [key]: value };
       if (key !== "page") newParams.page = 1;
       return newParams;
     });
-  };
+  }, []);
 
   return { data, isLoading, error, params, setFilter, refresh: () => fetchPlans(params) };
 }

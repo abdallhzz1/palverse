@@ -86,7 +86,7 @@ export function useStoresList(initialParams: StoresListParams = { page: 1, per_p
   }, [params]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const setFilter = (key: keyof StoresListParams, value: any) => {
+  const setFilter = useCallback((key: keyof StoresListParams, value: any) => {
     setParams(prev => {
       const newParams = { ...prev, [key]: value };
       if (key !== "page") {
@@ -94,7 +94,7 @@ export function useStoresList(initialParams: StoresListParams = { page: 1, per_p
       }
       return newParams;
     });
-  };
+  }, []);
 
   return {
     data,

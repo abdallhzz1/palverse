@@ -17,6 +17,7 @@ import {
   HelpCircle,
   Activity,
   LogOut,
+  CheckSquare,
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/locations", icon: MapPin, label: "المدن والمناطق" },
   { href: "/offers", icon: Percent, label: "العروض" },
   { href: "/subscription-plans", icon: CreditCard, label: "خطط الاشتراك" },
+  { href: "/subscriptions", icon: CheckSquare, label: "اشتراكات المحلات" },
   { href: "/settings", icon: Settings, label: "الإعدادات" },
   { href: "/pages", icon: FileText, label: "الصفحات" },
   { href: "/faq", icon: HelpCircle, label: "الأسئلة الشائعة" },
