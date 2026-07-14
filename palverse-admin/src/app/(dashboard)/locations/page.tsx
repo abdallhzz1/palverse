@@ -16,6 +16,7 @@ export default function LocationsPage() {
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab === "cities" || tab === "zones") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tab);
     }
   }, [searchParams]);

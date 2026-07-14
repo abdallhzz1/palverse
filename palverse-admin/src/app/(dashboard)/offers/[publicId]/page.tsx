@@ -16,7 +16,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export default function OfferDetailsPage({ params }: { params: { publicId: string } }) {
-  // Always unwrap `params` in Next.js App Router using `React.use()` as per the rule:
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const unwrappedParams = React.use(params as any) as { publicId: string };
   const publicId = unwrappedParams.publicId;
 

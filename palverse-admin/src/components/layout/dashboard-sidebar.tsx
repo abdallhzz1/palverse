@@ -27,7 +27,7 @@ const navItems = [
   { href: "/categories", icon: Tags, label: "التصنيفات" },
   { href: "/locations", icon: MapPin, label: "المدن والمناطق" },
   { href: "/offers", icon: Percent, label: "العروض" },
-  { href: "/plans", icon: CreditCard, label: "خطط الاشتراك" },
+  { href: "/subscription-plans", icon: CreditCard, label: "خطط الاشتراك" },
   { href: "/settings", icon: Settings, label: "الإعدادات" },
   { href: "/pages", icon: FileText, label: "الصفحات" },
   { href: "/faq", icon: HelpCircle, label: "الأسئلة الشائعة" },
