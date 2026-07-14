@@ -7,12 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\AuthTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        protected AuthTokenService $tokenService
+    ) {}
+
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
@@ -49,9 +54,12 @@ class AuthController extends Controller
             'last_login_at' => now(),
         ])->save();
 
-        $token = $user->createToken(
-            $credentials['device_name'] ?? 'palverse-client'
-        )->plainTextToken;
+        $tokenInstance = $this->tokenService->createToken(
+            user: $user,
+            request: $request,
+            deviceName: $credentials['device_name'] ?? 'palverse-client',
+            deviceType: $credentials['device_type'] ?? 'unknown'
+        );
 
         $user->loadMissing('roles', 'permissions');
 
@@ -59,8 +67,9 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'تم تسجيل الدخول بنجاح.',
             'data' => [
-                'token' => $token,
+                'token' => $tokenInstance->plainTextToken,
                 'token_type' => 'Bearer',
+                'session' => $this->tokenService->formatSession($tokenInstance->accessToken, $tokenInstance->accessToken),
                 'user' => new UserResource($user),
             ],
             'meta' => [],
@@ -84,7 +93,15 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()?->delete();
+        $currentToken = $request->user()->currentAccessToken();
+
+        if ($currentToken) {
+            if ($currentToken->public_id) {
+                $this->tokenService->revokeSession($request->user(), $currentToken->public_id);
+            } else {
+                $currentToken->delete();
+            }
+        }
 
         return response()->json([
             'success' => true,

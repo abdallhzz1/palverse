@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\RegisterMerchantRequest;
 use App\Http\Resources\UserResource;
 use App\Models\SystemSetting;
+use App\Services\AuthTokenService;
 use App\Services\MerchantRegistrationService;
 use Illuminate\Http\JsonResponse;
 
 class RegisterMerchantController extends Controller
 {
+    public function __construct(
+        protected AuthTokenService $tokenService
+    ) {}
+
     public function __invoke(
         RegisterMerchantRequest $request,
         MerchantRegistrationService $registrationService
@@ -36,14 +41,21 @@ class RegisterMerchantController extends Controller
         $user->loadMissing('roles');
 
         // Issue a Sanctum token immediately so the merchant can begin onboarding.
-        $token = $user->createToken('merchant-registration')->plainTextToken;
+        $credentials = $request->validated();
+        $tokenInstance = $this->tokenService->createToken(
+            user: $user,
+            request: $request,
+            deviceName: $credentials['device_name'] ?? 'merchant-registration',
+            deviceType: $credentials['device_type'] ?? 'unknown'
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'Merchant account created successfully.',
             'data' => [
-                'token' => $token,
+                'token' => $tokenInstance->plainTextToken,
                 'token_type' => 'Bearer',
+                'session' => $this->tokenService->formatSession($tokenInstance->accessToken, $tokenInstance->accessToken),
                 'user' => new UserResource($user),
             ],
             'meta' => [],

@@ -95,7 +95,7 @@ class AdminUserManagementTest extends TestCase
         ]);
 
         $response->assertStatus(409)
-            ->assertJsonPath('error_code', 'USER_SELF_DISABLE_NOT_ALLOWED');
+            ->assertJsonPath('error.code', 'USER_SELF_DISABLE_NOT_ALLOWED');
     }
 
     public function test_admin_can_deactivate_user(): void

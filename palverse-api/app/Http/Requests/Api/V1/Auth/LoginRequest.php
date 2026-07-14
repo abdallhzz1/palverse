@@ -20,6 +20,7 @@ class LoginRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'max:255'],
             'device_name' => ['nullable', 'string', 'max:100'],
+            'device_type' => ['nullable', 'string', 'in:web,android,ios,unknown'],
         ];
     }
 

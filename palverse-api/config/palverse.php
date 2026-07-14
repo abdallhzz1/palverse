@@ -74,6 +74,10 @@ return [
             'PALVERSE_FRONTEND_RESET_PASSWORD_URL',
             'http://localhost:3000/reset-password'
         ),
+        'frontend_verify_email_url' => env(
+            'PALVERSE_FRONTEND_VERIFY_EMAIL_URL',
+            'http://localhost:3000/verify-email'
+        ),
     ],
 
     'qr' => [

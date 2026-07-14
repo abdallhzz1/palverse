@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Enums\AuditAction;
 use App\Enums\StoreStatus;
+use App\Exceptions\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\Store\AdminStoreIndexRequest;
 use App\Http\Requests\Api\V1\Admin\Store\RejectStoreRequest;
@@ -93,7 +94,7 @@ class StoreController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم جلب المتاجر بنجاح.',
+            'message' => app()->getLocale() === 'en' ? 'Stores retrieved successfully.' : 'تم جلب المتاجر بنجاح.',
             'data' => StoreResource::collection($stores)->response()->getData(true)['data'],
             'meta' => StoreResource::collection($stores)->response()->getData(true)['meta'],
         ]);
@@ -105,18 +106,11 @@ class StoreController extends Controller
             ->where('public_id', $publicId)
             ->firstOrFail();
 
-        if ($request->user()->cannot('viewAny', Store::class)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied.',
-                'error' => ['code' => 'STORE_ACCESS_DENIED'],
-                'meta' => [],
-            ], 403);
-        }
+        $this->authorize('viewAny', Store::class);
 
         return response()->json([
             'success' => true,
-            'message' => 'تم جلب بيانات المتجر بنجاح.',
+            'message' => app()->getLocale() === 'en' ? 'Store retrieved successfully.' : 'تم جلب بيانات المتجر بنجاح.',
             'data' => new StoreResource($store),
             'meta' => [],
         ]);
@@ -126,22 +120,14 @@ class StoreController extends Controller
     {
         $store = Store::where('public_id', $publicId)->firstOrFail();
 
-        if ($request->user()->cannot('approve', $store)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied.',
-                'error' => ['code' => 'STORE_ACCESS_DENIED'],
-                'meta' => [],
-            ], 403);
-        }
+        $this->authorize('approve', $store);
 
         if ($store->status === StoreStatus::APPROVED) {
-            return response()->json([
-                'success' => false,
-                'message' => 'المتجر معتمد مسبقاً.',
-                'error' => ['code' => 'STORE_ALREADY_APPROVED'],
-                'meta' => [],
-            ], 409);
+            throw new BusinessException(
+                'STORE_ALREADY_APPROVED',
+                409,
+                app()->getLocale() === 'en' ? 'The store is already approved.' : 'المتجر معتمد مسبقاً.'
+            );
         }
 
         DB::beginTransaction();
@@ -193,7 +179,7 @@ class StoreController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم اعتماد المتجر بنجاح.',
+            'message' => app()->getLocale() === 'en' ? 'Store approved successfully.' : 'تم اعتماد المتجر بنجاح.',
             'data' => new StoreResource($store),
             'meta' => [],
         ]);
@@ -203,22 +189,14 @@ class StoreController extends Controller
     {
         $store = Store::where('public_id', $publicId)->firstOrFail();
 
-        if ($request->user()->cannot('reject', $store)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied.',
-                'error' => ['code' => 'STORE_ACCESS_DENIED'],
-                'meta' => [],
-            ], 403);
-        }
+        $this->authorize('reject', $store);
 
         if ($store->status === StoreStatus::REJECTED) {
-            return response()->json([
-                'success' => false,
-                'message' => 'المتجر مرفوض مسبقاً.',
-                'error' => ['code' => 'STORE_INVALID_STATUS_TRANSITION'],
-                'meta' => [],
-            ], 409);
+            throw new BusinessException(
+                'STORE_INVALID_STATUS_TRANSITION',
+                409,
+                app()->getLocale() === 'en' ? 'The store is already rejected.' : 'المتجر مرفوض مسبقاً.'
+            );
         }
 
         $validated = $request->validated();
@@ -266,7 +244,7 @@ class StoreController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم رفض المتجر بنجاح.',
+            'message' => app()->getLocale() === 'en' ? 'Store rejected successfully.' : 'تم رفض المتجر بنجاح.',
             'data' => new StoreResource($store),
             'meta' => [],
         ]);
@@ -276,32 +254,25 @@ class StoreController extends Controller
     {
         $store = Store::where('public_id', $publicId)->firstOrFail();
 
-        if ($request->user()->cannot('activate', $store)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied.',
-                'error' => ['code' => 'STORE_ACCESS_DENIED'],
-                'meta' => [],
-            ], 403);
-        }
+        $this->authorize('activate', $store);
 
         // Must be approved to be activated
         if ($store->status !== StoreStatus::APPROVED) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Store must be approved before activation.',
-                'error' => ['code' => 'STORE_NOT_APPROVED'],
-                'meta' => [],
-            ], 409);
+            throw new BusinessException(
+                'STORE_NOT_APPROVED',
+                409,
+                app()->getLocale() === 'en'
+                    ? 'The store must be approved before it can be activated.'
+                    : 'يجب اعتماد المتجر قبل تفعيله.'
+            );
         }
 
         if ($store->is_active) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Store is already active.',
-                'error' => ['code' => 'STORE_ALREADY_ACTIVE'],
-                'meta' => [],
-            ], 409);
+            throw new BusinessException(
+                'STORE_ALREADY_ACTIVE',
+                409,
+                app()->getLocale() === 'en' ? 'The store is already active.' : 'المتجر نشط بالفعل.'
+            );
         }
 
         DB::transaction(function () use ($store, $request) {
@@ -329,8 +300,8 @@ class StoreController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Store activated successfully.',
-            'data' => clone new StoreResource($store),
+            'message' => app()->getLocale() === 'en' ? 'Store activated successfully.' : 'تم تفعيل المتجر بنجاح.',
+            'data' => new StoreResource($store),
             'meta' => [],
         ], 200);
     }
@@ -339,22 +310,14 @@ class StoreController extends Controller
     {
         $store = Store::where('public_id', $publicId)->firstOrFail();
 
-        if ($request->user()->cannot('deactivate', $store)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied.',
-                'error' => ['code' => 'STORE_ACCESS_DENIED'],
-                'meta' => [],
-            ], 403);
-        }
+        $this->authorize('deactivate', $store);
 
         if (! $store->is_active) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Store is already inactive.',
-                'error' => ['code' => 'STORE_ALREADY_INACTIVE'],
-                'meta' => [],
-            ], 409);
+            throw new BusinessException(
+                'STORE_ALREADY_INACTIVE',
+                409,
+                app()->getLocale() === 'en' ? 'The store is already inactive.' : 'المتجر غير نشط بالفعل.'
+            );
         }
 
         DB::transaction(function () use ($store, $request) {
@@ -382,8 +345,8 @@ class StoreController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Store deactivated successfully.',
-            'data' => clone new StoreResource($store),
+            'message' => app()->getLocale() === 'en' ? 'Store deactivated successfully.' : 'تم تعطيل المتجر بنجاح.',
+            'data' => new StoreResource($store),
             'meta' => [],
         ], 200);
     }

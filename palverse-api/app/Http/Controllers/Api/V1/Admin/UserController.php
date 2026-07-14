@@ -20,6 +20,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 
+/**
+ * Maps a service-level InvalidArgumentException error code string to a
+ * bilingual human-readable message for the standard error envelope.
+ */
 class UserController extends Controller
 {
     protected UserManagementService $userService;
@@ -88,7 +92,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Users retrieved successfully.',
+            'message' => app()->getLocale() === 'en' ? 'Users retrieved successfully.' : 'تم جلب المستخدمين بنجاح.',
             'data' => $resourceResponse['data'] ?? [],
             'meta' => $resourceResponse['meta'] ?? [],
             'links' => $resourceResponse['links'] ?? [],
@@ -106,7 +110,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Merchant created successfully.',
+            'message' => app()->getLocale() === 'en' ? 'Merchant created successfully.' : 'تم إنشاء التاجر بنجاح.',
             'data' => new UserManagementResource($user),
         ], 201);
     }
@@ -120,7 +124,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User details retrieved successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User details retrieved successfully.' : 'تم جلب بيانات المستخدم بنجاح.',
             'data' => new UserManagementResource($user),
         ]);
     }
@@ -133,7 +137,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User updated successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User updated successfully.' : 'تم تحديث بيانات المستخدم بنجاح.',
             'data' => new UserManagementResource($updatedUser->load(['roles', 'suspendedBy', 'deactivatedBy', 'createdBy'])),
         ]);
     }
@@ -147,14 +151,14 @@ class UserController extends Controller
         } catch (InvalidArgumentException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cannot activate user.',
-                'error_code' => $e->getMessage(),
+                'message' => app()->getLocale() === 'en' ? 'Cannot activate user.' : 'لا يمكن تفعيل المستخدم.',
+                'error' => ['code' => $e->getMessage(), 'details' => []],
             ], 409);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'User activated successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User activated successfully.' : 'تم تفعيل المستخدم بنجاح.',
             'data' => new UserManagementResource($user->load(['roles'])),
         ]);
     }
@@ -173,14 +177,14 @@ class UserController extends Controller
         } catch (InvalidArgumentException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cannot deactivate user.',
-                'error_code' => $e->getMessage(),
+                'message' => app()->getLocale() === 'en' ? 'Cannot deactivate user.' : 'لا يمكن تعطيل المستخدم.',
+                'error' => ['code' => $e->getMessage(), 'details' => []],
             ], 409);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'User deactivated successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User deactivated successfully.' : 'تم تعطيل المستخدم بنجاح.',
             'data' => new UserManagementResource($user->load(['roles', 'deactivatedBy'])),
         ]);
     }
@@ -199,14 +203,14 @@ class UserController extends Controller
         } catch (InvalidArgumentException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cannot suspend user.',
-                'error_code' => $e->getMessage(),
+                'message' => app()->getLocale() === 'en' ? 'Cannot suspend user.' : 'لا يمكن تعليق حساب المستخدم.',
+                'error' => ['code' => $e->getMessage(), 'details' => []],
             ], 409);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'User suspended successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User suspended successfully.' : 'تم تعليق حساب المستخدم بنجاح.',
             'data' => new UserManagementResource($user->load(['roles', 'suspendedBy'])),
         ]);
     }
@@ -224,14 +228,14 @@ class UserController extends Controller
         } catch (InvalidArgumentException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cannot update user roles.',
-                'error_code' => $e->getMessage(),
+                'message' => app()->getLocale() === 'en' ? 'Cannot update user roles.' : 'لا يمكن تعديل أدوار المستخدم.',
+                'error' => ['code' => $e->getMessage(), 'details' => []],
             ], 409);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'User roles updated successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User roles updated successfully.' : 'تم تعديل أدوار المستخدم بنجاح.',
             'data' => collect($user->roles->pluck('name')),
         ]);
     }
@@ -244,7 +248,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tokens revoked successfully.',
+            'message' => app()->getLocale() === 'en' ? 'Tokens revoked successfully.' : 'تم إلغاء الجلسات بنجاح.',
             'data' => [
                 'revoked_count' => $revokedCount,
             ],
@@ -263,7 +267,8 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Password reset successfully.',
+            'message' => app()->getLocale() === 'en' ? 'Password reset successfully.' : 'تم إعادة تعيين كلمة المرور بنجاح.',
+            'data' => null,
         ]);
     }
 
@@ -279,7 +284,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User stores retrieved successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User stores retrieved successfully.' : 'تم جلب متاجر المستخدم بنجاح.',
             'data' => $resourceResponse['data'] ?? [],
             'meta' => $resourceResponse['meta'] ?? [],
             'links' => $resourceResponse['links'] ?? [],
@@ -300,7 +305,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User stores subscriptions retrieved successfully.',
+            'message' => app()->getLocale() === 'en' ? 'User store subscriptions retrieved successfully.' : 'تم جلب اشتراكات متاجر المستخدم بنجاح.',
             'data' => $resourceResponse['data'] ?? [],
             'meta' => $resourceResponse['meta'] ?? [],
             'links' => $resourceResponse['links'] ?? [],

@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Password;
 
 class PasswordRecoveryService
 {
-    public function __construct(protected AuditLogService $auditLogService) {}
+    public function __construct(
+        protected AuditLogService $auditLogService,
+        protected AuthTokenService $tokenService
+    ) {}
 
     /**
      * Send a password reset link to the given email address.
@@ -53,7 +56,7 @@ class PasswordRecoveryService
             $credentials,
             function (User $user, string $password) {
                 DB::transaction(function () use ($user, $password) {
-                    $revokedCount = $user->tokens()->delete();
+                    $revokedCount = $this->tokenService->revokeAllSessions($user);
 
                     $user->password = $password; // hashed by cast
                     $user->password_changed_at = now();

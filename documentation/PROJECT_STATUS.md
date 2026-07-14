@@ -33,6 +33,8 @@ Project foundation and documentation.
 - [x] Advanced Search and Suggestions Module
 - [x] System Settings, Static Pages, and FAQs Module
 - [x] Admin User and Merchant Management Module
+- [x] Email Verification and Session/Device Management
+- [x] Security Hardening, Exception Normalization, and Response Consistency
 
 ## In Progress
 

@@ -43,6 +43,8 @@ class RegisterMerchantRequest extends FormRequest
             'password' => ['required', 'string', 'confirmed', PasswordRules::default()],
             'password_confirmation' => ['required', 'string'],
             'preferred_locale' => ['nullable', 'string', Rule::in(['ar', 'en'])],
+            'device_name' => ['nullable', 'string', 'max:100'],
+            'device_type' => ['nullable', 'string', 'in:web,android,ios,unknown'],
         ];
     }
 }

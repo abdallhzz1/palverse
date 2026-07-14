@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\V1\Auth\RegisterMerchantController;
 use App\Http\Controllers\Api\V1\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\V1\Auth\SessionController;
+use App\Http\Controllers\Api\V1\Auth\VerificationController;
 use App\Http\Controllers\Api\V1\Merchant\DashboardController;
 use App\Http\Controllers\Api\V1\Merchant\OfferController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController as MerchantStoreController;
@@ -69,6 +71,26 @@ Route::prefix('v1')->group(function (): void {
         Route::middleware('auth:sanctum')->group(function (): void {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
+
+            // Email Verification
+            Route::prefix('email')->group(function (): void {
+                Route::get('/status', [VerificationController::class, 'status']);
+                Route::post('/verification-notification', [VerificationController::class, 'send'])
+                    ->middleware('throttle:verification-notification');
+                Route::get('/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+                    ->name('verification.verify')
+                    ->withoutMiddleware('auth:sanctum') // Support verification without active session
+                    ->middleware('throttle:email-verification');
+            });
+
+            // Session Management
+            Route::prefix('sessions')->group(function (): void {
+                Route::get('/', [SessionController::class, 'index']);
+                Route::delete('/others', [SessionController::class, 'destroyOthers']);
+                Route::delete('/all', [SessionController::class, 'destroyAll'])
+                    ->middleware('throttle:sessions-revoke');
+                Route::delete('/{publicId}', [SessionController::class, 'destroy']);
+            });
         });
     });
 
@@ -133,20 +155,20 @@ Route::prefix('v1')->group(function (): void {
 
             Route::prefix('stores')->group(function (): void {
                 Route::get('/', [MerchantStoreController::class, 'index']);
-                Route::post('/', [MerchantStoreController::class, 'store']);
+                Route::post('/', [MerchantStoreController::class, 'store'])->middleware('verified.api');
                 Route::get('/{storePublicId}/dashboard', [DashboardController::class, 'storeDashboard']);
                 Route::get('/{publicId}', [MerchantStoreController::class, 'show']);
-                Route::put('/{publicId}', [MerchantStoreController::class, 'update']);
+                Route::put('/{publicId}', [MerchantStoreController::class, 'update'])->middleware('verified.api');
                 Route::get('/{publicId}/status', [MerchantStoreController::class, 'status']);
 
                 // Media
-                Route::post('/{publicId}/logo', [StoreMediaController::class, 'storeLogo']);
-                Route::delete('/{publicId}/logo', [StoreMediaController::class, 'destroyLogo']);
-                Route::post('/{publicId}/cover', [StoreMediaController::class, 'storeCover']);
-                Route::delete('/{publicId}/cover', [StoreMediaController::class, 'destroyCover']);
-                Route::post('/{publicId}/gallery', [StoreMediaController::class, 'storeGallery']);
-                Route::delete('/{publicId}/gallery/{mediaPublicId}', [StoreMediaController::class, 'destroyGallery']);
-                Route::patch('/{publicId}/gallery/reorder', [StoreMediaController::class, 'reorderGallery']);
+                Route::post('/{publicId}/logo', [StoreMediaController::class, 'storeLogo'])->middleware('verified.api');
+                Route::delete('/{publicId}/logo', [StoreMediaController::class, 'destroyLogo'])->middleware('verified.api');
+                Route::post('/{publicId}/cover', [StoreMediaController::class, 'storeCover'])->middleware('verified.api');
+                Route::delete('/{publicId}/cover', [StoreMediaController::class, 'destroyCover'])->middleware('verified.api');
+                Route::post('/{publicId}/gallery', [StoreMediaController::class, 'storeGallery'])->middleware('verified.api');
+                Route::delete('/{publicId}/gallery/{mediaPublicId}', [StoreMediaController::class, 'destroyGallery'])->middleware('verified.api');
+                Route::patch('/{publicId}/gallery/reorder', [StoreMediaController::class, 'reorderGallery'])->middleware('verified.api');
 
                 // Working Hours
                 Route::get('/{publicId}/working-hours', [StoreWorkingHoursController::class, 'show']);
@@ -161,10 +183,10 @@ Route::prefix('v1')->group(function (): void {
 
                 // Offers
                 Route::get('/{publicId}/offers', [OfferController::class, 'index']);
-                Route::post('/{publicId}/offers', [OfferController::class, 'store']);
+                Route::post('/{publicId}/offers', [OfferController::class, 'store'])->middleware('verified.api');
                 Route::get('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'show']);
-                Route::put('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'update']);
-                Route::delete('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'destroy']);
+                Route::put('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'update'])->middleware('verified.api');
+                Route::delete('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'destroy'])->middleware('verified.api');
 
                 // Subscriptions
                 Route::get('/{publicId}/subscription', [MerchantStoreSubscriptionController::class, 'show']);

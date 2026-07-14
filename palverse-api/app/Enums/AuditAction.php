@@ -15,6 +15,14 @@ enum AuditAction: string
     case UserTokensRevoked = 'user.tokens_revoked';
     case UserPasswordReset = 'user.password_reset';
     case UserPasswordResetSelfService = 'user.password_reset_self_service';
+    case UserEmailVerificationSent = 'user.email_verification_sent';
+    case UserEmailVerified = 'user.email_verified';
+
+    // Sessions
+    case SessionCreated = 'session.created';
+    case SessionRevoked = 'session.revoked';
+    case SessionRevokedAll = 'session.revoked_all';
+    case SessionRevokedOthers = 'session.revoked_others';
 
     // Stores
     case StoreCreated = 'store.created';
