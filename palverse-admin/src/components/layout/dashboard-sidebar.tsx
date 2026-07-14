@@ -18,6 +18,7 @@ import {
   Activity,
   LogOut,
   CheckSquare,
+  Bell,
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 
@@ -34,6 +35,7 @@ const navItems = [
   { href: "/pages", icon: FileText, label: "الصفحات" },
   { href: "/faq", icon: HelpCircle, label: "الأسئلة الشائعة" },
   { href: "/logs", icon: Activity, label: "سجل العمليات" },
+  { href: "/notifications", icon: Bell, label: "الإشعارات" },
 ];
 
 export function DashboardSidebar() {
