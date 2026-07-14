@@ -4,7 +4,7 @@ import { AdminStore, StoresListParams, StoresListResponse } from "@/types/store"
 import { normalizeApiError, NormalizedApiError } from "@/lib/api/error";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export function useStoresList(initialParams: StoresListParams = { page: 1, per_page: 15 }) {
+export function useStoresList(initialParams: StoresListParams = { page: 1, per_page: 15 }, syncUrl: boolean = true) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -13,11 +13,13 @@ export function useStoresList(initialParams: StoresListParams = { page: 1, per_p
   const [params, setParams] = useState<StoresListParams>(() => {
     const urlParams: StoresListParams = { ...initialParams };
     
-    if (searchParams.has("query")) urlParams.query = searchParams.get("query")!;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (searchParams.has("status")) urlParams.status = searchParams.get("status") as any;
-    if (searchParams.has("is_active")) urlParams.is_active = searchParams.get("is_active") === "true";
-    if (searchParams.has("page")) urlParams.page = parseInt(searchParams.get("page")!, 10);
+    if (syncUrl) {
+      if (searchParams.has("query")) urlParams.query = searchParams.get("query")!;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (searchParams.has("status")) urlParams.status = searchParams.get("status") as any;
+      if (searchParams.has("is_active")) urlParams.is_active = searchParams.get("is_active") === "true";
+      if (searchParams.has("page")) urlParams.page = parseInt(searchParams.get("page")!, 10);
+    }
     
     return urlParams;
   });
@@ -28,17 +30,22 @@ export function useStoresList(initialParams: StoresListParams = { page: 1, per_p
 
   // Sync params to URL
   useEffect(() => {
-    const newSearchParams = new URLSearchParams();
+    if (!syncUrl) return;
+    const newSearchParams = new URLSearchParams(searchParams.toString());
     
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== "" && value !== null) {
         newSearchParams.set(key, String(value));
+      } else {
+        newSearchParams.delete(key);
       }
     });
 
-    const newUrl = `${pathname}?${newSearchParams.toString()}`;
-    router.replace(newUrl, { scroll: false });
-  }, [params, pathname, router]);
+    const newQueryString = newSearchParams.toString();
+    if (newQueryString !== searchParams.toString()) {
+      router.replace(`${pathname}?${newQueryString}`, { scroll: false });
+    }
+  }, [params, pathname, router, searchParams, syncUrl]);
 
   const fetchStores = useCallback(async (currentParams: StoresListParams) => {
     setIsLoading(true);

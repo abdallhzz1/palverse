@@ -31,7 +31,7 @@ export function useCategoriesList(initialParams: CategoriesListParams = { page: 
     if (newQueryString !== searchParams.toString()) {
       router.replace(`${pathname}?${newQueryString}`, { scroll: false });
     }
-  }, [params, pathname, router]);
+  }, [params, pathname, router, searchParams]);
 
   const fetchCategories = useCallback(async (currentParams: CategoriesListParams) => {
     setIsLoading(true);
