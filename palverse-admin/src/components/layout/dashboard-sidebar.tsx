@@ -33,7 +33,7 @@ const navItems = [
   { href: "/subscriptions", icon: CheckSquare, label: "اشتراكات المحلات" },
   { href: "/settings", icon: Settings, label: "الإعدادات" },
   { href: "/pages", icon: FileText, label: "الصفحات" },
-  { href: "/faq", icon: HelpCircle, label: "الأسئلة الشائعة" },
+  { href: "/faqs", icon: HelpCircle, label: "الأسئلة الشائعة" },
   { href: "/logs", icon: Activity, label: "سجل العمليات" },
   { href: "/notifications", icon: Bell, label: "الإشعارات" },
 ];
