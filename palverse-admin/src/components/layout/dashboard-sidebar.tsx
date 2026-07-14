@@ -25,7 +25,7 @@ const navItems = [
   { href: "/users", icon: Users, label: "المستخدمون والتجار" },
   { href: "/stores", icon: Store, label: "المحلات" },
   { href: "/categories", icon: Tags, label: "التصنيفات" },
-  { href: "/zones", icon: MapPin, label: "المدن والمناطق" },
+  { href: "/locations", icon: MapPin, label: "المدن والمناطق" },
   { href: "/offers", icon: Percent, label: "العروض" },
   { href: "/plans", icon: CreditCard, label: "خطط الاشتراك" },
   { href: "/settings", icon: Settings, label: "الإعدادات" },

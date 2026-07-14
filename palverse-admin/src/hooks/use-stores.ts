@@ -14,6 +14,7 @@ export function useStoresList(initialParams: StoresListParams = { page: 1, per_p
     const urlParams: StoresListParams = { ...initialParams };
     
     if (searchParams.has("query")) urlParams.query = searchParams.get("query")!;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (searchParams.has("status")) urlParams.status = searchParams.get("status") as any;
     if (searchParams.has("is_active")) urlParams.is_active = searchParams.get("is_active") === "true";
     if (searchParams.has("page")) urlParams.page = parseInt(searchParams.get("page")!, 10);
@@ -77,6 +78,7 @@ export function useStoresList(initialParams: StoresListParams = { page: 1, per_p
     };
   }, [params]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setFilter = (key: keyof StoresListParams, value: any) => {
     setParams(prev => {
       const newParams = { ...prev, [key]: value };
