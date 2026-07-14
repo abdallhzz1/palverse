@@ -33,6 +33,14 @@ export interface PaginatedResponse<T> {
   meta: PaginationMeta;
 }
 
+export interface PaginatedApiSuccessResponse<T> {
+  success?: boolean;
+  message?: string;
+  data: T[];
+  links: PaginationLinks;
+  meta: PaginationMeta;
+}
+
 export interface ApiErrorResponse {
   message: string;
   errors?: Record<string, string[]>;

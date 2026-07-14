@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { AuthUser } from "@/types/api";
 import { authService } from "@/services/auth.service";
 import { TOKEN_STORAGE_KEY } from "@/lib/constants";
@@ -42,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const user = await authService.me();
       setUser(user);
-    } catch (_error) {
+    } catch (error) {
       clearSession();
     } finally {
       setIsLoading(false);
@@ -63,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     try {
       void authService.logout();
-    } catch (_error) {
+    } catch (error) {
       console.error("Logout API failed, but session will be cleared anyway");
     } finally {
       clearSession();
