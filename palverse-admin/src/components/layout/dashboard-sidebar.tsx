@@ -34,7 +34,7 @@ const navItems = [
   { href: "/settings", icon: Settings, label: "الإعدادات" },
   { href: "/pages", icon: FileText, label: "الصفحات" },
   { href: "/faqs", icon: HelpCircle, label: "الأسئلة الشائعة" },
-  { href: "/logs", icon: Activity, label: "سجل العمليات" },
+  { href: "/audit-logs", icon: Activity, label: "سجل العمليات" },
   { href: "/notifications", icon: Bell, label: "الإشعارات" },
 ];
 
