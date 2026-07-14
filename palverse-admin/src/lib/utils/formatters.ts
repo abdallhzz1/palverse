@@ -13,6 +13,19 @@ export const formatPercentage = (value: number | undefined | null): string => {
   return new Intl.NumberFormat("ar-PS", { style: "percent", minimumFractionDigits: 0, maximumFractionDigits: 1 }).format(value / 100);
 };
 
+export const formatCurrency = (amount: number, currency: string = "ILS"): string => {
+  try {
+    return new Intl.NumberFormat("ar-PS", {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${amount} ${currency}`;
+  }
+};
+
 export const formatDate = (dateString: string | undefined | null): string => {
   if (!dateString) return "";
   try {
