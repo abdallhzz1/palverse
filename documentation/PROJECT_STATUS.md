@@ -35,6 +35,7 @@ Project foundation and documentation.
 - [x] Admin User and Merchant Management Module
 - [x] Email Verification and Session/Device Management
 - [x] Security Hardening, Exception Normalization, and Response Consistency
+- [x] End-to-End Test Suite & Demo Data Module
 
 ## In Progress
 

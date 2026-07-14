@@ -15,5 +15,9 @@ class DatabaseSeeder extends Seeder
             SystemSettingSeeder::class,
             StaticPageSeeder::class,
         ]);
+
+        if (config('palverse.demo.seed_enabled')) {
+            $this->call(DemoDataSeeder::class);
+        }
     }
 }

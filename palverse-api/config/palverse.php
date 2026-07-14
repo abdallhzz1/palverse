@@ -168,4 +168,17 @@ return [
             ],
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Demo Data Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure settings related to local demo data generation.
+    |
+    */
+    'demo' => [
+        'seed_enabled' => env('PALVERSE_SEED_DEMO_DATA', false),
+        'password' => env('PALVERSE_DEMO_PASSWORD', 'Password1234'),
+    ],
 ];

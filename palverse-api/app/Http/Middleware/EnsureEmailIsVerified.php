@@ -34,6 +34,7 @@ class EnsureEmailIsVerified
         }
 
         if (! $request->user()->hasVerifiedEmail()) {
+
             return response()->json([
                 'success' => false,
                 'message' => app()->getLocale() === 'en'
