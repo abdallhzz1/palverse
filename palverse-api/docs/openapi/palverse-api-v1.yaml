@@ -1,0 +1,5534 @@
+openapi: 3.1.0
+
+info:
+  title: Palverse API
+  version: 1.0.0
+  description: |
+    ## Palverse — Palestinian Business Directory API
+
+    Palverse is a bilingual (Arabic / English) Palestinian business directory platform.
+    This API serves three client groups:
+
+    - **Public** — unauthenticated access to directory data.
+    - **Merchant** — authenticated access for business owners managing their stores.
+    - **Admin** — authenticated access for platform administrators.
+
+    ### Authentication
+    All authenticated endpoints require a Bearer token obtained via `POST /api/v1/auth/login`
+    or `POST /api/v1/auth/register/merchant`. Tokens are issued by Laravel Sanctum.
+
+    ### Response Envelope
+    Every response follows a standard envelope:
+    ```json
+    {
+      "success": true,
+      "message": "...",
+      "data": { ... }
+    }
+    ```
+    Errors use:
+    ```json
+    {
+      "success": false,
+      "message": "...",
+      "error": { "code": "ERROR_CODE", "details": {} }
+    }
+    ```
+
+    ### Pagination
+    Paginated list endpoints include:
+    ```json
+    {
+      "data": [...],
+      "meta": { "current_page": 1, "last_page": 5, "per_page": 15, "total": 73 },
+      "links": { "first": "...", "last": "...", "prev": null, "next": "..." }
+    }
+    ```
+
+    ### Bilingual Support
+    All user-facing string fields are duplicated with `_ar` and `_en` suffixes.
+    Clients should render the appropriate locale based on user preference.
+
+    ### Identifiers
+    All public identifiers use ULIDs exposed as `public_id`.
+    Numeric database IDs are never exposed.
+
+    ### Correlation IDs
+    Every response includes an `X-Correlation-ID` header for distributed tracing.
+    Clients may supply their own value; the server echoes it back.
+  contact:
+    name: Palverse Support
+    email: support@example.test
+  license:
+    name: Proprietary
+    identifier: proprietary
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://api-staging.palverse.example/api/v1
+    description: Staging server (placeholder)
+  - url: https://api.palverse.example/api/v1
+    description: Production server (placeholder)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Security Schemes
+# ─────────────────────────────────────────────────────────────────────────────
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum Token
+      description: |
+        Laravel Sanctum personal access token.
+        Obtain via `POST /auth/login` or `POST /auth/register/merchant`.
+        Include as: `Authorization: Bearer <token>`
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Reusable Parameters
+  # ──────────────────────────────────────────────────────────────────────────
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number for paginated results.
+    PerPageParam:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 15
+      description: Number of items per page.
+    SortParam:
+      name: sort
+      in: query
+      schema:
+        type: string
+      description: Field to sort by.
+    DirectionParam:
+      name: direction
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+      description: Sort direction.
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Reusable Schemas
+  # ──────────────────────────────────────────────────────────────────────────
+  schemas:
+
+    # ── Envelope Wrappers ────────────────────────────────────────────────────
+
+    SuccessResponse:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "تمت العملية بنجاح."
+        data:
+          type: object
+          description: Response payload. Shape varies per endpoint.
+
+    ErrorResponse:
+      type: object
+      required: [success, message, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "حدث خطأ."
+        error:
+          type: object
+          required: [code, details]
+          properties:
+            code:
+              type: string
+              example: RESOURCE_NOT_FOUND
+            details:
+              type: object
+              additionalProperties: true
+              example: {}
+
+    ValidationErrorResponse:
+      type: object
+      required: [success, message, error, errors]
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "بيانات المدخلات غير صالحة."
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            details:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+              example:
+                email: ["The email field is required."]
+        errors:
+          type: object
+          description: Flat copy of error.details for compatibility.
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        per_page:
+          type: integer
+          example: 15
+        total:
+          type: integer
+          example: 73
+        from:
+          type: integer
+          nullable: true
+          example: 1
+        to:
+          type: integer
+          nullable: true
+          example: 15
+
+    PaginationLinks:
+      type: object
+      properties:
+        first:
+          type: string
+          nullable: true
+        last:
+          type: string
+          nullable: true
+        prev:
+          type: string
+          nullable: true
+        next:
+          type: string
+          nullable: true
+
+    # ── Domain Schemas ───────────────────────────────────────────────────────
+
+    AuthUser:
+      type: object
+      description: Authenticated user profile returned after login/register.
+      properties:
+        public_id:
+          type: string
+          example: "01HZ..."
+        name:
+          type: string
+          example: "أحمد محمود"
+        email:
+          type: string
+          format: email
+          example: "merchant@example.test"
+        phone:
+          type: string
+          nullable: true
+          example: "+970590000000"
+        preferred_locale:
+          type: string
+          example: "ar"
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          example: "active"
+        roles:
+          type: array
+          items:
+            type: string
+          example: ["merchant"]
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ["stores.manage", "offers.manage"]
+        email_verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_login_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      description: Admin-facing user management object.
+      properties:
+        public_id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        preferred_locale:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        roles:
+          type: array
+          items:
+            type: string
+        email_verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_login_at:
+          type: string
+          format: date-time
+          nullable: true
+        suspended_at:
+          type: string
+          format: date-time
+          nullable: true
+        suspension_reason:
+          type: string
+          nullable: true
+          description: Only visible to admins with users.manage permission.
+        deactivated_at:
+          type: string
+          format: date-time
+          nullable: true
+        stores_count:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: object
+          nullable: true
+          properties:
+            public_id:
+              type: string
+            name:
+              type: string
+        suspended_by:
+          type: object
+          nullable: true
+          properties:
+            public_id:
+              type: string
+            name:
+              type: string
+        deactivated_by:
+          type: object
+          nullable: true
+          properties:
+            public_id:
+              type: string
+            name:
+              type: string
+
+    Session:
+      type: object
+      properties:
+        public_id:
+          type: string
+          example: "01HZ..."
+        device_name:
+          type: string
+          nullable: true
+          example: "iPhone 15"
+        device_type:
+          type: string
+          nullable: true
+          example: "mobile"
+        ip_address:
+          type: string
+          nullable: true
+          example: "192.168.1.1"
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_current:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      properties:
+        public_id:
+          type: string
+          example: "01HZ..."
+        name_ar:
+          type: string
+          example: "مطاعم وكافيهات"
+        name_en:
+          type: string
+          example: "Restaurants & Cafes"
+        slug:
+          type: string
+          example: "restaurants-cafes"
+        description_ar:
+          type: string
+          nullable: true
+        description_en:
+          type: string
+          nullable: true
+        icon:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          example: true
+        sort_order:
+          type: integer
+          example: 1
+        stores_count:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    City:
+      type: object
+      properties:
+        public_id:
+          type: string
+          example: "01HZ..."
+        name_ar:
+          type: string
+          example: "رام الله"
+        name_en:
+          type: string
+          example: "Ramallah"
+        is_active:
+          type: boolean
+          example: true
+        stores_count:
+          type: integer
+          nullable: true
+        zones_count:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Zone:
+      type: object
+      properties:
+        public_id:
+          type: string
+          example: "01HZ..."
+        name_ar:
+          type: string
+          example: "المنارة"
+        name_en:
+          type: string
+          example: "Al-Manara"
+        city:
+          $ref: '#/components/schemas/City'
+        is_active:
+          type: boolean
+          example: true
+        stores_count:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Store:
+      type: object
+      description: Full store object returned from store detail endpoints.
+      properties:
+        public_id:
+          type: string
+          example: "01HZ..."
+        name_ar:
+          type: string
+          example: "مطعم الزيتون"
+        name_en:
+          type: string
+          nullable: true
+          example: "Al-Zaytoun Restaurant"
+        description_ar:
+          type: string
+          nullable: true
+        description_en:
+          type: string
+          nullable: true
+        slug:
+          type: string
+          nullable: true
+          example: "al-zaytoun-restaurant"
+          description: |
+            Null until admin approves the store and a slug is assigned.
+        web_url:
+          type: string
+          nullable: true
+          example: "http://localhost:3000/stores/al-zaytoun-restaurant"
+        deep_link:
+          type: string
+          nullable: true
+          example: "palverse://stores/al-zaytoun-restaurant"
+        qr_url:
+          type: string
+          nullable: true
+          description: Only present in detail views (not lists).
+        phone:
+          type: string
+          nullable: true
+          example: "+970598000000"
+        whatsapp:
+          type: string
+          nullable: true
+          example: "+970598000000"
+        email:
+          type: string
+          nullable: true
+          format: email
+        website:
+          type: string
+          nullable: true
+          format: uri
+        address_ar:
+          type: string
+          nullable: true
+        address_en:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          format: double
+          nullable: true
+          example: 31.9038
+        longitude:
+          type: number
+          format: double
+          nullable: true
+          example: 35.2034
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+          example: "approved"
+        is_active:
+          type: boolean
+          example: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        rejected_at:
+          type: string
+          format: date-time
+          nullable: true
+        rejection_reason:
+          type: string
+          nullable: true
+          description: Only visible to admin or the store owner.
+        owner:
+          type: object
+          nullable: true
+          description: Only loaded in admin context.
+          properties:
+            public_id:
+              type: string
+            name:
+              type: string
+            email:
+              type: string
+        category:
+          type: object
+          nullable: true
+          properties:
+            public_id:
+              type: string
+            name_ar:
+              type: string
+            name_en:
+              type: string
+            slug:
+              type: string
+        city:
+          type: object
+          nullable: true
+          properties:
+            public_id:
+              type: string
+            name_ar:
+              type: string
+            name_en:
+              type: string
+        zone:
+          type: object
+          nullable: true
+          properties:
+            public_id:
+              type: string
+            name_ar:
+              type: string
+            name_en:
+              type: string
+        logo:
+          $ref: '#/components/schemas/StoreMedia'
+        cover:
+          $ref: '#/components/schemas/StoreMedia'
+        gallery:
+          type: array
+          items:
+            $ref: '#/components/schemas/StoreMedia'
+        offers_count:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    StoreMedia:
+      type: object
+      nullable: true
+      properties:
+        public_id:
+          type: string
+        type:
+          type: string
+          enum: [logo, cover, gallery]
+        url:
+          type: string
+          format: uri
+        disk:
+          type: string
+          example: "public"
+        mime_type:
+          type: string
+          nullable: true
+          example: "image/jpeg"
+        size:
+          type: integer
+          nullable: true
+          description: File size in bytes.
+        sort_order:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    WorkingHoursDay:
+      type: object
+      description: Grouped working hours for a single day.
+      properties:
+        day_of_week:
+          type: integer
+          minimum: 0
+          maximum: 6
+          description: 0=Sunday, 1=Monday, ..., 6=Saturday
+          example: 0
+        day_label_ar:
+          type: string
+          example: "الأحد"
+        day_label_en:
+          type: string
+          example: "Sunday"
+        is_closed:
+          type: boolean
+          example: false
+        periods:
+          type: array
+          items:
+            type: object
+            properties:
+              public_id:
+                type: string
+              opens_at:
+                type: string
+                example: "09:00"
+              closes_at:
+                type: string
+                example: "17:00"
+
+    SocialLink:
+      type: object
+      properties:
+        public_id:
+          type: string
+        platform:
+          type: string
+          enum: [facebook, instagram, tiktok, linkedin, youtube, x, telegram, snapchat, other]
+          example: "instagram"
+        url:
+          type: string
+          format: uri
+          example: "https://instagram.com/zaytoun.store"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Offer:
+      type: object
+      properties:
+        public_id:
+          type: string
+        title_ar:
+          type: string
+          example: "خصم 30% على وجبات الغداء"
+        title_en:
+          type: string
+          nullable: true
+        description_ar:
+          type: string
+          nullable: true
+        description_en:
+          type: string
+          nullable: true
+        price:
+          type: string
+          nullable: true
+          example: "35.00"
+        old_price:
+          type: string
+          nullable: true
+          example: "50.00"
+        currency:
+          type: string
+          example: "ILS"
+        discount_percentage:
+          type: integer
+          nullable: true
+          example: 30
+          description: Computed field — present when both price and old_price are set.
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_active:
+          type: boolean
+        is_currently_valid:
+          type: boolean
+          description: True if the offer is within its active date range.
+        sort_order:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        public_id:
+          type: string
+        name_ar:
+          type: string
+          example: "الخطة الذهبية"
+        name_en:
+          type: string
+          nullable: true
+        code:
+          type: string
+          example: "gold"
+        description_ar:
+          type: string
+          nullable: true
+        description_en:
+          type: string
+          nullable: true
+        price:
+          type: string
+          example: "99.00"
+        currency:
+          type: string
+          example: "ILS"
+        duration_days:
+          type: integer
+          example: 365
+        max_offers:
+          type: integer
+          nullable: true
+        max_gallery_images:
+          type: integer
+          nullable: true
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    StoreSubscription:
+      type: object
+      properties:
+        public_id:
+          type: string
+        status:
+          type: string
+          enum: [pending, active, expired, cancelled]
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        activated_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+        expired_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancellation_reason:
+          type: string
+          nullable: true
+          description: Visible to admin and store owner only.
+        notes:
+          type: string
+          nullable: true
+          description: Admin-only field.
+        price_snapshot:
+          type: string
+          nullable: true
+          example: "99.00"
+        currency_snapshot:
+          type: string
+          nullable: true
+          example: "ILS"
+        plan_name_ar_snapshot:
+          type: string
+          nullable: true
+        plan_name_en_snapshot:
+          type: string
+          nullable: true
+        is_currently_valid:
+          type: boolean
+        plan:
+          $ref: '#/components/schemas/SubscriptionPlan'
+        assigned_by:
+          type: object
+          nullable: true
+          description: Admin-only field.
+          properties:
+            public_id:
+              type: string
+            name:
+              type: string
+        cancelled_by:
+          type: object
+          nullable: true
+          description: Admin-only field.
+          properties:
+            public_id:
+              type: string
+            name:
+              type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Laravel notification UUID.
+        type:
+          type: string
+          example: "subscription_expiring"
+        title_ar:
+          type: string
+          nullable: true
+        title_en:
+          type: string
+          nullable: true
+        message_ar:
+          type: string
+          nullable: true
+        message_en:
+          type: string
+          nullable: true
+        entity_type:
+          type: string
+          nullable: true
+          example: "store_subscription"
+        entity_public_id:
+          type: string
+          nullable: true
+        action_url:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties: true
+        is_read:
+          type: boolean
+        read_at:
+          type: string
+          nullable: true
+          example: "2026-01-15 10:30:00"
+        created_at:
+          type: string
+          example: "2026-01-14 08:00:00"
+
+    StoreLinks:
+      type: object
+      properties:
+        store_public_id:
+          type: string
+        slug:
+          type: string
+          nullable: true
+        web_url:
+          type: string
+          format: uri
+        deep_link:
+          type: string
+        qr_svg_url:
+          type: string
+          format: uri
+        qr_download_url:
+          type: string
+          format: uri
+        is_publicly_visible:
+          type: boolean
+        generated_at:
+          type: string
+          example: "2026-07-14 10:30:00"
+
+    StaticPage:
+      type: object
+      properties:
+        public_id:
+          type: string
+          nullable: true
+          description: Only present in admin responses.
+        slug:
+          type: string
+          example: "about-us"
+        title_ar:
+          type: string
+        title_en:
+          type: string
+          nullable: true
+        content_ar:
+          type: string
+        content_en:
+          type: string
+          nullable: true
+        excerpt_ar:
+          type: string
+          nullable: true
+        excerpt_en:
+          type: string
+          nullable: true
+        is_published:
+          type: boolean
+          nullable: true
+          description: Only present in admin responses.
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        sort_order:
+          type: integer
+          nullable: true
+          description: Only present in admin responses.
+        seo_title_ar:
+          type: string
+          nullable: true
+        seo_title_en:
+          type: string
+          nullable: true
+        seo_description_ar:
+          type: string
+          nullable: true
+        seo_description_en:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Only present in admin responses.
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    FAQ:
+      type: object
+      properties:
+        public_id:
+          type: string
+          nullable: true
+          description: Only present in admin responses.
+        question_ar:
+          type: string
+        question_en:
+          type: string
+          nullable: true
+        answer_ar:
+          type: string
+        answer_en:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        sort_order:
+          type: integer
+        is_active:
+          type: boolean
+          nullable: true
+          description: Only present in admin responses.
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Only present in admin responses.
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Only present in admin responses.
+
+    SystemSetting:
+      type: object
+      description: |
+        A single key-value system setting.
+        Settings are grouped by keys: general, branding, contact, social, application, maintenance.
+      properties:
+        key:
+          type: string
+          example: "platform_name_ar"
+        value:
+          type: string
+          nullable: true
+          example: "بالفرس"
+        group:
+          type: string
+          example: "general"
+
+    AuditLog:
+      type: object
+      properties:
+        public_id:
+          type: string
+        action:
+          type: string
+          example: "store.approved"
+          description: Stable action string from AuditAction enum.
+        actor:
+          type: object
+          nullable: true
+          properties:
+            type:
+              type: string
+              example: "user"
+            public_id:
+              type: string
+              nullable: true
+            name:
+              type: string
+              nullable: true
+            email:
+              type: string
+              nullable: true
+        subject:
+          type: object
+          nullable: true
+          properties:
+            type:
+              type: string
+              example: "store"
+            public_id:
+              type: string
+              nullable: true
+            label:
+              type: string
+              nullable: true
+        route:
+          type: string
+          nullable: true
+        method:
+          type: string
+          nullable: true
+          example: "PATCH"
+        ip_address:
+          type: string
+          nullable: true
+        user_agent:
+          type: string
+          nullable: true
+        request_id:
+          type: string
+          nullable: true
+        old_values:
+          type: object
+          nullable: true
+          additionalProperties: true
+        new_values:
+          type: object
+          nullable: true
+          additionalProperties: true
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    SearchSuggestion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [store, category]
+        public_id:
+          type: string
+        name_ar:
+          type: string
+        name_en:
+          type: string
+          nullable: true
+        slug:
+          type: string
+          nullable: true
+        extra:
+          type: object
+          nullable: true
+          additionalProperties: true
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Reusable Responses
+  # ──────────────────────────────────────────────────────────────────────────
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token.
+      headers:
+        X-Correlation-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "يجب تسجيل الدخول أولاً للوصول إلى هذا المصدر."
+            error:
+              code: UNAUTHENTICATED
+              details: {}
+
+    Forbidden:
+      description: Authenticated but insufficient permissions.
+      headers:
+        X-Correlation-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "ليس لديك الصلاحية الكافية لإجراء هذه العملية."
+            error:
+              code: UNAUTHORIZED_ACTION
+              details: {}
+
+    NotFound:
+      description: Resource not found.
+      headers:
+        X-Correlation-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "المصدر المطلوب غير موجود."
+            error:
+              code: RESOURCE_NOT_FOUND
+              details: {}
+
+    UnprocessableEntity:
+      description: Validation failed.
+      headers:
+        X-Correlation-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+
+    Conflict:
+      description: Business rule conflict.
+      headers:
+        X-Correlation-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "لا يمكن تنفيذ هذه العملية."
+            error:
+              code: BUSINESS_CONFLICT
+              details: {}
+
+    TooManyRequests:
+      description: Rate limit exceeded.
+      headers:
+        X-Correlation-ID:
+          schema:
+            type: string
+        Retry-After:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "طلبات كثيرة جداً، يرجى المحاولة لاحقاً."
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              details:
+                retry_after_seconds: 60
+
+    InternalServerError:
+      description: Unexpected server error.
+      headers:
+        X-Correlation-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "حدث خطأ داخلي في الخادم."
+            error:
+              code: INTERNAL_SERVER_ERROR
+              details: {}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tags
+# ─────────────────────────────────────────────────────────────────────────────
+tags:
+  - name: System
+    description: Health check and system bootstrap endpoints.
+  - name: Authentication
+    description: Login, logout, registration, and password recovery.
+  - name: Email Verification
+    description: Email address verification workflows.
+  - name: Sessions
+    description: Active session listing and revocation.
+  - name: Categories
+    description: Store categories — public read, admin write.
+  - name: Cities
+    description: Palestinian cities — public read, admin write.
+  - name: Zones
+    description: City zones/districts — public read, admin write.
+  - name: Stores
+    description: Public store directory.
+  - name: Store Media
+    description: Merchant store logo, cover, and gallery management.
+  - name: Working Hours
+    description: Merchant store working hours management.
+  - name: Social Links
+    description: Merchant store social media link management.
+  - name: Offers
+    description: Store offers — public read, merchant write, admin manage.
+  - name: Subscription Plans
+    description: Subscription plan catalog — public read, admin write.
+  - name: Subscriptions
+    description: Store subscriptions — merchant read, admin manage.
+  - name: Notifications
+    description: In-app notifications for authenticated users.
+  - name: Dashboards
+    description: Admin and merchant dashboard analytics.
+  - name: Search
+    description: Full-text search and auto-complete suggestions.
+  - name: Settings
+    description: Platform system settings.
+  - name: Pages
+    description: Static content pages.
+  - name: FAQs
+    description: Frequently asked questions.
+  - name: Users
+    description: Admin user management.
+  - name: Audit Logs
+    description: Platform audit trail — admin only.
+  - name: QR and Deep Links
+    description: QR code generation and deep link resolution.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Paths
+# ─────────────────────────────────────────────────────────────────────────────
+paths:
+
+  # ── System ──────────────────────────────────────────────────────────────────
+
+  /health:
+    get:
+      operationId: systemHealth
+      tags: [System]
+      summary: Health check
+      description: Returns HTTP 200 if the API is reachable.
+      security: []
+      responses:
+        '200':
+          description: API is healthy.
+          content:
+            application/json:
+              example:
+                status: ok
+
+  /bootstrap:
+    get:
+      operationId: systemBootstrap
+      tags: [System]
+      summary: Bootstrap application data
+      description: |
+        Returns all data needed for mobile/web app initialization in a single request:
+        active categories, active cities, public settings, and active subscription plans.
+      security: []
+      responses:
+        '200':
+          description: Bootstrap data.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم تحميل البيانات الأولية."
+                data:
+                  categories: []
+                  cities: []
+                  settings: {}
+                  subscription_plans: []
+
+  # ── Authentication ────────────────────────────────────────────────────────
+
+  /auth/login:
+    post:
+      operationId: authLogin
+      tags: [Authentication]
+      summary: Login
+      description: |
+        Authenticate with email and password.
+        Returns a Sanctum Bearer token and user profile.
+
+        **Rate limit:** This endpoint is throttled.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "merchant@example.test"
+                password:
+                  type: string
+                  format: password
+                  example: "secret123"
+                device_name:
+                  type: string
+                  example: "iPhone 15 Pro"
+                  description: Optional. Used to label the session token.
+            example:
+              email: "merchant@example.test"
+              password: "secret123"
+              device_name: "Android App"
+      responses:
+        '200':
+          description: Login successful.
+          headers:
+            X-Correlation-ID:
+              schema:
+                type: string
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم تسجيل الدخول بنجاح."
+                data:
+                  token_type: Bearer
+                  access_token: "<sanctum-token>"
+                  user:
+                    public_id: "01HZ..."
+                    name: "أحمد محمود"
+                    email: "merchant@example.test"
+                    roles: [merchant]
+                    status: active
+        '401':
+          description: Invalid credentials.
+          content:
+            application/json:
+              example:
+                success: false
+                message: "بيانات الدخول غير صحيحة."
+                error:
+                  code: INVALID_CREDENTIALS
+                  details: {}
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/register/merchant:
+    post:
+      operationId: authRegisterMerchant
+      tags: [Authentication]
+      summary: Register merchant
+      description: |
+        Create a new merchant account.
+        Returns a Sanctum Bearer token and user profile.
+        A verification email is sent automatically.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name:
+                  type: string
+                  example: "أحمد محمود"
+                email:
+                  type: string
+                  format: email
+                  example: "merchant@example.test"
+                phone:
+                  type: string
+                  example: "+970590000000"
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                password_confirmation:
+                  type: string
+                  format: password
+                preferred_locale:
+                  type: string
+                  enum: [ar, en]
+                  default: ar
+                device_name:
+                  type: string
+                  example: "Android App"
+      responses:
+        '201':
+          description: Registration successful.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم إنشاء الحساب بنجاح."
+                data:
+                  token_type: Bearer
+                  access_token: "<sanctum-token>"
+                  user:
+                    public_id: "01HZ..."
+                    name: "أحمد محمود"
+                    roles: [merchant]
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /auth/logout:
+    post:
+      operationId: authLogout
+      tags: [Authentication]
+      summary: Logout
+      description: Revoke the current session token.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logged out successfully.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم تسجيل الخروج بنجاح."
+                data: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      operationId: authMe
+      tags: [Authentication]
+      summary: Get current user profile
+      description: Returns the authenticated user's full profile including roles and permissions.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user profile.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/forgot-password:
+    post:
+      operationId: authForgotPassword
+      tags: [Authentication]
+      summary: Request password reset
+      description: |
+        Sends a password reset link to the provided email address.
+        Always returns 200 regardless of whether the email exists (prevents enumeration).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "merchant@example.test"
+      responses:
+        '200':
+          description: Reset link sent (or silently suppressed if email not found).
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني."
+                data: null
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /auth/reset-password:
+    post:
+      operationId: authResetPassword
+      tags: [Authentication]
+      summary: Reset password
+      description: |
+        Reset password using the token from the password reset email.
+        The token is valid for 60 minutes.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, email, password, password_confirmation]
+              properties:
+                token:
+                  type: string
+                  example: "<reset-token-from-email>"
+                email:
+                  type: string
+                  format: email
+                  example: "merchant@example.test"
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                password_confirmation:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Password reset successfully.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم إعادة تعيين كلمة المرور بنجاح."
+                data: null
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  # ── Email Verification ────────────────────────────────────────────────────
+
+  /auth/email/verification-notification:
+    post:
+      operationId: emailResendVerification
+      tags: [Email Verification]
+      summary: Resend verification email
+      description: Sends a new email verification link to the authenticated user's email address.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Verification email sent.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم إرسال رابط التحقق إلى بريدك الإلكتروني."
+                data: null
+        '400':
+          description: Email already verified.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/email/verify/{id}/{hash}:
+    get:
+      operationId: emailVerify
+      tags: [Email Verification]
+      summary: Verify email address
+      description: |
+        Verifies the user's email address using the signed URL from the verification email.
+        This URL is typically opened in a browser (via deep link or redirect).
+        Redirects to the frontend URL configured in `PALVERSE_FRONTEND_VERIFY_EMAIL_URL`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: User's database ID (internal, from the signed URL).
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Email hash from the signed URL.
+        - name: signature
+          in: query
+          required: true
+          schema:
+            type: string
+          description: URL signature for verification.
+        - name: expires
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '302':
+          description: Redirects to frontend verify-email page with status parameter.
+        '403':
+          description: Invalid or expired signature.
+
+  /auth/email/status:
+    get:
+      operationId: emailVerificationStatus
+      tags: [Email Verification]
+      summary: Get email verification status
+      description: Returns whether the current user's email is verified.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Verification status.
+          content:
+            application/json:
+              example:
+                success: true
+                message: ""
+                data:
+                  email_verified: true
+                  email_verified_at: "2026-01-10T08:00:00Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ── Sessions ──────────────────────────────────────────────────────────────
+
+  /auth/sessions:
+    get:
+      operationId: sessionsList
+      tags: [Sessions]
+      summary: List active sessions
+      description: Returns all active Sanctum tokens for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of active sessions.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Session'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/sessions/{publicId}:
+    delete:
+      operationId: sessionsRevoke
+      tags: [Sessions]
+      summary: Revoke a specific session
+      description: Revokes the specified session token. Users cannot revoke their current session this way.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The public_id of the session to revoke.
+      responses:
+        '200':
+          description: Session revoked.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم إلغاء الجلسة بنجاح."
+                data: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /auth/sessions/others:
+    delete:
+      operationId: sessionsRevokeOthers
+      tags: [Sessions]
+      summary: Revoke all other sessions
+      description: Revokes all session tokens except the current one.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Other sessions revoked.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم إلغاء جميع الجلسات الأخرى."
+                data:
+                  revoked_count: 3
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/sessions/all:
+    delete:
+      operationId: sessionsRevokeAll
+      tags: [Sessions]
+      summary: Revoke all sessions (logout everywhere)
+      description: Revokes all session tokens including the current one. Equivalent to logout everywhere.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: All sessions revoked.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم تسجيل الخروج من جميع الأجهزة."
+                data:
+                  revoked_count: 4
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ── Public Taxonomy ───────────────────────────────────────────────────────
+
+  /categories:
+    get:
+      operationId: publicListCategories
+      tags: [Categories]
+      summary: List categories
+      description: Returns all active store categories. No authentication required.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status. Defaults to showing all active categories for public.
+      responses:
+        '200':
+          description: Paginated list of categories.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                  links:
+                    $ref: '#/components/schemas/PaginationLinks'
+
+  /categories/{slug}:
+    get:
+      operationId: publicGetCategory
+      tags: [Categories]
+      summary: Get category by slug
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "restaurants-cafes"
+      responses:
+        '200':
+          description: Category detail.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /cities:
+    get:
+      operationId: publicListCities
+      tags: [Cities]
+      summary: List cities
+      description: Returns all active Palestinian cities.
+      security: []
+      responses:
+        '200':
+          description: List of cities.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/City'
+
+  /cities/{publicId}/zones:
+    get:
+      operationId: publicListCityZones
+      tags: [Zones]
+      summary: List zones for a city
+      description: Returns all active zones belonging to the specified city.
+      security: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "01HZ..."
+      responses:
+        '200':
+          description: List of zones.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Zone'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Public Stores ─────────────────────────────────────────────────────────
+
+  /stores:
+    get:
+      operationId: publicListStores
+      tags: [Stores]
+      summary: List public stores
+      description: |
+        Paginated directory of approved and active stores.
+        Supports full-text search, category, city, and zone filtering.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: query
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+          description: Full-text search query.
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by category slug.
+        - name: city
+          in: query
+          schema:
+            type: string
+          description: Filter by city public_id.
+        - name: zone
+          in: query
+          schema:
+            type: string
+          description: Filter by zone public_id.
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/DirectionParam'
+      responses:
+        '200':
+          description: Paginated store listing.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Store'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                  links:
+                    $ref: '#/components/schemas/PaginationLinks'
+
+  /stores/{slug}:
+    get:
+      operationId: publicGetStore
+      tags: [Stores]
+      summary: Get store by slug
+      description: Returns full store detail including logo, cover, gallery, and active offers.
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "al-zaytoun-restaurant"
+      responses:
+        '200':
+          description: Store detail.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Store'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /stores/{slug}/offers:
+    get:
+      operationId: publicListStoreOffers
+      tags: [Offers]
+      summary: List store's public offers
+      description: Returns active and currently-valid offers for the specified store.
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Paginated offers.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Offer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /stores/{slug}/links:
+    get:
+      operationId: publicGetStoreLinks
+      tags: [QR and Deep Links]
+      summary: Get store links (public)
+      description: Returns web URL, deep link, and QR URLs for a public store.
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store link data.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StoreLinks'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /stores/{slug}/qr:
+    get:
+      operationId: publicGetStoreQr
+      tags: [QR and Deep Links]
+      summary: Get store QR code (public)
+      description: |
+        Returns an SVG or PNG QR code for the store's public URL.
+
+        **Important:** This endpoint returns `image/svg+xml` (default) or `image/png`, NOT JSON.
+
+        The store must be approved and publicly visible. Returns 404 if not visible.
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 128
+            maximum: 1024
+            default: 512
+          description: QR image size in pixels (square).
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [svg, png]
+            default: svg
+          description: Output format.
+        - name: download
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+            default: 0
+          description: "If 1, sets Content-Disposition: attachment to trigger browser download."
+      responses:
+        '200':
+          description: QR code image.
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Store has no slug (not yet approved).
+          content:
+            application/json:
+              example:
+                success: false
+                message: "لا يمكن إنشاء رمز QR لمتجر بدون رابط."
+                error:
+                  code: STORE_HAS_NO_SLUG
+                  details: {}
+
+  /stores/{slug}/related:
+    get:
+      operationId: publicGetRelatedStores
+      tags: [Stores]
+      summary: Get related stores
+      description: Returns stores in the same category, excluding the current store.
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Related stores.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Store'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Search ───────────────────────────────────────────────────────────────
+
+  /search/suggestions:
+    get:
+      operationId: publicSearchSuggestions
+      tags: [Search]
+      summary: Search auto-complete suggestions
+      description: |
+        Returns search suggestions for stores and categories.
+        Minimum query length: 2 characters.
+        Maximum query length: 100 characters.
+      security: []
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 100
+          description: Search query string.
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 8
+          description: Maximum number of suggestions to return.
+      responses:
+        '200':
+          description: Search suggestions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchSuggestion'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  # ── Public Plans ──────────────────────────────────────────────────────────
+
+  /subscription-plans:
+    get:
+      operationId: publicListSubscriptionPlans
+      tags: [Subscription Plans]
+      summary: List public subscription plans
+      description: Returns all active subscription plans available to merchants.
+      security: []
+      responses:
+        '200':
+          description: List of subscription plans.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubscriptionPlan'
+
+  /subscription-plans/{code}:
+    get:
+      operationId: publicGetSubscriptionPlan
+      tags: [Subscription Plans]
+      summary: Get subscription plan by code
+      security: []
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "gold"
+      responses:
+        '200':
+          description: Subscription plan detail.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SubscriptionPlan'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Public Settings & Content ─────────────────────────────────────────────
+
+  /settings:
+    get:
+      operationId: publicGetSettings
+      tags: [Settings]
+      summary: Get all public settings
+      description: Returns all whitelisted system settings grouped by category.
+      security: []
+      responses:
+        '200':
+          description: Settings grouped by group name.
+          content:
+            application/json:
+              example:
+                success: true
+                message: ""
+                data:
+                  general:
+                    platform_name_ar: "بالفرس"
+                    platform_name_en: "Palverse"
+                  branding:
+                    logo_url: null
+                    primary_color: null
+
+  /settings/{group}:
+    get:
+      operationId: publicGetSettingsGroup
+      tags: [Settings]
+      summary: Get settings by group
+      description: |
+        Returns settings for a specific group.
+        Valid groups: `general`, `branding`, `contact`, `social`, `application`, `maintenance`.
+      security: []
+      parameters:
+        - name: group
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [general, branding, contact, social, application, maintenance]
+      responses:
+        '200':
+          description: Settings for the requested group.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /pages:
+    get:
+      operationId: publicListPages
+      tags: [Pages]
+      summary: List published static pages
+      description: Returns all published static pages.
+      security: []
+      responses:
+        '200':
+          description: List of static pages.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StaticPage'
+
+  /pages/{slug}:
+    get:
+      operationId: publicGetPage
+      tags: [Pages]
+      summary: Get static page by slug
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "about-us"
+      responses:
+        '200':
+          description: Static page detail.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StaticPage'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /faqs:
+    get:
+      operationId: publicListFaqs
+      tags: [FAQs]
+      summary: List FAQs
+      description: Returns all active FAQs. No authentication required.
+      security: []
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter FAQs by category label.
+      responses:
+        '200':
+          description: List of FAQs.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FAQ'
+
+  # ── Notifications ─────────────────────────────────────────────────────────
+
+  /notifications:
+    get:
+      operationId: notificationsList
+      tags: [Notifications]
+      summary: List notifications
+      description: |
+        Returns the authenticated user's in-app notifications, newest first.
+        Supports filtering by read status.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: unread_only
+          in: query
+          schema:
+            type: boolean
+          description: If true, returns only unread notifications.
+      responses:
+        '200':
+          description: Paginated notifications.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /notifications/unread-count:
+    get:
+      operationId: notificationsUnreadCount
+      tags: [Notifications]
+      summary: Get unread notifications count
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Unread count.
+          content:
+            application/json:
+              example:
+                success: true
+                message: ""
+                data:
+                  unread_count: 5
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /notifications/{id}/read:
+    patch:
+      operationId: notificationsMarkRead
+      tags: [Notifications]
+      summary: Mark a notification as read
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Notification UUID.
+      responses:
+        '200':
+          description: Notification marked as read.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Notification'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /notifications/read-all:
+    patch:
+      operationId: notificationsMarkAllRead
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: All notifications marked as read.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تم تحديد جميع الإشعارات كمقروءة."
+                data: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ── Merchant Stores ───────────────────────────────────────────────────────
+
+  /merchant/stores:
+    get:
+      operationId: merchantListStores
+      tags: [Stores]
+      summary: List merchant's own stores
+      description: |
+        Returns all stores owned by the authenticated merchant.
+        **Requires:** Authenticated merchant with `stores.view` permission.
+        **Email verified:** Not required for listing.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+      responses:
+        '200':
+          description: Merchant's stores.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Store'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      operationId: merchantCreateStore
+      tags: [Stores]
+      summary: Create a new store
+      description: |
+        Creates a new store for the authenticated merchant.
+        **Requires:** Verified email, `stores.manage` permission.
+        The store starts in `pending` status awaiting admin approval.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name_ar, category_public_id, city_public_id]
+              properties:
+                name_ar:
+                  type: string
+                  example: "مطعم الزيتون"
+                name_en:
+                  type: string
+                  example: "Al-Zaytoun Restaurant"
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                category_public_id:
+                  type: string
+                  example: "01HZ..."
+                city_public_id:
+                  type: string
+                  example: "01HZ..."
+                zone_public_id:
+                  type: string
+                  nullable: true
+                  example: "01HZ..."
+                phone:
+                  type: string
+                  example: "+970598000000"
+                whatsapp:
+                  type: string
+                  example: "+970598000000"
+                email:
+                  type: string
+                  format: email
+                website:
+                  type: string
+                  format: uri
+                address_ar:
+                  type: string
+                address_en:
+                  type: string
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+      responses:
+        '201':
+          description: Store created.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Store'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /merchant/stores/{publicId}:
+    get:
+      operationId: merchantGetStore
+      tags: [Stores]
+      summary: Get merchant's store detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store detail.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Store'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: merchantUpdateStore
+      tags: [Stores]
+      summary: Update a store
+      description: |
+        Updates an existing store's details.
+        **Requires:** Store ownership or admin, verified email.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name_ar:
+                  type: string
+                name_en:
+                  type: string
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                category_public_id:
+                  type: string
+                city_public_id:
+                  type: string
+                zone_public_id:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                whatsapp:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                website:
+                  type: string
+                  format: uri
+                address_ar:
+                  type: string
+                address_en:
+                  type: string
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+      responses:
+        '200':
+          description: Store updated.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Store'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /merchant/stores/{publicId}/status:
+    get:
+      operationId: merchantGetStoreStatus
+      tags: [Stores]
+      summary: Get store approval status
+      description: Returns the current approval status and rejection reason (if any) for the store.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store status.
+          content:
+            application/json:
+              example:
+                success: true
+                message: ""
+                data:
+                  status: pending
+                  rejection_reason: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Merchant Media ────────────────────────────────────────────────────────
+
+  /merchant/stores/{publicId}/logo:
+    post:
+      operationId: merchantUploadStoreLogo
+      tags: [Store Media]
+      summary: Upload store logo
+      description: |
+        Uploads a new logo image. Replaces the existing logo if one exists.
+
+        **Constraints:**
+        - Allowed types: `jpeg`, `jpg`, `png`, `webp`
+        - Maximum size: 4 MB (configurable via `STORE_LOGO_MAX_KB`)
+        - **Requires:** Verified email.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [logo]
+              properties:
+                logo:
+                  type: string
+                  format: binary
+                  description: Logo image file (jpeg/jpg/png/webp, max 4MB).
+      responses:
+        '200':
+          description: Logo uploaded.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StoreMedia'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+    delete:
+      operationId: merchantDeleteStoreLogo
+      tags: [Store Media]
+      summary: Delete store logo
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Logo deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /merchant/stores/{publicId}/cover:
+    post:
+      operationId: merchantUploadStoreCover
+      tags: [Store Media]
+      summary: Upload store cover image
+      description: |
+        Uploads a new cover image. Replaces existing cover.
+
+        **Constraints:**
+        - Allowed types: `jpeg`, `jpg`, `png`, `webp`
+        - Maximum size: 6 MB (configurable via `STORE_COVER_MAX_KB`)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [cover]
+              properties:
+                cover:
+                  type: string
+                  format: binary
+                  description: Cover image file (jpeg/jpg/png/webp, max 6MB).
+      responses:
+        '200':
+          description: Cover uploaded.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StoreMedia'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+    delete:
+      operationId: merchantDeleteStoreCover
+      tags: [Store Media]
+      summary: Delete store cover image
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cover deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /merchant/stores/{publicId}/gallery:
+    post:
+      operationId: merchantUploadGalleryImage
+      tags: [Store Media]
+      summary: Upload gallery image
+      description: |
+        Uploads one gallery image. Gallery has a maximum of 10 images (configurable via `STORE_GALLERY_LIMIT`).
+
+        **Constraints:**
+        - Allowed types: `jpeg`, `jpg`, `png`, `webp`
+        - Maximum size: 4 MB per image
+        - Maximum total: 10 images
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Gallery image (jpeg/jpg/png/webp, max 4MB).
+      responses:
+        '201':
+          description: Gallery image uploaded.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StoreMedia'
+        '409':
+          description: Gallery limit reached (max 10 images).
+          content:
+            application/json:
+              example:
+                success: false
+                message: "تجاوزت الحد الأقصى للصور."
+                error:
+                  code: MAX_GALLERY_LIMIT_EXCEEDED
+                  details:
+                    limit: 10
+                    current_count: 10
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /merchant/stores/{publicId}/gallery/reorder:
+    patch:
+      operationId: merchantReorderGallery
+      tags: [Store Media]
+      summary: Reorder gallery images
+      description: Updates the `sort_order` of gallery images.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order]
+              properties:
+                order:
+                  type: array
+                  description: Array of media public_ids in the desired order.
+                  items:
+                    type: string
+                  example: ["01HZ_media_1", "01HZ_media_2", "01HZ_media_3"]
+      responses:
+        '200':
+          description: Gallery reordered.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /merchant/stores/{publicId}/gallery/{mediaPublicId}:
+    delete:
+      operationId: merchantDeleteGalleryImage
+      tags: [Store Media]
+      summary: Delete a gallery image
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mediaPublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Image deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Merchant Working Hours ─────────────────────────────────────────────────
+
+  /merchant/stores/{publicId}/working-hours:
+    get:
+      operationId: merchantGetWorkingHours
+      tags: [Working Hours]
+      summary: Get store working hours
+      description: Returns working hours grouped by day of week.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Working hours for all 7 days.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkingHoursDay'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      operationId: merchantUpdateWorkingHours
+      tags: [Working Hours]
+      summary: Update store working hours
+      description: |
+        Replaces all working hours for the store. Must supply all 7 days.
+        Each day can have multiple time periods or be marked as closed.
+        Periods must not overlap within the same day.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [days]
+              properties:
+                days:
+                  type: array
+                  minItems: 7
+                  maxItems: 7
+                  items:
+                    type: object
+                    required: [day_of_week, is_closed]
+                    properties:
+                      day_of_week:
+                        type: integer
+                        minimum: 0
+                        maximum: 6
+                        description: 0=Sunday, 1=Monday ... 6=Saturday
+                      is_closed:
+                        type: boolean
+                      periods:
+                        type: array
+                        description: Required when is_closed is false.
+                        items:
+                          type: object
+                          required: [opens_at, closes_at]
+                          properties:
+                            opens_at:
+                              type: string
+                              pattern: '^\d{2}:\d{2}$'
+                              example: "09:00"
+                            closes_at:
+                              type: string
+                              pattern: '^\d{2}:\d{2}$'
+                              example: "18:00"
+            example:
+              days:
+                - day_of_week: 0
+                  is_closed: true
+                  periods: []
+                - day_of_week: 1
+                  is_closed: false
+                  periods:
+                    - opens_at: "09:00"
+                      closes_at: "18:00"
+      responses:
+        '200':
+          description: Working hours updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkingHoursDay'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  # ── Merchant Social Links ──────────────────────────────────────────────────
+
+  /merchant/stores/{publicId}/social-links:
+    get:
+      operationId: merchantListSocialLinks
+      tags: [Social Links]
+      summary: List store social links
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Social links list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SocialLink'
+
+    post:
+      operationId: merchantCreateSocialLink
+      tags: [Social Links]
+      summary: Add a social link
+      description: |
+        Adds a social link to the store.
+        Each platform can only be added once per store.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, url]
+              properties:
+                platform:
+                  type: string
+                  enum: [facebook, instagram, tiktok, linkedin, youtube, x, telegram, snapchat, other]
+                  example: "instagram"
+                url:
+                  type: string
+                  format: uri
+                  example: "https://instagram.com/zaytoun.store"
+      responses:
+        '201':
+          description: Social link created.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SocialLink'
+        '409':
+          description: Platform already linked.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /merchant/stores/{publicId}/social-links/{socialLinkPublicId}:
+    get:
+      operationId: merchantGetSocialLink
+      tags: [Social Links]
+      summary: Get a social link
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: socialLinkPublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Social link detail.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: merchantUpdateSocialLink
+      tags: [Social Links]
+      summary: Update a social link
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: socialLinkPublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform:
+                  type: string
+                  enum: [facebook, instagram, tiktok, linkedin, youtube, x, telegram, snapchat, other]
+                url:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Social link updated.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+    delete:
+      operationId: merchantDeleteSocialLink
+      tags: [Social Links]
+      summary: Delete a social link
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: socialLinkPublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Social link deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Merchant Offers ────────────────────────────────────────────────────────
+
+  /merchant/stores/{publicId}/offers:
+    get:
+      operationId: merchantListOffers
+      tags: [Offers]
+      summary: List store offers (merchant)
+      description: Returns all offers for the merchant's store (active and inactive).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Paginated offers.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Offer'
+
+    post:
+      operationId: merchantCreateOffer
+      tags: [Offers]
+      summary: Create a store offer
+      description: |
+        Creates a new offer for the store.
+        **Maximum:** 50 offers per store (configurable via `MERCHANT_OFFER_LIMIT_PER_STORE`).
+        **Requires:** Verified email, `offers.manage` permission.
+
+        Image upload is separate (use the offer image upload endpoint if needed).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [title_ar]
+              properties:
+                title_ar:
+                  type: string
+                  example: "خصم 30% على وجبات الغداء"
+                title_en:
+                  type: string
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                price:
+                  type: number
+                  example: 35.00
+                old_price:
+                  type: number
+                  example: 50.00
+                currency:
+                  type: string
+                  default: "ILS"
+                image:
+                  type: string
+                  format: binary
+                  description: Offer image (jpeg/jpg/png/webp, max 4MB). Optional.
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                is_active:
+                  type: boolean
+                  default: true
+                sort_order:
+                  type: integer
+      responses:
+        '201':
+          description: Offer created.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Offer'
+        '409':
+          description: Offer limit reached.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /merchant/stores/{publicId}/offers/{offerPublicId}:
+    get:
+      operationId: merchantGetOffer
+      tags: [Offers]
+      summary: Get offer detail (merchant)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: offerPublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Offer detail.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Offer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: merchantUpdateOffer
+      tags: [Offers]
+      summary: Update an offer
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: offerPublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title_ar:
+                  type: string
+                title_en:
+                  type: string
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                price:
+                  type: number
+                old_price:
+                  type: number
+                currency:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                is_active:
+                  type: boolean
+                sort_order:
+                  type: integer
+      responses:
+        '200':
+          description: Offer updated.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Offer'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+    delete:
+      operationId: merchantDeleteOffer
+      tags: [Offers]
+      summary: Delete an offer
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: offerPublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Offer deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Merchant Subscriptions ────────────────────────────────────────────────
+
+  /merchant/stores/{publicId}/subscription:
+    get:
+      operationId: merchantGetCurrentSubscription
+      tags: [Subscriptions]
+      summary: Get current active subscription
+      description: Returns the currently active subscription for the merchant's store.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Current subscription or null.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        oneOf:
+                          - $ref: '#/components/schemas/StoreSubscription'
+                          - type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /merchant/stores/{publicId}/subscriptions:
+    get:
+      operationId: merchantListSubscriptions
+      tags: [Subscriptions]
+      summary: List subscription history
+      description: Returns paginated subscription history for the merchant's store.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Subscription history.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoreSubscription'
+
+  # ── Merchant Dashboard ────────────────────────────────────────────────────
+
+  /merchant/dashboard/summary:
+    get:
+      operationId: merchantDashboardSummary
+      tags: [Dashboards]
+      summary: Merchant dashboard summary
+      description: Returns aggregate counts and metrics for the authenticated merchant.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year, custom]
+            default: month
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Required when period=custom.
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Required when period=custom.
+      responses:
+        '200':
+          description: Dashboard summary.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /merchant/dashboard/recent-activity:
+    get:
+      operationId: merchantDashboardRecentActivity
+      tags: [Dashboards]
+      summary: Merchant recent activity
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Recent activity items.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /merchant/stores/{storePublicId}/dashboard:
+    get:
+      operationId: merchantStoreDashboard
+      tags: [Dashboards]
+      summary: Store-level dashboard
+      description: Returns dashboard metrics for a specific store owned by the merchant.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: storePublicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year, custom]
+            default: month
+      responses:
+        '200':
+          description: Store dashboard data.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Merchant Store Links & QR ──────────────────────────────────────────────
+
+  /merchant/stores/{storePublicId}/links:
+    get:
+      operationId: merchantGetStoreLinks
+      tags: [QR and Deep Links]
+      summary: Get store links (merchant)
+      description: |
+        Returns web URL, deep link, and QR URLs for a store owned by the merchant.
+        Also indicates whether the store is publicly visible.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: storePublicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store link data.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StoreLinks'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /merchant/stores/{storePublicId}/qr:
+    get:
+      operationId: merchantGetStoreQr
+      tags: [QR and Deep Links]
+      summary: Get store QR code (merchant)
+      description: |
+        Returns an SVG or PNG QR code. Returns 409 if the store has no slug yet.
+        **This endpoint returns an image, not JSON.**
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: storePublicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 128
+            maximum: 1024
+            default: 512
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [svg, png]
+            default: svg
+        - name: download
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+            default: 0
+      responses:
+        '200':
+          description: QR code image.
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Store has no slug (pending approval).
+
+  # ── Admin Categories ──────────────────────────────────────────────────────
+
+  /admin/categories:
+    get:
+      operationId: adminListCategories
+      tags: [Categories]
+      summary: List all categories (admin)
+      description: |
+        Returns all categories including inactive ones.
+        **Requires:** `admin` role, `categories.manage` permission.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Paginated categories.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      operationId: adminCreateCategory
+      tags: [Categories]
+      summary: Create a category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name_ar]
+              properties:
+                name_ar:
+                  type: string
+                  example: "مطاعم"
+                name_en:
+                  type: string
+                  example: "Restaurants"
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                icon:
+                  type: string
+                is_active:
+                  type: boolean
+                  default: true
+                sort_order:
+                  type: integer
+                  default: 0
+      responses:
+        '201':
+          description: Category created.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /admin/categories/{publicId}:
+    get:
+      operationId: adminGetCategory
+      tags: [Categories]
+      summary: Get category (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category detail.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: adminUpdateCategory
+      tags: [Categories]
+      summary: Update a category
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name_ar:
+                  type: string
+                name_en:
+                  type: string
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                icon:
+                  type: string
+                is_active:
+                  type: boolean
+                sort_order:
+                  type: integer
+      responses:
+        '200':
+          description: Category updated.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+    delete:
+      operationId: adminDeleteCategory
+      tags: [Categories]
+      summary: Delete a category
+      description: Soft-deletes a category. Cannot delete categories that have active stores.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category deleted.
+        '409':
+          description: Category has active stores.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Admin Cities & Zones ──────────────────────────────────────────────────
+
+  /admin/cities:
+    get:
+      operationId: adminListCities
+      tags: [Cities]
+      summary: List all cities (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Paginated cities.
+
+    post:
+      operationId: adminCreateCity
+      tags: [Cities]
+      summary: Create a city
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name_ar]
+              properties:
+                name_ar:
+                  type: string
+                  example: "نابلس"
+                name_en:
+                  type: string
+                  example: "Nablus"
+                is_active:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: City created.
+
+  /admin/cities/{publicId}:
+    get:
+      operationId: adminGetCity
+      tags: [Cities]
+      summary: Get city (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: City detail.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: adminUpdateCity
+      tags: [Cities]
+      summary: Update a city
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name_ar:
+                  type: string
+                name_en:
+                  type: string
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: City updated.
+
+    delete:
+      operationId: adminDeleteCity
+      tags: [Cities]
+      summary: Delete a city
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: City deleted.
+        '409':
+          description: City has active zones or stores.
+
+  /admin/zones:
+    get:
+      operationId: adminListZones
+      tags: [Zones]
+      summary: List all zones (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: city_id
+          in: query
+          schema:
+            type: string
+          description: Filter by city public_id.
+      responses:
+        '200':
+          description: Paginated zones.
+
+    post:
+      operationId: adminCreateZone
+      tags: [Zones]
+      summary: Create a zone
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name_ar, city_id]
+              properties:
+                name_ar:
+                  type: string
+                  example: "المنارة"
+                name_en:
+                  type: string
+                  example: "Al-Manara"
+                city_id:
+                  type: string
+                  description: City public_id
+                is_active:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Zone created.
+
+  /admin/zones/{publicId}:
+    get:
+      operationId: adminGetZone
+      tags: [Zones]
+      summary: Get zone (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Zone detail.
+
+    put:
+      operationId: adminUpdateZone
+      tags: [Zones]
+      summary: Update a zone
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name_ar:
+                  type: string
+                name_en:
+                  type: string
+                city_id:
+                  type: string
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Zone updated.
+
+    delete:
+      operationId: adminDeleteZone
+      tags: [Zones]
+      summary: Delete a zone
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Zone deleted.
+
+  # ── Admin Stores ──────────────────────────────────────────────────────────
+
+  /admin/stores:
+    get:
+      operationId: adminListStores
+      tags: [Stores]
+      summary: List all stores (admin)
+      description: |
+        Returns all stores regardless of status.
+        **Requires:** `stores.view` permission.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: query
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/DirectionParam'
+      responses:
+        '200':
+          description: Paginated stores.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/stores/{publicId}:
+    get:
+      operationId: adminGetStore
+      tags: [Stores]
+      summary: Get store detail (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store detail with owner info.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/stores/{publicId}/approve:
+    patch:
+      operationId: adminApproveStore
+      tags: [Stores]
+      summary: Approve a store
+      description: |
+        Approves a pending store. Generates a slug if not set.
+        **Requires:** `stores.approve` permission.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store approved.
+          content:
+            application/json:
+              example:
+                success: true
+                message: "تمت الموافقة على المتجر بنجاح."
+                data:
+                  status: approved
+        '409':
+          description: Store already approved.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/stores/{publicId}/reject:
+    patch:
+      operationId: adminRejectStore
+      tags: [Stores]
+      summary: Reject a store
+      description: |
+        Rejects a pending store with a mandatory reason.
+        **Requires:** `stores.approve` permission.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rejection_reason]
+              properties:
+                rejection_reason:
+                  type: string
+                  example: "المتجر لا يستوفي شروط المنصة."
+      responses:
+        '200':
+          description: Store rejected.
+        '409':
+          description: Store is not in pending status.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /admin/stores/{publicId}/activate:
+    patch:
+      operationId: adminActivateStore
+      tags: [Stores]
+      summary: Activate a store
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store activated.
+
+  /admin/stores/{publicId}/deactivate:
+    patch:
+      operationId: adminDeactivateStore
+      tags: [Stores]
+      summary: Deactivate a store
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store deactivated.
+
+  /admin/stores/{publicId}/links:
+    get:
+      operationId: adminGetStoreLinks
+      tags: [QR and Deep Links]
+      summary: Get store links (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store links.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StoreLinks'
+
+  /admin/stores/{publicId}/qr:
+    get:
+      operationId: adminGetStoreQr
+      tags: [QR and Deep Links]
+      summary: Get store QR code (admin)
+      description: Returns QR code image. Returns 409 if the store has no slug yet.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 128
+            maximum: 1024
+            default: 512
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [svg, png]
+            default: svg
+        - name: download
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+            default: 0
+      responses:
+        '200':
+          description: QR code image.
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/stores/{publicId}/subscriptions:
+    get:
+      operationId: adminGetStoreSubscriptions
+      tags: [Subscriptions]
+      summary: List a store's subscriptions (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Store subscription history.
+
+  # ── Admin Offers ──────────────────────────────────────────────────────────
+
+  /admin/offers:
+    get:
+      operationId: adminListOffers
+      tags: [Offers]
+      summary: List all offers (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: store
+          in: query
+          schema:
+            type: string
+          description: Filter by store public_id.
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Paginated offers.
+
+  /admin/offers/{publicId}:
+    get:
+      operationId: adminGetOffer
+      tags: [Offers]
+      summary: Get offer (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Offer detail.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: adminUpdateOffer
+      tags: [Offers]
+      summary: Update an offer (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title_ar:
+                  type: string
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Offer updated.
+
+    delete:
+      operationId: adminDeleteOffer
+      tags: [Offers]
+      summary: Delete an offer (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Offer deleted.
+
+  # ── Admin Subscription Plans ───────────────────────────────────────────────
+
+  /admin/subscription-plans:
+    get:
+      operationId: adminListSubscriptionPlans
+      tags: [Subscription Plans]
+      summary: List all subscription plans (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Paginated subscription plans.
+
+    post:
+      operationId: adminCreateSubscriptionPlan
+      tags: [Subscription Plans]
+      summary: Create a subscription plan
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name_ar, code, price, duration_days]
+              properties:
+                name_ar:
+                  type: string
+                  example: "الخطة الذهبية"
+                name_en:
+                  type: string
+                code:
+                  type: string
+                  example: "gold"
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                price:
+                  type: number
+                  example: 99.00
+                currency:
+                  type: string
+                  default: "ILS"
+                duration_days:
+                  type: integer
+                  example: 365
+                max_offers:
+                  type: integer
+                  nullable: true
+                max_gallery_images:
+                  type: integer
+                  nullable: true
+                is_active:
+                  type: boolean
+                  default: true
+                sort_order:
+                  type: integer
+                  default: 0
+      responses:
+        '201':
+          description: Plan created.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /admin/subscription-plans/{publicId}:
+    get:
+      operationId: adminGetSubscriptionPlan
+      tags: [Subscription Plans]
+      summary: Get subscription plan (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan detail.
+
+    put:
+      operationId: adminUpdateSubscriptionPlan
+      tags: [Subscription Plans]
+      summary: Update a subscription plan
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name_ar:
+                  type: string
+                name_en:
+                  type: string
+                description_ar:
+                  type: string
+                description_en:
+                  type: string
+                price:
+                  type: number
+                currency:
+                  type: string
+                duration_days:
+                  type: integer
+                max_offers:
+                  type: integer
+                max_gallery_images:
+                  type: integer
+                is_active:
+                  type: boolean
+                sort_order:
+                  type: integer
+      responses:
+        '200':
+          description: Plan updated.
+
+    delete:
+      operationId: adminDeleteSubscriptionPlan
+      tags: [Subscription Plans]
+      summary: Delete a subscription plan
+      description: Cannot delete plans with active subscriptions.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan deleted.
+        '409':
+          description: Plan has active subscriptions.
+
+  # ── Admin Subscriptions ───────────────────────────────────────────────────
+
+  /admin/subscriptions:
+    get:
+      operationId: adminListSubscriptions
+      tags: [Subscriptions]
+      summary: List all subscriptions (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, active, expired, cancelled]
+        - name: store
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated subscriptions.
+
+  /admin/subscriptions/assign:
+    post:
+      operationId: adminAssignSubscription
+      tags: [Subscriptions]
+      summary: Assign a subscription to a store
+      description: |
+        Assigns a subscription plan to a store, optionally with a custom start date.
+        **Requires:** `subscriptions.manage` permission.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [store_public_id, plan_public_id]
+              properties:
+                store_public_id:
+                  type: string
+                plan_public_id:
+                  type: string
+                starts_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                  description: Defaults to now() if not provided.
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Subscription assigned.
+        '409':
+          description: Store already has an active subscription.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /admin/subscriptions/{publicId}:
+    get:
+      operationId: adminGetSubscription
+      tags: [Subscriptions]
+      summary: Get subscription (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Subscription detail.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/subscriptions/{publicId}/cancel:
+    patch:
+      operationId: adminCancelSubscription
+      tags: [Subscriptions]
+      summary: Cancel a subscription
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancellation_reason:
+                  type: string
+      responses:
+        '200':
+          description: Subscription cancelled.
+        '409':
+          description: Subscription cannot be cancelled in its current state.
+
+  # ── Admin Dashboard ───────────────────────────────────────────────────────
+
+  /admin/dashboard/summary:
+    get:
+      operationId: adminDashboardSummary
+      tags: [Dashboards]
+      summary: Admin dashboard summary
+      description: |
+        Returns platform-wide aggregate metrics.
+        **Requires:** `admin` role.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year, custom]
+            default: month
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Admin dashboard summary.
+
+  /admin/dashboard/recent-activity:
+    get:
+      operationId: adminDashboardRecentActivity
+      tags: [Dashboards]
+      summary: Admin recent activity
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Recent activity events.
+
+  # ── Admin Settings ────────────────────────────────────────────────────────
+
+  /admin/settings:
+    get:
+      operationId: adminGetSettings
+      tags: [Settings]
+      summary: Get all settings (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: All settings including non-whitelisted values.
+
+    put:
+      operationId: adminUpdateSettings
+      tags: [Settings]
+      summary: Bulk update settings
+      description: |
+        Updates one or more settings values.
+        Only whitelisted keys can be updated.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [settings]
+              properties:
+                settings:
+                  type: object
+                  description: Key-value map of setting updates.
+                  additionalProperties:
+                    type: string
+              example:
+                settings:
+                  platform_name_ar: "بالفرس"
+                  platform_name_en: "Palverse"
+      responses:
+        '200':
+          description: Settings updated.
+
+  /admin/settings/{group}:
+    get:
+      operationId: adminGetSettingsGroup
+      tags: [Settings]
+      summary: Get settings by group (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: group
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [general, branding, contact, social, application, maintenance]
+      responses:
+        '200':
+          description: Settings for the group.
+
+  # ── Admin Pages ───────────────────────────────────────────────────────────
+
+  /admin/pages:
+    get:
+      operationId: adminListPages
+      tags: [Pages]
+      summary: List all static pages (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Paginated pages.
+
+    post:
+      operationId: adminCreatePage
+      tags: [Pages]
+      summary: Create a static page
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, title_ar, content_ar]
+              properties:
+                slug:
+                  type: string
+                  example: "about-us"
+                title_ar:
+                  type: string
+                title_en:
+                  type: string
+                content_ar:
+                  type: string
+                content_en:
+                  type: string
+                excerpt_ar:
+                  type: string
+                excerpt_en:
+                  type: string
+                is_published:
+                  type: boolean
+                  default: false
+                sort_order:
+                  type: integer
+                seo_title_ar:
+                  type: string
+                seo_title_en:
+                  type: string
+                seo_description_ar:
+                  type: string
+                seo_description_en:
+                  type: string
+      responses:
+        '201':
+          description: Page created.
+
+  /admin/pages/{publicId}:
+    get:
+      operationId: adminGetPage
+      tags: [Pages]
+      summary: Get static page (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Page detail.
+
+    put:
+      operationId: adminUpdatePage
+      tags: [Pages]
+      summary: Update a static page
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                title_ar:
+                  type: string
+                title_en:
+                  type: string
+                content_ar:
+                  type: string
+                content_en:
+                  type: string
+                is_published:
+                  type: boolean
+                sort_order:
+                  type: integer
+      responses:
+        '200':
+          description: Page updated.
+
+    delete:
+      operationId: adminDeletePage
+      tags: [Pages]
+      summary: Delete a static page
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Page deleted.
+
+  # ── Admin FAQs ────────────────────────────────────────────────────────────
+
+  /admin/faqs:
+    get:
+      operationId: adminListFaqs
+      tags: [FAQs]
+      summary: List all FAQs (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Paginated FAQs.
+
+    post:
+      operationId: adminCreateFaq
+      tags: [FAQs]
+      summary: Create a FAQ
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question_ar, answer_ar]
+              properties:
+                question_ar:
+                  type: string
+                question_en:
+                  type: string
+                answer_ar:
+                  type: string
+                answer_en:
+                  type: string
+                category:
+                  type: string
+                sort_order:
+                  type: integer
+                is_active:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: FAQ created.
+
+  /admin/faqs/{publicId}:
+    get:
+      operationId: adminGetFaq
+      tags: [FAQs]
+      summary: Get FAQ (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: FAQ detail.
+
+    put:
+      operationId: adminUpdateFaq
+      tags: [FAQs]
+      summary: Update a FAQ
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question_ar:
+                  type: string
+                question_en:
+                  type: string
+                answer_ar:
+                  type: string
+                answer_en:
+                  type: string
+                category:
+                  type: string
+                sort_order:
+                  type: integer
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: FAQ updated.
+
+    delete:
+      operationId: adminDeleteFaq
+      tags: [FAQs]
+      summary: Delete a FAQ
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: FAQ deleted.
+
+  # ── Admin Users ───────────────────────────────────────────────────────────
+
+  /admin/users:
+    get:
+      operationId: adminListUsers
+      tags: [Users]
+      summary: List users (admin)
+      description: |
+        Returns paginated list of all users.
+        **Requires:** `users.manage` permission.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [admin, merchant]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, suspended]
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search by name or email.
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/DirectionParam'
+      responses:
+        '200':
+          description: Paginated users.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/users/merchants:
+    post:
+      operationId: adminCreateMerchant
+      tags: [Users]
+      summary: Create a merchant user (admin)
+      description: Admin creates a merchant account on behalf of a merchant.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name:
+                  type: string
+                  example: "محمد يوسف"
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                password_confirmation:
+                  type: string
+                preferred_locale:
+                  type: string
+                  enum: [ar, en]
+      responses:
+        '201':
+          description: Merchant created.
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /admin/users/{publicId}:
+    get:
+      operationId: adminGetUser
+      tags: [Users]
+      summary: Get user (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User detail.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: adminUpdateUser
+      tags: [Users]
+      summary: Update a user (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                preferred_locale:
+                  type: string
+      responses:
+        '200':
+          description: User updated.
+
+  /admin/users/{publicId}/suspend:
+    patch:
+      operationId: adminSuspendUser
+      tags: [Users]
+      summary: Suspend a user
+      description: |
+        Suspends a user. Cannot suspend yourself or the last admin account.
+        **Requires:** `users.manage` permission.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [suspension_reason]
+              properties:
+                suspension_reason:
+                  type: string
+                  example: "انتهاك شروط الاستخدام."
+      responses:
+        '200':
+          description: User suspended.
+        '409':
+          description: Cannot suspend self or last admin.
+          content:
+            application/json:
+              example:
+                success: false
+                message: "لا يمكن تعطيل آخر حساب مسؤول."
+                error:
+                  code: USER_SELF_DISABLE_NOT_ALLOWED
+                  details: {}
+
+  /admin/users/{publicId}/activate:
+    patch:
+      operationId: adminActivateUser
+      tags: [Users]
+      summary: Activate a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User activated.
+
+  /admin/users/{publicId}/deactivate:
+    patch:
+      operationId: adminDeactivateUser
+      tags: [Users]
+      summary: Deactivate a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deactivated.
+
+  /admin/users/{publicId}/roles:
+    patch:
+      operationId: adminUpdateUserRoles
+      tags: [Users]
+      summary: Update user roles
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roles]
+              properties:
+                roles:
+                  type: array
+                  items:
+                    type: string
+                    enum: [admin, merchant]
+                  example: ["merchant"]
+      responses:
+        '200':
+          description: Roles updated.
+
+  /admin/users/{publicId}/reset-password:
+    post:
+      operationId: adminResetUserPassword
+      tags: [Users]
+      summary: Reset user password (admin)
+      description: Sends a password reset email to the specified user.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Password reset email sent.
+
+  /admin/users/{publicId}/revoke-tokens:
+    post:
+      operationId: adminRevokeUserTokens
+      tags: [Users]
+      summary: Revoke all user tokens (admin)
+      description: Revokes all Sanctum tokens for the specified user (force logout everywhere).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All tokens revoked.
+
+  /admin/users/{publicId}/stores:
+    get:
+      operationId: adminGetUserStores
+      tags: [Users]
+      summary: List user's stores (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User's stores.
+
+  /admin/users/{publicId}/subscriptions:
+    get:
+      operationId: adminGetUserSubscriptions
+      tags: [Users]
+      summary: List user's subscriptions (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User's subscription history.
+
+  # ── Admin Audit Logs ──────────────────────────────────────────────────────
+
+  /admin/audit-logs:
+    get:
+      operationId: adminListAuditLogs
+      tags: [Audit Logs]
+      summary: List audit logs
+      description: |
+        Returns paginated audit log entries.
+        **Requires:** `admin` role and `audit-logs.view` permission.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: action
+          in: query
+          schema:
+            type: string
+          description: Filter by audit action string (e.g., `store.approved`).
+        - name: actor_type
+          in: query
+          schema:
+            type: string
+            enum: [user, system]
+        - name: subject_type
+          in: query
+          schema:
+            type: string
+          description: Filter by subject type (e.g., `store`, `user`).
+        - name: subject_public_id
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/DirectionParam'
+      responses:
+        '200':
+          description: Paginated audit logs.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/audit-logs/{publicId}:
+    get:
+      operationId: adminGetAuditLog
+      tags: [Audit Logs]
+      summary: Get audit log entry
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: publicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log detail.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuditLog'
+        '404':
+          $ref: '#/components/responses/NotFound'
