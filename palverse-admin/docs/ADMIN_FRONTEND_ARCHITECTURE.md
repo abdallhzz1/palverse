@@ -30,3 +30,9 @@ All API errors are intercepted and normalized in `src/lib/api/error.ts`. This en
 The dashboard utilizes a dual-layout approach:
 - `DashboardLayout` enforces authentication and admin role. Redirects guests to `/login` and non-admins to `/unauthorized`.
 - `AuthLayout` redirects authenticated users to `/dashboard`.
+
+## Data Fetching & Dashboard
+Data fetching in the dashboard is handled via a dedicated `dashboardService` integrated with a custom React hook `useAdminDashboard`.
+- **Concurrency**: The hook fetches the critical `summary` stats alongside `trends`, `storesByStatus`, and `recentActivity` using `Promise.allSettled`. This allows partial failures (e.g. if the recent activity feed fails, the main summary still loads).
+- **Caching & Refresh**: Data is currently fetched on mount with manual refresh capabilities. Date range filtering dynamically triggers a refetch by modifying the hook's internal `dateRange` state.
+- **Charts**: We use `recharts` for fast, declarative, and responsive SVG charts, leveraging Tailwind's CSS variables for accurate Palverse brand matching and dark mode support.

@@ -1,101 +1,153 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { apiClient } from "@/lib/api/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Store, MapPin, Percent, CreditCard } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
-import { NormalizedApiError } from "@/lib/api/error";
+import { useAdminDashboard } from "@/hooks/use-admin-dashboard";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
+import { DashboardPeriodSelector } from "@/components/dashboard/dashboard-period-selector";
+import { StoreStatusChart } from "@/components/dashboard/store-status-chart";
+import { DashboardTrendChart } from "@/components/dashboard/dashboard-trend-chart";
+import { RecentActivityList } from "@/components/dashboard/recent-activity-list";
 import { Button } from "@/components/ui/button";
-
-export interface AdminDashboardSummary {
-  users_count: number;
-  merchants_count: number;
-  stores_count: number;
-  pending_stores_count: number;
-  active_subscriptions_count: number;
-  active_offers_count: number;
-}
-
-interface DashboardResponse {
-  data: AdminDashboardSummary;
-}
+import { RefreshCw, Users, Store, MapPin, CreditCard, Percent, Tag, AlertTriangle } from "lucide-react";
 
 export default function DashboardPage() {
-  const [data, setData] = useState<AdminDashboardSummary | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    summary,
+    storesByStatus,
+    trends,
+    recentActivity,
+    isInitialLoading,
+    isRefreshing,
+    hasAnyData,
+    selectedPeriod,
+    setSelectedPeriod,
+    refresh
+  } = useAdminDashboard();
 
-  const fetchDashboardData = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      // The interceptor returns the data directly
-      const response = await apiClient.get<unknown, DashboardResponse>("/admin/dashboard/summary");
-      setData(response.data);
-    } catch (err) {
-      const apiError = err as NormalizedApiError;
-      setError(apiError.message || "حدث خطأ أثناء جلب بيانات لوحة التحكم");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchDashboardData();
-  }, []);
-
-  if (isLoading) {
+  if (isInitialLoading && !hasAnyData) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Spinner size="lg" />
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">لوحة التحكم</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">نظرة شاملة على أداء منصة Palverse</p>
+          </div>
+        </div>
+        <DashboardSkeleton />
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex h-[50vh] flex-col items-center justify-center space-y-4">
-        <div className="text-danger font-medium">{error}</div>
-        <Button onClick={fetchDashboardData} variant="outline">
-          إعادة المحاولة
-        </Button>
-      </div>
-    );
-  }
-
-  if (!data) return null;
-
-  const stats = [
-    { title: "إجمالي المستخدمين", value: data.users_count, icon: Users },
-    { title: "إجمالي التجار", value: data.merchants_count, icon: Store },
-    { title: "إجمالي المحلات", value: data.stores_count, icon: Store },
-    { title: "المحلات قيد المراجعة", value: data.pending_stores_count, icon: MapPin },
-    { title: "الاشتراكات النشطة", value: data.active_subscriptions_count, icon: CreditCard },
-    { title: "العروض النشطة", value: data.active_offers_count, icon: Percent },
-  ];
+  // Calculate some derived stats safely
+  const pendingStores = Array.isArray(storesByStatus.data) 
+    ? storesByStatus.data.find(s => s.key === "pending")?.count || 0 
+    : 0;
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold tracking-tight">نظرة عامة</h2>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-primary">
-                <stat.icon className="h-5 w-5" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-latin">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="space-y-8 pb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">لوحة التحكم</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">نظرة شاملة على أداء منصة Palverse</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {/* We must handle the type conversion carefully for DashboardPeriodSelector */}
+          <DashboardPeriodSelector selected={selectedPeriod} onChange={setSelectedPeriod} disabled={isRefreshing || isInitialLoading} />
+          <Button 
+            onClick={refresh} 
+            variant="outline" 
+            size="icon" 
+            disabled={isRefreshing || isInitialLoading}
+            className="h-9 w-9 border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1F2522]"
+            aria-label="تحديث البيانات"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
+      </div>
+
+      {/* Summary Stats Grid */}
+      {summary.error ? (
+        <div className="flex flex-col items-center justify-center p-8 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-xl">
+          <AlertTriangle className="w-8 h-8 text-red-500 mb-3" />
+          <p className="text-red-700 dark:text-red-400 font-medium">{summary.error.message || "تعذر تحميل بيانات لوحة التحكم الأساسية"}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard 
+            title="إجمالي المستخدمين" 
+            value={summary.data?.users?.total_users} 
+            icon={<Users />} 
+          />
+          <StatCard 
+            title="إجمالي المحلات" 
+            value={summary.data?.stores?.total_stores} 
+            icon={<Store />} 
+          />
+          <StatCard 
+            title="محلات قيد المراجعة" 
+            value={pendingStores} 
+            icon={<MapPin />} 
+          />
+          <StatCard 
+            title="الاشتراكات النشطة" 
+            value={summary.data?.subscriptions?.active_subscriptions} 
+            icon={<CreditCard />} 
+          />
+          <StatCard 
+            title="العروض النشطة" 
+            value={summary.data?.offers?.active_offers} 
+            icon={<Percent />} 
+          />
+          <StatCard 
+            title="التصنيفات النشطة" 
+            value={summary.data?.taxonomy?.active_categories} 
+            icon={<Tag />} 
+          />
+        </div>
+      )}
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Trend Chart */}
+        <div className="lg:col-span-2 bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">نمو المحلات</h3>
+          {trends.error ? (
+            <div className="h-[350px] flex flex-col items-center justify-center text-slate-400">
+              <AlertTriangle className="w-6 h-6 mb-2 opacity-50" />
+              <span>تعذر تحميل الرسوم البيانية</span>
+            </div>
+          ) : (
+            <DashboardTrendChart data={trends.data || []} metricLabel="محل" />
+          )}
+        </div>
+
+        {/* Store Status Breakdown */}
+        <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">حالة المحلات</h3>
+          {storesByStatus.error ? (
+             <div className="h-[300px] flex flex-col items-center justify-center text-slate-400">
+               <AlertTriangle className="w-6 h-6 mb-2 opacity-50" />
+               <span>تعذر تحميل المخطط</span>
+             </div>
+          ) : (
+            <StoreStatusChart data={storesByStatus.data || []} />
+          )}
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">أحدث الأنشطة</h3>
+        {recentActivity.error ? (
+          <div className="p-4 text-center text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+            تعذر تحميل أحدث الأنشطة
+          </div>
+        ) : (
+          <RecentActivityList items={recentActivity.data || []} />
+        )}
       </div>
     </div>
   );
