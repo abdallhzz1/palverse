@@ -6,21 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\StaticPageResource;
 use App\Http\Resources\Api\V1\StaticPageSummaryResource;
 use App\Models\StaticPage;
+use App\Services\PublicReferenceCacheService;
 use Illuminate\Http\JsonResponse;
 
 class StaticPageController extends Controller
 {
+    public function __construct(protected PublicReferenceCacheService $cacheService) {}
+
     /**
      * Get published static pages list (summaries).
      */
     public function index(): JsonResponse
     {
-        $pages = StaticPage::published()->ordered()->get();
+        $data = $this->cacheService->remember('pages', [], function () {
+            $pages = StaticPage::published()->ordered()->get();
+
+            return StaticPageSummaryResource::collection($pages)->resolve();
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'تم جلب الصفحات بنجاح.',
-            'data' => StaticPageSummaryResource::collection($pages),
+            'data' => $data,
             'meta' => [],
         ]);
     }
@@ -30,8 +37,16 @@ class StaticPageController extends Controller
      */
     public function show(string $slug): JsonResponse
     {
-        $page = StaticPage::published()->where('slug', $slug)->first();
-        if (! $page) {
+        $data = $this->cacheService->remember('pages', ['slug' => $slug], function () use ($slug) {
+            $page = StaticPage::published()->where('slug', $slug)->first();
+            if (! $page) {
+                return null;
+            }
+
+            return (new StaticPageResource($page))->resolve();
+        });
+
+        if (! $data) {
             return response()->json([
                 'success' => false,
                 'message' => 'الصفحة غير موجودة أو غير منشورة.',
@@ -41,7 +56,7 @@ class StaticPageController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم جلب تفاصيل الصفحة بنجاح.',
-            'data' => new StaticPageResource($page),
+            'data' => $data,
             'meta' => [],
         ]);
     }

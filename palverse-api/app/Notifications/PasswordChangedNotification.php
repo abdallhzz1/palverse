@@ -11,6 +11,11 @@ class PasswordChangedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public function __construct()
+    {
+        $this->queue = 'mail';
+    }
+
     /**
      * @return array<int, string>
      */

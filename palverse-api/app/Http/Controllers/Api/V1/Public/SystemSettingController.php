@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Public;
 
 use App\Http\Controllers\Controller;
+use App\Services\PublicReferenceCacheService;
 use App\Services\SystemSettingService;
 use Illuminate\Http\JsonResponse;
 
@@ -10,9 +11,12 @@ class SystemSettingController extends Controller
 {
     protected SystemSettingService $settingsService;
 
-    public function __construct(SystemSettingService $settingsService)
+    protected PublicReferenceCacheService $cacheService;
+
+    public function __construct(SystemSettingService $settingsService, PublicReferenceCacheService $cacheService)
     {
         $this->settingsService = $settingsService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -20,7 +24,9 @@ class SystemSettingController extends Controller
      */
     public function index(): JsonResponse
     {
-        $settings = $this->settingsService->getPublicSettings();
+        $settings = $this->cacheService->remember('settings', [], function () {
+            return $this->settingsService->getPublicSettings();
+        });
 
         return response()->json([
             'success' => true,
@@ -35,7 +41,9 @@ class SystemSettingController extends Controller
      */
     public function show(string $group): JsonResponse
     {
-        $settings = $this->settingsService->getPublicSettings();
+        $settings = $this->cacheService->remember('settings', [], function () {
+            return $this->settingsService->getPublicSettings();
+        });
 
         if (! isset($settings[$group])) {
             return response()->json([

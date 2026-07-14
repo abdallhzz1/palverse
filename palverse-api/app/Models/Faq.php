@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasPublicReferenceCache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,14 @@ use Illuminate\Support\Str;
 
 class Faq extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use HasPublicReferenceCache;
+    use SoftDeletes;
+
+    public function getCacheDomain(): string
+    {
+        return 'faqs';
+    }
 
     protected $fillable = [
         'question_ar',

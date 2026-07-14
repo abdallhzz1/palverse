@@ -84,6 +84,7 @@ class SystemSettingService
 
             // Invalidate cache on update
             Cache::forget('palverse.public_settings');
+            app(PublicReferenceCacheService::class)->invalidateDomain('settings');
 
             if (count($changes) > 0) {
                 $oldValues = [];

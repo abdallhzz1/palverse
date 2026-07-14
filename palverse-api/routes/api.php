@@ -32,24 +32,14 @@ use App\Http\Controllers\Api\V1\Public\StoreController as PublicStoreController;
 use App\Http\Controllers\Api\V1\Public\StoreLinkController;
 use App\Http\Controllers\Api\V1\Public\SubscriptionPlanController as PublicSubscriptionPlanController;
 use App\Http\Controllers\Api\V1\Public\SystemSettingController;
-use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Api\V1\SystemController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
 
-    // ─── Health check ─────────────────────────────────────────────────────────
-    Route::get('/health', function (): JsonResponse {
-        return response()->json([
-            'success' => true,
-            'message' => 'Palverse API is running.',
-            'data' => [
-                'service' => 'palverse-api',
-                'status' => 'healthy',
-                'timestamp' => now()->toIso8601String(),
-            ],
-            'meta' => [],
-        ]);
-    });
+    // ─── Health & Readiness checks ────────────────────────────────────────────
+    Route::get('/health', [SystemController::class, 'health']);
+    Route::get('/ready', [SystemController::class, 'ready']);
 
     // ─── Authentication ────────────────────────────────────────────────────────
     Route::prefix('auth')->group(function (): void {

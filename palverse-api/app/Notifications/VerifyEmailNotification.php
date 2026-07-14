@@ -5,14 +5,19 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Notification as BaseNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
-class VerifyEmailNotification extends Notification implements ShouldQueue
+class VerifyEmailNotification extends BaseNotification implements ShouldQueue
 {
     use Queueable;
+
+    public function __construct()
+    {
+        $this->queue = 'mail';
+    }
 
     public function via(object $notifiable): array
     {

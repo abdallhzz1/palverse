@@ -5,24 +5,31 @@ namespace App\Http\Controllers\Api\V1\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Services\PublicReferenceCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    public function __construct(protected PublicReferenceCacheService $cacheService) {}
+
     /**
      * PUB-01: List all categories.
      */
     public function index(Request $request): JsonResponse
     {
-        $categories = Category::query()
-            ->orderBy('name_ar')
-            ->get();
+        $data = $this->cacheService->remember('categories', [], function () {
+            $categories = Category::query()
+                ->orderBy('name_ar')
+                ->get();
+
+            return CategoryResource::collection($categories)->resolve();
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'تم جلب التصنيفات بنجاح.',
-            'data' => CategoryResource::collection($categories),
+            'data' => $data,
             'meta' => [],
         ]);
     }
@@ -32,14 +39,18 @@ class CategoryController extends Controller
      */
     public function show(string $slug): JsonResponse
     {
-        $category = Category::query()
-            ->where('slug', $slug)
-            ->firstOrFail();
+        $data = $this->cacheService->remember('categories', ['slug' => $slug], function () use ($slug) {
+            $category = Category::query()
+                ->where('slug', $slug)
+                ->firstOrFail();
+
+            return (new CategoryResource($category))->resolve();
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'تم جلب التصنيف بنجاح.',
-            'data' => new CategoryResource($category),
+            'data' => $data,
             'meta' => [],
         ]);
     }

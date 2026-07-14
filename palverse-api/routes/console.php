@@ -6,3 +6,19 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+use Illuminate\Support\Facades\Schedule;
+
+// Expire stores that have active subscriptions past their end date.
+// Run shortly after midnight.
+Schedule::command('subscriptions:expire')
+    ->dailyAt('00:05')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// Notify merchants of subscriptions that will expire soon.
+// Run daily in the morning.
+Schedule::command('subscriptions:notify-expiring')
+    ->dailyAt('08:00')
+    ->withoutOverlapping()
+    ->onOneServer();

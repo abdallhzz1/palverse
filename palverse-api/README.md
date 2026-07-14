@@ -37,3 +37,22 @@ Run the feature test suite:
 php artisan test
 ```
 The test suite heavily utilizes `RefreshDatabase` and covers Authentication, Merchant Operations, Public Lookups, Admin Controls, Notifications, and specific Edge-cases (like Security Headers and Auditing).
+
+## Local Development & Operations
+
+While testing locally (especially on Windows), you can run background services manually:
+- **Queue Worker**: `php artisan queue:work`
+- **Scheduler**: `php artisan schedule:work`
+- **Storage Link**: Ensure media uploads work by creating the storage symlink: `php artisan storage:link`
+- **Create Admin**: To bypass the standard seeder limits, create an admin interactively: `php artisan palverse:create-admin`
+
+## Production Readiness
+
+When deploying to production, follow the [Deployment Checklist](docs/operations/deployment-checklist.md) and ensure:
+- **Environment**: Copy `.env.production.example` to `.env` and fill all keys.
+- **Initial Admin Provisioning**: Use the interactive `php artisan palverse:create-admin` command to securely create an admin user instead of using deterministic seeders.
+- **Caching**: Ensure Redis is configured. The API aggressively caches public endpoints (Categories, Cities, Zones, Plans, Bootstrapping). Cache clears automatically when admins update reference data.
+- **Health & Readiness**: Monitor your application via `/api/v1/health` and `/api/v1/ready` endpoints.
+- **Storage Strategy**: Local storage (`storage:link`) is supported, but S3 configuration is recommended for horizontal scaling.
+
+> **Warning**: Never run `php artisan migrate:fresh` or run the `DemoDataSeeder` in a production environment!
