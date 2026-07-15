@@ -33,6 +33,16 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     const normalizedError = normalizeApiError(error);
+    
+    // Global 401 handling to ensure session clears and redirects
+    if (normalizedError.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      // Only redirect if not already on login
+      if (!window.location.pathname.includes("/login")) {
+        window.location.href = "/login";
+      }
+    }
+    
     return Promise.reject(normalizedError);
   }
 );

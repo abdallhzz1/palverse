@@ -65,6 +65,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = async (values: any) => {
     // Convert empty strings to null for optional fields
     const payload = Object.fromEntries(
@@ -97,6 +98,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="slug"
             render={({ field }) => (
@@ -112,6 +114,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
           />
 
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="sort_order"
             render={({ field }) => (
@@ -141,6 +144,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
 
           <TabsContent value="ar" className="p-6 space-y-6 mt-0">
             <FormField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               control={form.control as any}
               name="title_ar"
               render={({ field }) => (
@@ -155,6 +159,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
             />
             
             <FormField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               control={form.control as any}
               name="content_ar"
               render={({ field }) => (
@@ -169,6 +174,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
             />
 
             <FormField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               control={form.control as any}
               name="excerpt_ar"
               render={({ field }) => (
@@ -184,6 +190,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
 
             <div className="pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 control={form.control as any}
                 name="seo_title_ar"
                 render={({ field }) => (
@@ -197,6 +204,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
                 )}
               />
               <FormField
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 control={form.control as any}
                 name="seo_description_ar"
                 render={({ field }) => (
@@ -214,6 +222,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
 
           <TabsContent value="en" className="p-6 space-y-6 mt-0">
             <FormField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               control={form.control as any}
               name="title_en"
               render={({ field }) => (
@@ -228,6 +237,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
             />
             
             <FormField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               control={form.control as any}
               name="content_en"
               render={({ field }) => (
@@ -242,6 +252,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
             />
 
             <FormField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               control={form.control as any}
               name="excerpt_en"
               render={({ field }) => (
@@ -257,6 +268,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
 
             <div className="pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 control={form.control as any}
                 name="seo_title_en"
                 render={({ field }) => (
@@ -270,6 +282,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
                 )}
               />
               <FormField
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 control={form.control as any}
                 name="seo_description_en"
                 render={({ field }) => (
@@ -288,6 +301,7 @@ export function PageForm({ initialData, onSubmit, isMutating, apiError }: PageFo
 
         <div className="bg-white p-6 rounded-xl border border-slate-200">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="is_published"
             render={({ field }) => (

@@ -22,6 +22,7 @@ export function useSettings() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSettings();
   }, [fetchSettings]);
 
@@ -47,6 +48,7 @@ export function useSettingsGroup(group: SettingsGroupName) {
   }, [group]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchGroup();
   }, [fetchGroup]);
 
@@ -57,7 +59,7 @@ export function useSettingsActions() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [apiError, setApiError] = useState<NormalizedApiError | null>(null);
 
-  const updateGroup = async (group: SettingsGroupName, values: Record<string, any>, onSuccess?: () => void) => {
+  const updateGroup = useCallback(async (group: SettingsGroupName, values: Record<string, unknown>, onSuccess?: () => void) => {
     setIsUpdating(true);
     setApiError(null);
     try {
@@ -70,7 +72,7 @@ export function useSettingsActions() {
     } finally {
       setIsUpdating(false);
     }
-  };
+  }, []);
 
   return { updateGroup, isUpdating, apiError };
 }

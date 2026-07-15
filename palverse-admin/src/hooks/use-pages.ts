@@ -20,9 +20,11 @@ export function usePagesList(params: PagesListParams = {}) {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(params)]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPages();
   }, [fetchPages]);
 
@@ -54,6 +56,7 @@ export function usePageDetails(publicId: string | null) {
   }, [publicId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPage();
   }, [fetchPage]);
 

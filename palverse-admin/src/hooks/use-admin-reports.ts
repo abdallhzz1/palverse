@@ -52,6 +52,7 @@ export function useAdminReports(initialFilters: ReportsFilterState): UseAdminRep
   // Update dateRange when filters change
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (filters.period === "custom") {
       setDateRange({ period: "custom", from: filters.date_from, to: filters.date_to });
     } else {

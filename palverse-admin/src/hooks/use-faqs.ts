@@ -20,9 +20,11 @@ export function useFaqsList(params: FaqsListParams = {}) {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(params)]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchFaqs();
   }, [fetchFaqs]);
 
@@ -54,6 +56,7 @@ export function useFaqDetails(publicId: string | null) {
   }, [publicId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchFaq();
   }, [fetchFaq]);
 

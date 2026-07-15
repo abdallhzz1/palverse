@@ -4,6 +4,7 @@ export type SettingType = "string" | "integer" | "decimal" | "boolean" | "email"
 
 export interface SettingField {
   public_id: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
   type: SettingType;
   is_public: boolean;
@@ -18,11 +19,11 @@ export type SettingsResponse = ApiSuccessResponse<SystemSettings>;
 export type SettingsGroupResponse = ApiSuccessResponse<SettingsGroup>;
 
 export interface UpdateSettingsRequest {
-  settings: Record<string, Record<string, any>>;
+  settings: Record<string, Record<string, unknown>>;
 }
 
 export interface UpdateSettingsGroupRequest {
-  settings: Record<string, any>;
+  settings: Record<string, unknown>;
 }
 
 // Strictly typed config whitelist for frontend forms

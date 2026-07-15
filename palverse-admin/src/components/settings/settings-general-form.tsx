@@ -91,6 +91,7 @@ export function SettingsGeneralForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="platform_name_ar"
             render={({ field }) => (
@@ -105,6 +106,7 @@ export function SettingsGeneralForm() {
           />
 
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="platform_name_en"
             render={({ field }) => (
@@ -121,6 +123,7 @@ export function SettingsGeneralForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="platform_description_ar"
             render={({ field }) => (
@@ -135,6 +138,7 @@ export function SettingsGeneralForm() {
           />
 
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="platform_description_en"
             render={({ field }) => (
@@ -151,6 +155,7 @@ export function SettingsGeneralForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="default_currency"
             render={({ field }) => (
@@ -174,6 +179,7 @@ export function SettingsGeneralForm() {
           />
 
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="default_language"
             render={({ field }) => (
@@ -196,6 +202,7 @@ export function SettingsGeneralForm() {
           />
 
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="timezone"
             render={({ field }) => (

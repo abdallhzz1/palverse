@@ -28,7 +28,7 @@ export function PagesList() {
 
   const { deletePage, publishPage, unpublishPage, isMutating } = usePageActions();
 
-  const queryParams: any = {
+  const queryParams: Record<string, string | number | boolean> = {
     page,
     per_page: 15,
   };

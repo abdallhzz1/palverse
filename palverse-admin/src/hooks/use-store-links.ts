@@ -21,7 +21,7 @@ export function useStoreLinks(publicId: string, slug?: string | null) {
       setLinks(data);
     } catch (err) {
       // Intentionally silent or small toast to avoid disrupting the UI
-      console.error("Failed to fetch store links", err);
+      // Error fetching store links
     } finally {
       setIsLoadingLinks(false);
     }
@@ -34,8 +34,8 @@ export function useStoreLinks(publicId: string, slug?: string | null) {
       const blob = await storesService.getQrBlob(publicId);
       const url = URL.createObjectURL(blob);
       setQrObjectUrl(url);
-    } catch (err) {
-      console.error("Failed to fetch QR code", err);
+    } catch {
+      // Error fetching QR code
     } finally {
       setIsLoadingQr(false);
     }
@@ -52,7 +52,7 @@ export function useStoreLinks(publicId: string, slug?: string | null) {
       a.click();
       document.body.removeChild(a);
       toast.success("تم تنزيل رمز QR بنجاح");
-    } catch (err) {
+    } catch {
       toast.error("حدث خطأ أثناء تنزيل رمز QR");
     }
   }, [qrObjectUrl]);
@@ -70,7 +70,7 @@ export function useStoreLinks(publicId: string, slug?: string | null) {
     try {
       await navigator.clipboard.writeText(text);
       toast.success(successMessage);
-    } catch (err) {
+    } catch {
       toast.error("حدث خطأ أثناء النسخ");
     }
   };

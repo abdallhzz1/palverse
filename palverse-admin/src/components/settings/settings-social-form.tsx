@@ -75,6 +75,7 @@ export function SettingsSocialForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="facebook_url"
             render={({ field }) => (
@@ -88,6 +89,7 @@ export function SettingsSocialForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="instagram_url"
             render={({ field }) => (
@@ -101,6 +103,7 @@ export function SettingsSocialForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="x_url"
             render={({ field }) => (
@@ -114,6 +117,7 @@ export function SettingsSocialForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="tiktok_url"
             render={({ field }) => (
@@ -127,6 +131,7 @@ export function SettingsSocialForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="youtube_url"
             render={({ field }) => (
@@ -140,6 +145,7 @@ export function SettingsSocialForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="linkedin_url"
             render={({ field }) => (

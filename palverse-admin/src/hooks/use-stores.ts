@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { storesService } from "@/services/stores.service";
-import { AdminStore, StoresListParams, StoresListResponse } from "@/types/store";
+import { StoresListParams, StoresListResponse } from "@/types/store";
 import { normalizeApiError, NormalizedApiError } from "@/lib/api/error";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 

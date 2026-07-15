@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       void authService.logout();
     } catch (error) {
-      console.error("Logout API failed, but session will be cleared anyway");
+      // API failed, but session will be cleared anyway
     } finally {
       clearSession();
     }

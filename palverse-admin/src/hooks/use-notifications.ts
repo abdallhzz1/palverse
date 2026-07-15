@@ -97,7 +97,7 @@ export function useNotificationActions() {
       await notificationsService.markAsRead(id);
       if (onSuccess) onSuccess();
     } catch (error) {
-      console.error("Failed to mark as read", error);
+      // Error marking as read
     } finally {
       setIsMarking(null);
     }
@@ -109,7 +109,7 @@ export function useNotificationActions() {
       await notificationsService.markAllAsRead();
       if (onSuccess) onSuccess();
     } catch (error) {
-      console.error("Failed to mark all as read", error);
+      // Error marking all as read
     } finally {
       setIsMarkingAll(false);
     }

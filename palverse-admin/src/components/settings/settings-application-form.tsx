@@ -69,6 +69,7 @@ export function SettingsApplicationForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="android_app_url"
             render={({ field }) => (
@@ -82,6 +83,7 @@ export function SettingsApplicationForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="minimum_android_version"
             render={({ field }) => (
@@ -98,6 +100,7 @@ export function SettingsApplicationForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="ios_app_url"
             render={({ field }) => (
@@ -111,6 +114,7 @@ export function SettingsApplicationForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="minimum_ios_version"
             render={({ field }) => (

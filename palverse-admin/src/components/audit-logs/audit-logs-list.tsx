@@ -89,8 +89,8 @@ export function AuditLogsList() {
           <div className="w-full sm:w-40">
             <Select
               value={sortOrder}
-              onValueChange={(val: "newest" | "oldest") => {
-                setSortOrder(val);
+              onValueChange={(val: string) => {
+                setSortOrder(val as "newest" | "oldest");
                 setPage(1);
               }}
             >

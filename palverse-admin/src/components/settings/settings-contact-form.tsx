@@ -72,6 +72,7 @@ export function SettingsContactForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="support_email"
             render={({ field }) => (
@@ -85,6 +86,7 @@ export function SettingsContactForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="support_phone"
             render={({ field }) => (
@@ -98,6 +100,7 @@ export function SettingsContactForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="support_whatsapp"
             render={({ field }) => (
@@ -114,6 +117,7 @@ export function SettingsContactForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="address_ar"
             render={({ field }) => (
@@ -127,6 +131,7 @@ export function SettingsContactForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="address_en"
             render={({ field }) => (

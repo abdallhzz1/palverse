@@ -22,8 +22,11 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 
+import { PieChart } from "lucide-react";
+
 const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "الرئيسية" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "لوحة التحكم" },
+  { href: "/reports", icon: PieChart, label: "التقارير" },
   { href: "/users", icon: Users, label: "المستخدمون والتجار" },
   { href: "/stores", icon: Store, label: "المحلات" },
   { href: "/categories", icon: Tags, label: "التصنيفات" },
@@ -31,11 +34,11 @@ const navItems = [
   { href: "/offers", icon: Percent, label: "العروض" },
   { href: "/subscription-plans", icon: CreditCard, label: "خطط الاشتراك" },
   { href: "/subscriptions", icon: CheckSquare, label: "اشتراكات المحلات" },
-  { href: "/settings", icon: Settings, label: "الإعدادات" },
+  { href: "/notifications", icon: Bell, label: "الإشعارات" },
   { href: "/pages", icon: FileText, label: "الصفحات" },
   { href: "/faqs", icon: HelpCircle, label: "الأسئلة الشائعة" },
   { href: "/audit-logs", icon: Activity, label: "سجل العمليات" },
-  { href: "/notifications", icon: Bell, label: "الإشعارات" },
+  { href: "/settings", icon: Settings, label: "الإعدادات" },
 ];
 
 export function DashboardSidebar() {
@@ -92,7 +95,7 @@ export function DashboardSidebar() {
           تسجيل الخروج
         </button>
         <div className="mt-4 text-center text-xs text-sidebar-foreground/50 text-latin">
-          v1.0.0
+          Palverse Admin v{process.env.NEXT_PUBLIC_ADMIN_VERSION || "1.0.0"}
         </div>
       </div>
     </aside>

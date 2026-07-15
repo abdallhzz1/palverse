@@ -22,7 +22,7 @@ export function SettingsTabs() {
       : "general"
   );
 
-  const tabs: { id: SettingsGroupName; label: string; icon: any }[] = [
+  const tabs: { id: SettingsGroupName; label: string; icon: React.ElementType }[] = [
     { id: "general", label: "الإعدادات العامة", icon: Settings },
     { id: "branding", label: "الهوية البصرية", icon: Palette },
     { id: "contact", label: "معلومات التواصل", icon: Phone },

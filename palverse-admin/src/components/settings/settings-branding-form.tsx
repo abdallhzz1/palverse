@@ -75,6 +75,7 @@ export function SettingsBrandingForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="logo_url"
             render={({ field }) => (
@@ -88,6 +89,7 @@ export function SettingsBrandingForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="logo_dark_url"
             render={({ field }) => (
@@ -101,6 +103,7 @@ export function SettingsBrandingForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="favicon_url"
             render={({ field }) => (
@@ -117,6 +120,7 @@ export function SettingsBrandingForm() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="primary_color"
             render={({ field }) => (
@@ -136,6 +140,7 @@ export function SettingsBrandingForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="secondary_color"
             render={({ field }) => (

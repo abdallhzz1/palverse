@@ -70,6 +70,7 @@ export function SettingsMaintenanceForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="registration_enabled"
             render={({ field }) => (
@@ -85,6 +86,7 @@ export function SettingsMaintenanceForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="merchant_registration_enabled"
             render={({ field }) => (
@@ -103,6 +105,7 @@ export function SettingsMaintenanceForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="maintenance_message_ar"
             render={({ field }) => (
@@ -116,6 +119,7 @@ export function SettingsMaintenanceForm() {
             )}
           />
           <FormField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="maintenance_message_en"
             render={({ field }) => (

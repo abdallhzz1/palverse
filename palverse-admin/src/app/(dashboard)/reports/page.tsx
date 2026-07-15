@@ -61,7 +61,10 @@ export default function ReportsPage() {
       params.delete("date_to");
     }
 
-    router.replace(`${pathname}?${params.toString()}`);
+    const newQuery = params.toString();
+    if (searchParams.toString() !== newQuery) {
+      router.replace(`${pathname}?${newQuery}`, { scroll: false });
+    }
   }, [filters, isMounted, pathname, router, searchParams]);
 
   const handleTabChange = (val: string) => {
