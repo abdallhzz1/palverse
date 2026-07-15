@@ -12,12 +12,25 @@ class StoreZoneRequest extends FormRequest
         return $this->user()?->can('zones.manage') ?? false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('city_public_id')) {
+            $city = \App\Models\City::where('public_id', $this->input('city_public_id'))->first();
+            if ($city) {
+                $this->merge([
+                    'city_id' => $city->id,
+                ]);
+            }
+        }
+    }
+
     /**
      * @return array<string, array<int, mixed>>
      */
     public function rules(): array
     {
         return [
+            'city_public_id' => ['sometimes', 'required', 'string', Rule::exists('cities', 'public_id')],
             'city_id' => ['required', 'integer', Rule::exists('cities', 'id')],
             'name_ar' => [
                 'required',

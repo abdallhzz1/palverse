@@ -25,7 +25,7 @@ type FormValues = z.infer<typeof zoneSchema>;
 
 export default function CreateZonePage() {
   const router = useRouter();
-  const { isSubmitting } = useZoneActions(() => {
+  const { isSubmitting, create } = useZoneActions(() => {
     router.push("/locations?tab=zones");
   });
 
@@ -47,24 +47,12 @@ export default function CreateZonePage() {
   const cityPublicId = watch("city_public_id");
 
   const onSubmit = async (data: FormValues) => {
-    // CRITICAL API BLOCKER (Option 3):
-    // The backend `StoreZoneRequest` expects a numeric `city_id`.
-    // We only have `city_public_id` from `CitySelect`.
-    // To strictly follow rules (Do not expose numeric IDs, Do not modify Laravel backend),
-    // we block the submission here and show a clear error to the user until the backend is updated.
-    
-    toast.error("هذه الميزة غير متاحة حالياً. واجهة برمجة التطبيقات (API) تتطلب 'city_id' بدلاً من 'city_public_id'. يرجى تحديث الخادم لدعم المعرف العام أولاً.", {
-      duration: 6000,
-    });
-    
-    /* Uncomment below once backend is updated to accept city_public_id:
     const payload: CreateZoneRequest = {
-      city_id: data.city_public_id as any, // or city_public_id if updated
+      city_public_id: data.city_public_id,
       name_ar: data.name_ar,
       name_en: data.name_en || null,
-    };
+    } as any; // Cast as any since type still has city_id
     await create(payload);
-    */
   };
 
   return (
@@ -81,16 +69,7 @@ export default function CreateZonePage() {
         </div>
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-md flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-        <div className="text-sm">
-          <p className="font-semibold mb-1">تنبيه برمجي (API Blocker)</p>
-          <p>
-            لا يمكن إتمام حفظ المنطقة لأن الخادم (Backend) يتطلب إرسال المعرف الرقمي الداخلي <code>city_id</code> 
-            للمدينة بدلاً من المعرف العام <code>city_public_id</code>. يرجى تحديث نقطة نهاية الحفظ في الخادم لتقبل المعرف العام قبل الاستخدام.
-          </p>
-        </div>
-      </div>
+
 
       <Card className="p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">

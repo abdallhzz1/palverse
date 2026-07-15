@@ -36,6 +36,7 @@ export default function CreateMerchantPage() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<CreateMerchantFormValues>({
     resolver: zodResolver(createMerchantSchema),
@@ -57,7 +58,17 @@ export default function CreateMerchantPage() {
       router.push(`/users/${user.public_id}`);
     } catch (err) {
       const error = normalizeApiError(err);
-      toast.error(error.message);
+      if (error.code === "VALIDATION_ERROR" && error.details) {
+        Object.entries(error.details).forEach(([field, messages]) => {
+          setError(field as keyof CreateMerchantFormValues, { 
+            type: "server", 
+            message: messages[0] 
+          });
+        });
+        toast.error("يرجى مراجعة الأخطاء في النموذج");
+      } else {
+        toast.error(error.message);
+      }
     } finally {
       setIsSubmitting(false);
     }

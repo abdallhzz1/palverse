@@ -71,9 +71,8 @@ class SubscriptionPlanController extends Controller
 
     public function show(string $publicId): JsonResponse
     {
-        $this->authorize('view', SubscriptionPlan::class);
-
         $plan = SubscriptionPlan::where('public_id', $publicId)->firstOrFail();
+        $this->authorize('view', $plan);
 
         return response()->json([
             'success' => true,
@@ -85,9 +84,9 @@ class SubscriptionPlanController extends Controller
 
     public function update(UpdateSubscriptionPlanRequest $request, string $publicId): JsonResponse
     {
-        $this->authorize('update', SubscriptionPlan::class);
-
         $plan = SubscriptionPlan::where('public_id', $publicId)->firstOrFail();
+        $this->authorize('update', $plan);
+
         $oldValues = $plan->only(array_keys($request->validated()));
         $plan->update($request->validated());
 
@@ -108,9 +107,8 @@ class SubscriptionPlanController extends Controller
 
     public function destroy(string $publicId): JsonResponse
     {
-        $this->authorize('delete', SubscriptionPlan::class);
-
         $plan = SubscriptionPlan::where('public_id', $publicId)->firstOrFail();
+        $this->authorize('delete', $plan);
 
         $this->auditLogService->recordFromRequest(
             action: AuditAction::SubscriptionPlanDeleted,
