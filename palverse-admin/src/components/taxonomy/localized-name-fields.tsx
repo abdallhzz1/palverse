@@ -36,7 +36,7 @@ export function LocalizedNameFields({ register, errors, disabled = false, isEngl
         <Label htmlFor="name_en" className="flex items-center gap-1">
           الاسم بالإنجليزية
           {isEnglishOptional ? (
-            <span className="text-xs text-slate-400 font-normal mr-1">(اختياري)</span>
+            <span className="text-xs text-muted-foreground font-normal mr-1">(اختياري)</span>
           ) : (
             <span className="text-red-500">*</span>
           )}

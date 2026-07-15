@@ -50,9 +50,9 @@ export function AuditActionBadge({ action }: AuditActionBadgeProps) {
       className={
         variant === "success" ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border border-emerald-200" : 
         isDanger ? "bg-red-100 text-red-800 hover:bg-red-100 border border-red-200" : 
-        variant === "secondary" ? "bg-slate-100 text-slate-800 hover:bg-slate-100 border border-slate-200" :
+        variant === "secondary" ? "bg-muted text-slate-800 hover:bg-muted border border-border" :
         variant === "destructive" ? "bg-red-100 text-red-800 hover:bg-red-100 border border-red-200" :
-        variant === "outline" ? "bg-transparent text-slate-800 hover:bg-slate-50 border border-slate-200" :
+        variant === "outline" ? "bg-transparent text-slate-800 hover:bg-muted border border-border" :
         "bg-slate-900 text-white hover:bg-slate-800 border border-slate-900"
       }
     >

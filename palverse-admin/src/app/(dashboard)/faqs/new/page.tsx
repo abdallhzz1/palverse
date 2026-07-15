@@ -18,8 +18,8 @@ export default function NewFaqPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">إضافة سؤال جديد</h1>
-          <p className="text-sm text-slate-500 mt-1">إنشاء سؤال شائع جديد باللغتين العربية والإنجليزية</p>
+          <h1 className="text-2xl font-bold text-foreground">إضافة سؤال جديد</h1>
+          <p className="text-sm text-muted-foreground mt-1">إنشاء سؤال شائع جديد باللغتين العربية والإنجليزية</p>
         </div>
       </div>
 

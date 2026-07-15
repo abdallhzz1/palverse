@@ -10,7 +10,7 @@ interface AuditTimelineProps {
 export function AuditTimeline({ log }: AuditTimelineProps) {
   return (
     <div className="flex flex-col gap-6 p-4">
-      <div className="relative border-r-2 border-slate-200 pr-6 space-y-8 pb-4">
+      <div className="relative border-r-2 border-border pr-6 space-y-8 pb-4">
         
         {/* Time Step */}
         <div className="relative">
@@ -19,10 +19,10 @@ export function AuditTimeline({ log }: AuditTimelineProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-slate-400" />
+              <Clock className="w-4 h-4 text-muted-foreground" />
               وقت العملية
             </span>
-            <span className="text-sm text-slate-500 mt-1">
+            <span className="text-sm text-muted-foreground mt-1">
               {log.created_at ? format(new Date(log.created_at), "dd MMMM yyyy HH:mm:ss", { locale: ar }) : "-"}
             </span>
           </div>
@@ -35,10 +35,10 @@ export function AuditTimeline({ log }: AuditTimelineProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-              <Globe className="w-4 h-4 text-slate-400" />
+              <Globe className="w-4 h-4 text-muted-foreground" />
               الشبكة
             </span>
-            <div className="flex flex-col gap-1 mt-1 text-sm text-slate-500">
+            <div className="flex flex-col gap-1 mt-1 text-sm text-muted-foreground">
               <span><strong>عنوان IP:</strong> {log.ip_address || "-"}</span>
             </div>
           </div>
@@ -51,10 +51,10 @@ export function AuditTimeline({ log }: AuditTimelineProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-              <Monitor className="w-4 h-4 text-slate-400" />
+              <Monitor className="w-4 h-4 text-muted-foreground" />
               المتصفح/العميل
             </span>
-            <div className="flex flex-col gap-1 mt-1 text-sm text-slate-500 break-words max-w-sm">
+            <div className="flex flex-col gap-1 mt-1 text-sm text-muted-foreground break-words max-w-sm">
               {log.user_agent || "-"}
             </div>
           </div>
@@ -67,14 +67,14 @@ export function AuditTimeline({ log }: AuditTimelineProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-              <Route className="w-4 h-4 text-slate-400" />
+              <Route className="w-4 h-4 text-muted-foreground" />
               المسار
             </span>
-            <div className="flex items-center gap-2 mt-1 text-sm text-slate-500">
-              <span className="px-1.5 py-0.5 rounded-sm bg-slate-100 font-mono text-xs border border-slate-200">
+            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+              <span className="px-1.5 py-0.5 rounded-sm bg-muted font-mono text-xs border border-border">
                 {log.method || "-"}
               </span>
-              <span className="font-mono text-xs text-slate-600 truncate max-w-[200px]" title={log.route || ""}>
+              <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px]" title={log.route || ""}>
                 {log.route || "-"}
               </span>
             </div>
@@ -88,10 +88,10 @@ export function AuditTimeline({ log }: AuditTimelineProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-              <Hash className="w-4 h-4 text-slate-400" />
+              <Hash className="w-4 h-4 text-muted-foreground" />
               رقم الطلب
             </span>
-            <span className="text-sm text-slate-500 mt-1 font-mono text-xs">
+            <span className="text-sm text-muted-foreground mt-1 font-mono text-xs">
               {log.request_id || "-"}
             </span>
           </div>

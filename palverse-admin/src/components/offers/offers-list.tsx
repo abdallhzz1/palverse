@@ -38,7 +38,7 @@ export function OffersList() {
       {/* Filters Toolbar */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="ابحث بعنوان العرض..."
@@ -63,7 +63,7 @@ export function OffersList() {
         <select
           value={params.is_active?.toString() || ""}
           onChange={(e) => setFilter("is_active", e.target.value)}
-          className="flex h-10 w-full md:w-48 items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 appearance-none"
+          className="flex h-10 w-full md:w-48 items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 appearance-none"
         >
           <option value="">جميع الحالات الإدارية</option>
           <option value="true">نشط</option>
@@ -73,7 +73,7 @@ export function OffersList() {
         <select
           value={params.valid_now?.toString() || ""}
           onChange={(e) => setFilter("valid_now", e.target.value)}
-          className="flex h-10 w-full md:w-48 items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 appearance-none"
+          className="flex h-10 w-full md:w-48 items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 appearance-none"
         >
           <option value="">جميع الأوقات</option>
           <option value="true">ساري الآن فقط</option>
@@ -85,7 +85,7 @@ export function OffersList() {
           {error.message || "حدث خطأ أثناء تحميل العروض"}
         </div>
       ) : (
-        <div className="rounded-md border border-slate-200 bg-white">
+        <div className="rounded-md border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -107,7 +107,7 @@ export function OffersList() {
                 </TableRow>
               ) : data?.data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center text-slate-500">
+                  <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                     لا توجد عروض مطابقة للبحث
                   </TableCell>
                 </TableRow>
@@ -122,23 +122,23 @@ export function OffersList() {
                             <img 
                               src={offer.image_url} 
                               alt={offer.title_ar} 
-                              className="w-12 h-12 rounded-md object-cover bg-slate-100"
+                              className="w-12 h-12 rounded-md object-cover bg-muted"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center">
-                              <ImageIcon className="h-5 w-5 text-slate-400" />
+                            <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
+                              <ImageIcon className="h-5 w-5 text-muted-foreground" />
                             </div>
                           )}
                           <div className="flex flex-col">
-                            <span className="font-medium text-slate-900">{offer.title_ar}</span>
-                            {offer.title_en && <span className="text-sm text-slate-500">{offer.title_en}</span>}
+                            <span className="font-medium text-foreground">{offer.title_ar}</span>
+                            {offer.title_en && <span className="text-sm text-muted-foreground">{offer.title_en}</span>}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         {offer.store ? (
                           <div className="flex items-center gap-2">
-                            <StoreIcon className="h-4 w-4 text-slate-400" />
+                            <StoreIcon className="h-4 w-4 text-muted-foreground" />
                             <Link 
                               href={`/stores/${offer.store.public_id}`} 
                               className="text-[#1E7D4E] hover:underline"
@@ -147,7 +147,7 @@ export function OffersList() {
                             </Link>
                           </div>
                         ) : (
-                          <span className="text-slate-500">-</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -164,11 +164,11 @@ export function OffersList() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className={cn("text-sm font-medium", visibility.visible ? "text-[#1E7D4E]" : "text-slate-500")}>
+                          <span className={cn("text-sm font-medium", visibility.visible ? "text-[#1E7D4E]" : "text-muted-foreground")}>
                             {visibility.label}
                           </span>
                           {!visibility.visible && visibility.reason && (
-                            <span className="text-xs text-slate-400">{visibility.reason}</span>
+                            <span className="text-xs text-muted-foreground">{visibility.reason}</span>
                           )}
                         </div>
                       </TableCell>

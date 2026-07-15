@@ -8,7 +8,7 @@ export const Switch = React.forwardRef<HTMLInputElement, React.InputHTMLAttribut
       ref={ref}
       checked={checked} 
       onChange={(e) => onCheckedChange?.(e.target.checked)} 
-      className={`h-5 w-10 appearance-none rounded-full bg-slate-200 checked:bg-[#0F3D2E] relative transition-colors cursor-pointer after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all checked:after:translate-x-5 ${className || ''}`}
+      className={`h-5 w-10 appearance-none rounded-full bg-slate-200 checked:bg-[#0F3D2E] relative transition-colors cursor-pointer after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:rounded-full after:h-4 after:w-4 after:transition-all checked:after:translate-x-5 ${className || ''}`}
       {...props} 
     />
   )

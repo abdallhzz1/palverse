@@ -38,14 +38,14 @@ export function StoreSelector({ value, onSelect, disabled }: StoreSelectorProps)
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         disabled={disabled}
-        className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+        className="flex h-9 w-full rounded-md border border-border bg-card px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
       />
       <div className="relative">
         <select
           value={value || ""}
           onChange={handleChange}
           disabled={disabled || isLoading}
-          className="flex h-10 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E] disabled:opacity-50"
+          className="flex h-10 w-full appearance-none rounded-md border border-border bg-card px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E] disabled:opacity-50"
         >
           <option value="" disabled>اختر المحل...</option>
           {data?.data.map((store) => (
@@ -56,7 +56,7 @@ export function StoreSelector({ value, onSelect, disabled }: StoreSelectorProps)
         </select>
         {isLoading && (
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         )}
       </div>

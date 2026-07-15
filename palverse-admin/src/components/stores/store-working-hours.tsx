@@ -20,7 +20,7 @@ const dayOrder = ["saturday", "sunday", "monday", "tuesday", "wednesday", "thurs
 export function StoreWorkingHours({ workingHours }: StoreWorkingHoursProps) {
   if (!workingHours || workingHours.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div className="flex flex-col items-center justify-center p-6 text-muted-foreground bg-muted dark:bg-slate-800/50 rounded-lg border border-border dark:border-slate-700">
         <Clock className="w-6 h-6 mb-2 opacity-50" />
         <p className="text-sm">ساعات العمل غير متوفرة</p>
       </div>
@@ -47,9 +47,9 @@ export function StoreWorkingHours({ workingHours }: StoreWorkingHoursProps) {
         const isClosed = periods.some(p => p.is_closed);
 
         return (
-          <div key={day} className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800 last:border-0 last:pb-0">
+          <div key={day} className="flex justify-between items-center py-2 border-b border-border dark:border-slate-800 last:border-0 last:pb-0">
             <span className="font-medium text-sm">{dayMapping[day] || day}</span>
-            <div className="text-sm text-slate-600 dark:text-slate-300 text-left" dir="ltr">
+            <div className="text-sm text-muted-foreground dark:text-slate-300 text-left" dir="ltr">
               {isClosed ? (
                 <span className="text-red-500 dark:text-red-400 font-medium">مغلق</span>
               ) : (

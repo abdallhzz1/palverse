@@ -84,7 +84,7 @@ export function AssignSubscriptionForm() {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-white p-6 rounded-lg border border-slate-200">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-card p-6 rounded-lg border border-border">
       {apiError && (
         <div className="p-4 rounded-md bg-red-50 text-red-700 text-sm border border-red-100 flex items-start gap-2">
           <div className="mt-0.5">⚠️</div>
@@ -114,11 +114,11 @@ export function AssignSubscriptionForm() {
             <Label>خطة الاشتراك <span className="text-red-500">*</span></Label>
             
             {plansLoading ? (
-              <div className="flex items-center gap-2 text-sm text-slate-500 p-4 border rounded-md">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 border rounded-md">
                 <Loader2 className="h-4 w-4 animate-spin" /> جاري تحميل الخطط...
               </div>
             ) : plans.length === 0 ? (
-              <div className="p-4 border rounded-md text-sm text-slate-500">
+              <div className="p-4 border rounded-md text-sm text-muted-foreground">
                 لا توجد خطط نشطة متاحة
               </div>
             ) : (
@@ -130,7 +130,7 @@ export function AssignSubscriptionForm() {
                       "flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors",
                       selectedPlanId === plan.public_id 
                         ? "border-[#1E7D4E] bg-[#EAF3EC] ring-1 ring-[#1E7D4E]" 
-                        : "hover:border-slate-300 bg-white"
+                        : "hover:border-slate-300 bg-card"
                     )}
                   >
                     <input 
@@ -147,10 +147,10 @@ export function AssignSubscriptionForm() {
                     </div>
                     <div className="flex-1 flex flex-col gap-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-slate-900">{plan.name_ar}</span>
+                        <span className="font-semibold text-foreground">{plan.name_ar}</span>
                         <span className="font-bold text-[#1E7D4E] font-sans" dir="ltr">{formatPlanPrice(plan.price, plan.currency)}</span>
                       </div>
-                      <span className="text-sm text-slate-600">
+                      <span className="text-sm text-muted-foreground">
                         مدة الاشتراك: {formatPlanDuration(plan.duration_days)}
                       </span>
                     </div>
@@ -179,7 +179,7 @@ export function AssignSubscriptionForm() {
                 type="date"
                 id="starts_at"
                 {...form.register("starts_at")}
-                className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+                className="flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
                 disabled={isSubmitting}
               />
               {form.formState.errors.starts_at && (
@@ -192,7 +192,7 @@ export function AssignSubscriptionForm() {
                 type="date"
                 id="ends_at"
                 {...form.register("ends_at")}
-                className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+                className="flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
                 disabled={isSubmitting}
               />
               {form.formState.errors.ends_at && (
@@ -206,7 +206,7 @@ export function AssignSubscriptionForm() {
             <textarea
               id="notes"
               {...form.register("notes")}
-              className="flex min-h-[120px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+              className="flex min-h-[120px] w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
               placeholder="أي ملاحظات حول هذا الاشتراك..."
               disabled={isSubmitting}
             />
@@ -217,7 +217,7 @@ export function AssignSubscriptionForm() {
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
+      <div className="flex justify-end gap-3 pt-6 border-t border-border">
         <Button 
           type="button" 
           variant="outline" 

@@ -64,7 +64,7 @@ export default function EditZonePage({ params }: { params: Promise<{ publicId: s
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
         <h2 className="text-xl font-bold text-red-600">لم يتم العثور على المنطقة</h2>
-        <p className="text-slate-600">{error.message}</p>
+        <p className="text-muted-foreground">{error.message}</p>
         <Button asChild variant="outline">
           <Link href="/locations?tab=zones">العودة للمناطق</Link>
         </Button>
@@ -81,8 +81,8 @@ export default function EditZonePage({ params }: { params: Promise<{ publicId: s
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">تعديل المنطقة</h2>
-          <p className="text-slate-500">تحديث بيانات المنطقة</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">تعديل المنطقة</h2>
+          <p className="text-muted-foreground">تحديث بيانات المنطقة</p>
         </div>
       </div>
 
@@ -101,10 +101,10 @@ export default function EditZonePage({ params }: { params: Promise<{ publicId: s
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             
-            <div className="bg-slate-50 p-4 rounded-md border text-slate-700 text-sm max-w-md">
+            <div className="bg-muted p-4 rounded-md border text-slate-700 text-sm max-w-md">
               <p className="font-semibold mb-1">المدينة الحالية</p>
               <p>{zone?.city?.name_ar || "-"}</p>
-              <p className="text-slate-500 text-xs mt-2 flex items-center gap-1">
+              <p className="text-muted-foreground text-xs mt-2 flex items-center gap-1">
                 <Info className="h-3 w-3" />
                 لا يمكن تغيير المدينة المرتبطة بالمنطقة بعد إنشائها.
               </p>

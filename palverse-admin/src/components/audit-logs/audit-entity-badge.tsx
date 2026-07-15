@@ -7,7 +7,7 @@ interface AuditEntityBadgeProps {
 
 export function AuditEntityBadge({ subject }: AuditEntityBadgeProps) {
   if (!subject) {
-    return <span className="text-slate-400 text-sm italic">غير متوفر</span>;
+    return <span className="text-muted-foreground text-sm italic">غير متوفر</span>;
   }
 
   const getTypeLabel = (type: string) => {
@@ -33,11 +33,11 @@ export function AuditEntityBadge({ subject }: AuditEntityBadgeProps) {
 
   return (
     <div className="flex flex-col items-start gap-1">
-      <Badge className="bg-slate-50 text-slate-700 font-normal text-xs border border-slate-200 hover:bg-slate-100">
+      <Badge className="bg-muted text-slate-700 font-normal text-xs border border-border hover:bg-muted">
         {getTypeLabel(subject.type)}
       </Badge>
       {subject.label && (
-        <span className="text-sm text-slate-600 truncate max-w-[200px]" title={subject.label}>
+        <span className="text-sm text-muted-foreground truncate max-w-[200px]" title={subject.label}>
           {subject.label}
         </span>
       )}

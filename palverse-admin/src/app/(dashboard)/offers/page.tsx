@@ -11,8 +11,8 @@ export default function OffersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">العروض</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">العروض</h2>
+          <p className="text-muted-foreground dark:text-muted-foreground mt-1">
             إدارة كافة العروض والمصادقة على ظهورها العام
           </p>
         </div>

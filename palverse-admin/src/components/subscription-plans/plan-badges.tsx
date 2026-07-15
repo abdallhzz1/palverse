@@ -9,7 +9,7 @@ export function PlanStatusBadge({ isActive }: { isActive: boolean }) {
     );
   }
   return (
-    <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100/80 border-none px-2 py-0.5 font-medium">
+    <Badge className="bg-muted text-muted-foreground hover:bg-muted/80 border-none px-2 py-0.5 font-medium">
       غير نشطة
     </Badge>
   );

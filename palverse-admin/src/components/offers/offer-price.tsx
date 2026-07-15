@@ -28,11 +28,11 @@ export function OfferPrice({ offer, className }: { offer: AdminOffer; className?
 
   return (
     <div className={cn("flex flex-col gap-1", className)}>
-      <span className="font-semibold text-slate-900 dark:text-white">
+      <span className="font-semibold text-foreground dark:text-white">
         {currentPrice}
       </span>
       {hasValidOldPrice && (
-        <span className="text-sm text-slate-500 line-through decoration-slate-400">
+        <span className="text-sm text-muted-foreground line-through decoration-slate-400">
           {formatCurrency(offer.old_price!, offer.currency)}
         </span>
       )}

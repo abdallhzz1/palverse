@@ -18,7 +18,7 @@ export default function EditSubscriptionPlanPage({ params }: { params: { publicI
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-[#1E7D4E]" />
-        <p className="text-slate-500">جاري تحميل الخطة...</p>
+        <p className="text-muted-foreground">جاري تحميل الخطة...</p>
       </div>
     );
   }
@@ -48,8 +48,8 @@ export default function EditSubscriptionPlanPage({ params }: { params: { publicI
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">تعديل الخطة</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">تعديل الخطة</h2>
+          <p className="text-muted-foreground dark:text-muted-foreground mt-1">
             تحديث بيانات &quot;{plan.name_ar}&quot;
           </p>
         </div>

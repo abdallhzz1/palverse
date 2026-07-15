@@ -63,7 +63,7 @@ export function CancelSubscriptionDialog({ publicId, isOpen, onClose, onSuccess 
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             disabled={isSubmitting}
-            className="flex min-h-[100px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+            className="flex min-h-[100px] w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
             placeholder="يرجى توضيح سبب إلغاء هذا الاشتراك (إلزامي)..."
           />
         </div>

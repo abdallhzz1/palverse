@@ -19,8 +19,8 @@ export default function NewSubscriptionPlanPage() {
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">إضافة خطة جديدة</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">إضافة خطة جديدة</h2>
+          <p className="text-muted-foreground dark:text-muted-foreground mt-1">
             أدخل تفاصيل خطة الاشتراك الجديدة
           </p>
         </div>

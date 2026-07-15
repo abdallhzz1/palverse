@@ -54,7 +54,7 @@ export default function CategoriesPage() {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <h2 className="text-xl font-bold text-red-600 mb-2">حدث خطأ</h2>
-        <p className="text-slate-600 mb-4">{error.message}</p>
+        <p className="text-muted-foreground mb-4">{error.message}</p>
         <Button onClick={refresh} variant="outline">
           إعادة المحاولة
         </Button>
@@ -66,8 +66,8 @@ export default function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">التصنيفات</h2>
-          <p className="text-slate-500">إدارة تصنيفات المحلات في النظام</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">التصنيفات</h2>
+          <p className="text-muted-foreground">إدارة تصنيفات المحلات في النظام</p>
         </div>
         <Button asChild className="bg-[#0F3D2E] hover:bg-[#1E7D4E]">
           <Link href="/categories/new">
@@ -80,7 +80,7 @@ export default function CategoriesPage() {
       <Card className="p-4">
         <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="ابحث باسم التصنيف"
               value={searchQuery}
@@ -115,7 +115,7 @@ export default function CategoriesPage() {
                 ))
               ) : data?.data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12 text-slate-500">
+                  <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                     لا توجد تصنيفات حتى الآن
                   </TableCell>
                 </TableRow>
@@ -124,7 +124,7 @@ export default function CategoriesPage() {
                   <TableRow key={category.public_id}>
                     <TableCell className="font-medium">{category.name_ar}</TableCell>
                     <TableCell>{category.name_en || "-"}</TableCell>
-                    <TableCell dir="ltr" className="text-right text-slate-500">{category.slug}</TableCell>
+                    <TableCell dir="ltr" className="text-right text-muted-foreground">{category.slug}</TableCell>
                     <TableCell>{format(new Date(category.created_at), "yyyy/MM/dd")}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

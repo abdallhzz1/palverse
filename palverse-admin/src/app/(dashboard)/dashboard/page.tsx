@@ -34,8 +34,8 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">لوحة التحكم</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">نظرة شاملة على أداء منصة Palverse</p>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">لوحة التحكم</h2>
+            <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">نظرة شاملة على أداء منصة Palverse</p>
           </div>
         </div>
         <DashboardSkeleton />
@@ -56,8 +56,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">لوحة التحكم</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">نظرة شاملة على أداء منصة Palverse</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">لوحة التحكم</h2>
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">نظرة شاملة على أداء منصة Palverse</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -73,7 +73,7 @@ export default function DashboardPage() {
             variant="outline" 
             size="icon" 
             disabled={isRefreshing || isInitialLoading}
-            className="h-9 w-9 border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1F2522]"
+            className="h-9 w-9 border-border dark:border-slate-700 bg-card dark:bg-[#1F2522]"
             aria-label="تحديث البيانات"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
@@ -146,9 +146,9 @@ export default function DashboardPage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Trend Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
+        <div className="lg:col-span-2 bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">مؤشرات النمو</h3>
+            <h3 className="text-lg font-bold text-foreground dark:text-white">مؤشرات النمو</h3>
             <Select value={activeTrendMetric} onValueChange={(val: any) => setActiveTrendMetric(val)}>
               <SelectTrigger className="w-[140px] h-8 text-sm">
                 <SelectValue placeholder="اختر المؤشر" />
@@ -163,7 +163,7 @@ export default function DashboardPage() {
           </div>
           
           {trends.error ? (
-            <div className="h-[300px] flex flex-col items-center justify-center text-slate-400 bg-slate-50 dark:bg-slate-800/30 rounded-lg">
+            <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground bg-muted dark:bg-slate-800/30 rounded-lg">
               <AlertTriangle className="w-6 h-6 mb-2 opacity-50 text-red-500" />
               <span>تعذر تحميل الرسوم البيانية</span>
             </div>
@@ -180,10 +180,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Store Status Breakdown */}
-        <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">حالة المحلات</h3>
+        <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+          <h3 className="text-lg font-bold text-foreground dark:text-white mb-6">حالة المحلات</h3>
           {storesByStatus.error ? (
-             <div className="h-[300px] flex flex-col items-center justify-center text-slate-400 bg-slate-50 dark:bg-slate-800/30 rounded-lg">
+             <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground bg-muted dark:bg-slate-800/30 rounded-lg">
                <AlertTriangle className="w-6 h-6 mb-2 opacity-50 text-red-500" />
                <span>تعذر تحميل المخطط</span>
              </div>
@@ -198,8 +198,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">أحدث الأنشطة</h3>
+      <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+        <h3 className="text-lg font-bold text-foreground dark:text-white mb-6">أحدث الأنشطة</h3>
         {recentActivity.error ? (
           <div className="p-4 text-center text-red-500 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-200 dark:border-red-900/30 flex items-center justify-center gap-2">
             <AlertTriangle className="w-5 h-5" />

@@ -20,7 +20,7 @@ export function StoreStatusChart({ data }: StoreStatusChartProps) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="h-[300px] flex items-center justify-center text-slate-400">
+      <div className="h-[300px] flex items-center justify-center text-muted-foreground">
         لا توجد بيانات لعرضها
       </div>
     );
@@ -68,10 +68,10 @@ export function StoreStatusChart({ data }: StoreStatusChartProps) {
         </PieChart>
       </ResponsiveContainer>
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <span className="text-3xl font-bold text-slate-900 dark:text-white">
+        <span className="text-3xl font-bold text-foreground dark:text-white">
           {formatNumber(total)}
         </span>
-        <span className="text-sm text-slate-500 dark:text-slate-400">الإجمالي</span>
+        <span className="text-sm text-muted-foreground dark:text-muted-foreground">الإجمالي</span>
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ export default function SubscriptionPlanDetailsPage({ params }: { params: { publ
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-[#1E7D4E]" />
-        <p className="text-slate-500">جاري تحميل تفاصيل الخطة...</p>
+        <p className="text-muted-foreground">جاري تحميل تفاصيل الخطة...</p>
       </div>
     );
   }
@@ -77,10 +77,10 @@ export default function SubscriptionPlanDetailsPage({ params }: { params: { publ
             </Link>
           </Button>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">
               {plan.name_ar}
             </h2>
-            <p className="text-sm text-slate-500 font-sans" dir="ltr">{plan.code}</p>
+            <p className="text-sm text-muted-foreground font-sans" dir="ltr">{plan.code}</p>
           </div>
           <PlanStatusBadge isActive={plan.is_active} />
         </div>
@@ -133,20 +133,20 @@ export default function SubscriptionPlanDetailsPage({ params }: { params: { publ
             <CardTitle>التفاصيل الأساسية</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
-            <div className="flex flex-col gap-1 border-b border-slate-100 pb-3">
-              <span className="text-slate-500 font-medium">الاسم بالعربية</span>
-              <span className="text-slate-900 font-semibold">{plan.name_ar}</span>
+            <div className="flex flex-col gap-1 border-b border-border pb-3">
+              <span className="text-muted-foreground font-medium">الاسم بالعربية</span>
+              <span className="text-foreground font-semibold">{plan.name_ar}</span>
             </div>
             {plan.name_en && (
-              <div className="flex flex-col gap-1 border-b border-slate-100 pb-3">
-                <span className="text-slate-500 font-medium">الاسم بالإنجليزية</span>
-                <span className="text-slate-900 font-sans" dir="ltr">{plan.name_en}</span>
+              <div className="flex flex-col gap-1 border-b border-border pb-3">
+                <span className="text-muted-foreground font-medium">الاسم بالإنجليزية</span>
+                <span className="text-foreground font-sans" dir="ltr">{plan.name_en}</span>
               </div>
             )}
             
             {(plan.description_ar || plan.description_en) && (
-              <div className="flex flex-col gap-3 border-b border-slate-100 pb-3">
-                <span className="text-slate-500 font-medium">الوصف</span>
+              <div className="flex flex-col gap-3 border-b border-border pb-3">
+                <span className="text-muted-foreground font-medium">الوصف</span>
                 {plan.description_ar && <p className="text-slate-700">{plan.description_ar}</p>}
                 {plan.description_en && <p className="text-slate-700 font-sans" dir="ltr">{plan.description_en}</p>}
               </div>
@@ -154,14 +154,14 @@ export default function SubscriptionPlanDetailsPage({ params }: { params: { publ
 
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="flex flex-col gap-1">
-                <span className="text-slate-500 font-medium">تاريخ الإنشاء</span>
-                <span className="text-slate-900">
+                <span className="text-muted-foreground font-medium">تاريخ الإنشاء</span>
+                <span className="text-foreground">
                   {plan.created_at ? format(parseISO(plan.created_at), "d MMMM yyyy", { locale: ar }) : "-"}
                 </span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-slate-500 font-medium">الترتيب</span>
-                <span className="text-slate-900 font-sans" dir="ltr">{plan.sort_order ?? 0}</span>
+                <span className="text-muted-foreground font-medium">الترتيب</span>
+                <span className="text-foreground font-sans" dir="ltr">{plan.sort_order ?? 0}</span>
               </div>
             </div>
           </CardContent>
@@ -175,13 +175,13 @@ export default function SubscriptionPlanDetailsPage({ params }: { params: { publ
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-6 text-center">
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100">
-                  <span className="text-sm text-slate-500 font-medium mb-1">سعر الاشتراك</span>
+                <div className="bg-muted rounded-lg p-4 flex flex-col items-center justify-center border border-border">
+                  <span className="text-sm text-muted-foreground font-medium mb-1">سعر الاشتراك</span>
                   <PlanPrice plan={plan} className="text-2xl text-[#1E7D4E]" />
                 </div>
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100">
-                  <span className="text-sm text-slate-500 font-medium mb-1">مدة الاشتراك</span>
-                  <PlanDuration days={plan.duration_days} className="text-xl font-semibold text-slate-900" />
+                <div className="bg-muted rounded-lg p-4 flex flex-col items-center justify-center border border-border">
+                  <span className="text-sm text-muted-foreground font-medium mb-1">مدة الاشتراك</span>
+                  <PlanDuration days={plan.duration_days} className="text-xl font-semibold text-foreground" />
                 </div>
               </div>
             </CardContent>
@@ -194,22 +194,22 @@ export default function SubscriptionPlanDetailsPage({ params }: { params: { publ
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                <li className="flex items-center justify-between p-3 rounded-md bg-slate-50 border border-slate-100">
+                <li className="flex items-center justify-between p-3 rounded-md bg-muted border border-border">
                   <div className="flex items-center gap-2">
                     <Check className="h-5 w-5 text-[#1E7D4E]" />
                     <span className="font-medium">عدد العروض المسموحة</span>
                   </div>
-                  <span className="font-semibold px-2.5 py-0.5 rounded bg-white border border-slate-200">
+                  <span className="font-semibold px-2.5 py-0.5 rounded bg-card border border-border">
                     {plan.max_offers === null ? "لا محدود" : plan.max_offers}
                   </span>
                 </li>
                 
-                <li className="flex items-center justify-between p-3 rounded-md bg-slate-50 border border-slate-100">
+                <li className="flex items-center justify-between p-3 rounded-md bg-muted border border-border">
                   <div className="flex items-center gap-2">
                     <Check className="h-5 w-5 text-[#1E7D4E]" />
                     <span className="font-medium">الحد الأقصى لصور المعرض</span>
                   </div>
-                  <span className="font-semibold px-2.5 py-0.5 rounded bg-white border border-slate-200">
+                  <span className="font-semibold px-2.5 py-0.5 rounded bg-card border border-border">
                     {plan.max_gallery_images === null ? "لا محدود" : plan.max_gallery_images}
                   </span>
                 </li>

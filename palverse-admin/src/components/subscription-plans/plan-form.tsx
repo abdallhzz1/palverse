@@ -100,7 +100,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-white p-6 rounded-lg border border-slate-200">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-card p-6 rounded-lg border border-border">
       {apiError && (
         <div className="p-4 rounded-md bg-red-50 text-red-600 text-sm">
           {apiError}
@@ -140,7 +140,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
             <textarea
               id="description_ar"
               {...form.register("description_ar")}
-              className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2"
+              className="flex min-h-[80px] w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2"
               placeholder="وصف مميزات الخطة للمستخدمين..."
             />
             {form.formState.errors.description_ar && (
@@ -154,7 +154,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
               id="description_en"
               {...form.register("description_en")}
               dir="ltr"
-              className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 font-sans"
+              className="flex min-h-[80px] w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 font-sans"
               placeholder="English description..."
             />
             {form.formState.errors.description_en && (
@@ -186,7 +186,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
           <div className="space-y-2">
             <Label htmlFor="duration_days">المدة (بالأيام) <span className="text-red-500">*</span></Label>
             <Input id="duration_days" type="number" {...form.register("duration_days")} dir="ltr" />
-            <p className="text-xs text-slate-500">أمثلة: 30 لشهر، 365 لسنة</p>
+            <p className="text-xs text-muted-foreground">أمثلة: 30 لشهر، 365 لسنة</p>
             {form.formState.errors.duration_days && (
               <p className="text-xs text-red-500">{form.formState.errors.duration_days.message}</p>
             )}
@@ -198,7 +198,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
             <div className="space-y-2">
               <Label htmlFor="max_offers">أقصى عدد للعروض</Label>
               <Input id="max_offers" type="number" {...form.register("max_offers")} dir="ltr" placeholder="لا محدود" />
-              <p className="text-xs text-slate-500">اتركه فارغاً لجعله لا محدود</p>
+              <p className="text-xs text-muted-foreground">اتركه فارغاً لجعله لا محدود</p>
               {form.formState.errors.max_offers && (
                 <p className="text-xs text-red-500">{form.formState.errors.max_offers.message}</p>
               )}
@@ -206,7 +206,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
             <div className="space-y-2">
               <Label htmlFor="max_gallery_images">أقصى عدد للصور في المعرض</Label>
               <Input id="max_gallery_images" type="number" {...form.register("max_gallery_images")} dir="ltr" placeholder="لا محدود" />
-              <p className="text-xs text-slate-500">اتركه فارغاً لجعله لا محدود</p>
+              <p className="text-xs text-muted-foreground">اتركه فارغاً لجعله لا محدود</p>
               {form.formState.errors.max_gallery_images && (
                 <p className="text-xs text-red-500">{form.formState.errors.max_gallery_images.message}</p>
               )}
@@ -231,7 +231,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
+      <div className="flex justify-end gap-3 pt-6 border-t border-border">
         <Button 
           type="button" 
           variant="outline" 

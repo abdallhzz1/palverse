@@ -40,7 +40,7 @@ export function SettingsTabs() {
     <div className="flex flex-col md:flex-row gap-6">
       {/* Sidebar Tabs */}
       <div className="w-full md:w-64 shrink-0">
-        <nav className="flex flex-col space-y-1 bg-white p-2 rounded-xl border border-slate-200">
+        <nav className="flex flex-col space-y-1 bg-card p-2 rounded-xl border border-border">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -51,11 +51,11 @@ export function SettingsTabs() {
                 className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors text-right w-full
                   ${isActive 
                     ? "bg-[#1E7D4E]/10 text-[#1E7D4E]" 
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }
                 `}
               >
-                <Icon className={`h-4 w-4 ${isActive ? "text-[#1E7D4E]" : "text-slate-400"}`} />
+                <Icon className={`h-4 w-4 ${isActive ? "text-[#1E7D4E]" : "text-muted-foreground"}`} />
                 {tab.label}
               </button>
             );
@@ -64,7 +64,7 @@ export function SettingsTabs() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 bg-white rounded-xl border border-slate-200 p-6">
+      <div className="flex-1 bg-card rounded-xl border border-border p-6">
         {activeTab === "general" && <SettingsGeneralForm />}
         {activeTab === "branding" && <SettingsBrandingForm />}
         {activeTab === "contact" && <SettingsContactForm />}

@@ -78,7 +78,7 @@ export function StoreActions({ store, onSuccess }: StoreActionsProps) {
       {/* Approve Modal */}
       <Modal isOpen={activeModal === "approve"} onClose={closeModal} title="قبول المحل" description="هل تريد اعتماد هذا المحل؟">
         <div className="py-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             بعد الاعتماد قد يحتاج المحل إلى اشتراك نشط ليظهر للعامة.
           </p>
         </div>
@@ -115,7 +115,7 @@ export function StoreActions({ store, onSuccess }: StoreActionsProps) {
       {/* Activate Modal */}
       <Modal isOpen={activeModal === "activate"} onClose={closeModal} title="تفعيل المحل" description="هل تريد تفعيل هذا المحل؟">
         <div className="py-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             تفعيل المحل لا يجعله ظاهراً للعامة بالضرورة إذا لم يكن لديه اشتراك نشط.
           </p>
         </div>

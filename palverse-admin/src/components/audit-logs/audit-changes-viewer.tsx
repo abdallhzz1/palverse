@@ -20,7 +20,7 @@ const SENSITIVE_KEYS = [
 export function AuditChangesViewer({ oldValues, newValues }: AuditChangesViewerProps) {
   if (!oldValues && !newValues) {
     return (
-      <div className="text-sm text-slate-500 italic p-4 bg-slate-50 rounded-lg border border-slate-100">
+      <div className="text-sm text-muted-foreground italic p-4 bg-muted rounded-lg border border-border">
         لا توجد تفاصيل إضافية لهذه العملية.
       </div>
     );

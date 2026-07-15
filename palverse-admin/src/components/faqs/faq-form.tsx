@@ -78,7 +78,7 @@ export function FaqForm({ initialData, onSubmit, isMutating, apiError }: FaqForm
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-card p-6 rounded-xl border border-border">
           <FormField
             control={form.control as any}
             name="category"
@@ -114,11 +114,11 @@ export function FaqForm({ initialData, onSubmit, isMutating, apiError }: FaqForm
           />
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="bg-slate-50 border-b border-slate-200 px-4 pt-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="bg-muted border-b border-border px-4 pt-4">
             <TabsList className="bg-slate-200/50">
-              <TabsTrigger value="ar" className="data-[state=active]:bg-white data-[state=active]:text-[#0F3D2E]">العربية</TabsTrigger>
-              <TabsTrigger value="en" className="data-[state=active]:bg-white data-[state=active]:text-[#0F3D2E]">English</TabsTrigger>
+              <TabsTrigger value="ar" className="data-[state=active]:bg-card data-[state=active]:text-[#0F3D2E]">العربية</TabsTrigger>
+              <TabsTrigger value="en" className="data-[state=active]:bg-card data-[state=active]:text-[#0F3D2E]">English</TabsTrigger>
             </TabsList>
           </div>
 
@@ -183,7 +183,7 @@ export function FaqForm({ initialData, onSubmit, isMutating, apiError }: FaqForm
           </TabsContent>
         </Tabs>
 
-        <div className="bg-white p-6 rounded-xl border border-slate-200">
+        <div className="bg-card p-6 rounded-xl border border-border">
           <FormField
             control={form.control as any}
             name="is_active"
@@ -191,7 +191,7 @@ export function FaqForm({ initialData, onSubmit, isMutating, apiError }: FaqForm
               <FormItem className="flex flex-row items-center justify-between">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">تفعيل السؤال</FormLabel>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     عند التفعيل، سيكون السؤال والإجابة مرئيين للعامة.
                   </p>
                 </div>

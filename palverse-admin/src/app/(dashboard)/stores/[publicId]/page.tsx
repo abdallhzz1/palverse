@@ -32,7 +32,7 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
     return (
       <div className="space-y-6 animate-pulse">
         <div className="h-10 w-32 bg-slate-200 dark:bg-slate-800 rounded"></div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 flex flex-col md:flex-row gap-6">
+        <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg p-6 flex flex-col md:flex-row gap-6">
           <div className="w-24 h-24 bg-slate-200 dark:bg-slate-800 rounded-lg shrink-0"></div>
           <div className="flex-1 space-y-4">
             <div className="h-8 w-64 bg-slate-200 dark:bg-slate-800 rounded"></div>
@@ -50,7 +50,7 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
   if (error || !store) {
     return (
       <div className="space-y-6">
-        <Link href="/stores" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+        <Link href="/stores" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors">
           <ArrowRight className="w-4 h-4 ml-1" />
           العودة إلى المحلات
         </Link>
@@ -69,20 +69,20 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <Link href="/stores" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+        <Link href="/stores" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors">
           <ArrowRight className="w-4 h-4 ml-1" />
           العودة إلى المحلات
         </Link>
       </div>
 
       {/* Header Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg shadow-sm overflow-hidden">
         <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-center">
-          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-800 shrink-0 flex items-center justify-center">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl border border-border dark:border-slate-800 overflow-hidden bg-muted dark:bg-slate-800 shrink-0 flex items-center justify-center">
             {store.logo ? (
               <img src={store.logo.url} alt={store.name_ar} className="w-full h-full object-contain p-2" />
             ) : (
-              <span className="text-4xl font-bold text-slate-300 dark:text-slate-600">
+              <span className="text-4xl font-bold text-slate-300 dark:text-muted-foreground">
                 {store.name_ar.charAt(0)}
               </span>
             )}
@@ -91,13 +91,13 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
           <div className="flex-1 space-y-4">
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-2">
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground dark:text-white">
                   {store.name_ar}
                 </h2>
                 <StoreStatusBadge status={store.status} />
                 <StoreVisibilityBadge store={store} activeSubscription={activeSubscription} />
               </div>
-              <div className="flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground dark:text-muted-foreground">
                 {store.slug && (
                   <span className="flex items-center gap-1.5" dir="ltr">
                     <Globe className="w-4 h-4" />
@@ -139,53 +139,53 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
         {/* Left Column (Information) */}
         <div className="lg:col-span-2 space-y-6">
           
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="font-semibold text-slate-900 dark:text-white">المعلومات الأساسية</h3>
+          <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-border dark:border-slate-800">
+              <h3 className="font-semibold text-foreground dark:text-white">المعلومات الأساسية</h3>
             </div>
             <div className="p-6">
               <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 text-sm">
                 <div className="md:col-span-2">
-                  <dt className="text-slate-500 dark:text-slate-400 mb-1">الوصف (عربي)</dt>
-                  <dd className="text-slate-900 dark:text-white leading-relaxed whitespace-pre-wrap">
-                    {store.description_ar || <span className="text-slate-400">لا يوجد وصف</span>}
+                  <dt className="text-muted-foreground dark:text-muted-foreground mb-1">الوصف (عربي)</dt>
+                  <dd className="text-foreground dark:text-white leading-relaxed whitespace-pre-wrap">
+                    {store.description_ar || <span className="text-muted-foreground">لا يوجد وصف</span>}
                   </dd>
                 </div>
                 {store.description_en && (
                   <div className="md:col-span-2">
-                    <dt className="text-slate-500 dark:text-slate-400 mb-1">الوصف (إنجليزي)</dt>
-                    <dd className="text-slate-900 dark:text-white leading-relaxed whitespace-pre-wrap" dir="ltr">
+                    <dt className="text-muted-foreground dark:text-muted-foreground mb-1">الوصف (إنجليزي)</dt>
+                    <dd className="text-foreground dark:text-white leading-relaxed whitespace-pre-wrap" dir="ltr">
                       {store.description_en}
                     </dd>
                   </div>
                 )}
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400 mb-1">رقم الهاتف</dt>
-                  <dd className="text-slate-900 dark:text-white flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-slate-400" />
-                    <span dir="ltr">{store.phone || <span className="text-slate-400 text-xs">غير متوفر</span>}</span>
+                  <dt className="text-muted-foreground dark:text-muted-foreground mb-1">رقم الهاتف</dt>
+                  <dd className="text-foreground dark:text-white flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-muted-foreground" />
+                    <span dir="ltr">{store.phone || <span className="text-muted-foreground text-xs">غير متوفر</span>}</span>
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400 mb-1">رقم الواتساب</dt>
-                  <dd className="text-slate-900 dark:text-white flex items-center gap-2">
+                  <dt className="text-muted-foreground dark:text-muted-foreground mb-1">رقم الواتساب</dt>
+                  <dd className="text-foreground dark:text-white flex items-center gap-2">
                     <span className="text-emerald-500 font-bold w-4 h-4 flex items-center justify-center text-xs">W</span>
-                    <span dir="ltr">{store.whatsapp || <span className="text-slate-400 text-xs">غير متوفر</span>}</span>
+                    <span dir="ltr">{store.whatsapp || <span className="text-muted-foreground text-xs">غير متوفر</span>}</span>
                   </dd>
                 </div>
                 <div className="md:col-span-2">
-                  <dt className="text-slate-500 dark:text-slate-400 mb-1">العنوان التفصيلي</dt>
-                  <dd className="text-slate-900 dark:text-white">
-                    {store.address_ar || <span className="text-slate-400">غير متوفر</span>}
+                  <dt className="text-muted-foreground dark:text-muted-foreground mb-1">العنوان التفصيلي</dt>
+                  <dd className="text-foreground dark:text-white">
+                    {store.address_ar || <span className="text-muted-foreground">غير متوفر</span>}
                   </dd>
                 </div>
               </dl>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="font-semibold text-slate-900 dark:text-white">الوسائط</h3>
+          <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-border dark:border-slate-800">
+              <h3 className="font-semibold text-foreground dark:text-white">الوسائط</h3>
             </div>
             <div className="p-6">
               <StoreMediaGallery logo={store.logo} cover={store.cover} gallery={store.gallery} />
@@ -198,9 +198,9 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
         <div className="space-y-6">
           
           {/* Owner Info */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="font-semibold text-slate-900 dark:text-white">معلومات المالك</h3>
+          <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-border dark:border-slate-800">
+              <h3 className="font-semibold text-foreground dark:text-white">معلومات المالك</h3>
             </div>
             <div className="p-6">
               {store.owner ? (
@@ -210,19 +210,19 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                       <UserIcon className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="font-medium text-slate-900 dark:text-white">{store.owner.name}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">{store.owner.email}</div>
+                      <div className="font-medium text-foreground dark:text-white">{store.owner.name}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{store.owner.email}</div>
                     </div>
                   </div>
                   <Link 
                     href={`/users/${store.owner.public_id}`}
-                    className="flex w-full items-center justify-center h-9 rounded-md border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    className="flex w-full items-center justify-center h-9 rounded-md border border-border dark:border-slate-700 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-muted dark:hover:bg-slate-800 transition-colors"
                   >
                     عرض صفحة المستخدم
                   </Link>
                 </div>
               ) : (
-                <div className="text-center text-slate-500 text-sm py-4">معلومات المالك غير متوفرة</div>
+                <div className="text-center text-muted-foreground text-sm py-4">معلومات المالك غير متوفرة</div>
               )}
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                     <div>
                       <Label className="text-xs text-emerald-800 dark:text-emerald-300 mb-1 block">رابط الويب</Label>
                       <div className="flex gap-2">
-                        <Input readOnly value={links.web_url} dir="ltr" className="h-9 text-xs bg-white/50 dark:bg-slate-900/50" />
+                        <Input readOnly value={links.web_url} dir="ltr" className="h-9 text-xs bg-card/50 dark:bg-slate-900/50" />
                         <Button variant="outline" size="icon" className="h-9 w-9 shrink-0" onClick={() => copyToClipboard(links.web_url, "تم نسخ الرابط بنجاح")}>
                           <Copy className="w-4 h-4" />
                         </Button>
@@ -249,7 +249,7 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                     <div>
                       <Label className="text-xs text-emerald-800 dark:text-emerald-300 mb-1 block">الرابط العميق (التطبيق)</Label>
                       <div className="flex gap-2">
-                        <Input readOnly value={links.deep_link} dir="ltr" className="h-9 text-xs bg-white/50 dark:bg-slate-900/50" />
+                        <Input readOnly value={links.deep_link} dir="ltr" className="h-9 text-xs bg-card/50 dark:bg-slate-900/50" />
                         <Button variant="outline" size="icon" className="h-9 w-9 shrink-0" onClick={() => copyToClipboard(links.deep_link, "تم نسخ الرابط العميق بنجاح")}>
                           <Copy className="w-4 h-4" />
                         </Button>
@@ -262,13 +262,13 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                   <div className="pt-4 border-t border-emerald-100 dark:border-emerald-800">
                     <Label className="text-xs text-emerald-800 dark:text-emerald-300 mb-3 block text-center">رمز الاستجابة السريعة (QR Code)</Label>
                     <div className="flex justify-center mb-4">
-                      <div className="p-3 bg-white rounded-lg shadow-sm border border-slate-100 w-32 h-32">
+                      <div className="p-3 bg-card rounded-lg shadow-sm border border-border w-32 h-32">
                         <img src={qrObjectUrl} alt="Store QR Code" className="w-full h-full object-contain" />
                       </div>
                     </div>
                     <Button 
                       variant="outline" 
-                      className="w-full bg-white dark:bg-slate-900"
+                      className="w-full bg-card dark:bg-slate-900"
                       onClick={() => downloadQr(store.name_en || store.name_ar)}
                     >
                       <Download className="w-4 h-4 ml-2" />
@@ -281,23 +281,23 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
           )}
 
           {/* Subscription Info */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-              <h3 className="font-semibold text-slate-900 dark:text-white">حالة الاشتراك</h3>
+          <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-border dark:border-slate-800 flex justify-between items-center">
+              <h3 className="font-semibold text-foreground dark:text-white">حالة الاشتراك</h3>
             </div>
             <div className="p-6">
               {activeSubscription ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-full">اشتراك نشط</span>
-                    <span className="text-xs text-slate-500 font-medium" dir="ltr">
+                    <span className="text-xs text-muted-foreground font-medium" dir="ltr">
                       {formatCurrency(activeSubscription.plan.price, activeSubscription.plan.currency)} / {activeSubscription.plan.duration_days} يوم
                     </span>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-slate-900 dark:text-white">{activeSubscription.plan.name_ar}</div>
+                    <div className="text-lg font-bold text-foreground dark:text-white">{activeSubscription.plan.name_ar}</div>
                   </div>
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="pt-4 border-t border-border dark:border-slate-800 space-y-2 text-sm text-muted-foreground dark:text-muted-foreground">
                     <div className="flex justify-between">
                       <span>تاريخ البدء:</span>
                       <span dir="ltr">{new Date(activeSubscription.starts_at).toLocaleDateString("en-GB")}</span>
@@ -310,19 +310,19 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                 </div>
               ) : (
                 <div className="text-center py-4">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 mb-3">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted dark:bg-slate-800 text-muted-foreground mb-3">
                     <AlertCircle className="w-6 h-6" />
                   </div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">لا يوجد اشتراك نشط حالياً</p>
+                  <p className="text-sm text-muted-foreground dark:text-muted-foreground">لا يوجد اشتراك نشط حالياً</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Working Hours */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="font-semibold text-slate-900 dark:text-white">أوقات العمل</h3>
+          <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-border dark:border-slate-800">
+              <h3 className="font-semibold text-foreground dark:text-white">أوقات العمل</h3>
             </div>
             <div className="p-6">
               <StoreWorkingHours workingHours={store.working_hours} />

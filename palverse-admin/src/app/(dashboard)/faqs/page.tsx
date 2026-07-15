@@ -14,8 +14,8 @@ export default function FaqsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">الأسئلة الشائعة</h1>
-          <p className="text-sm text-slate-500 mt-1">إدارة الأسئلة التي تظهر للعامة للإجابة عن استفساراتهم</p>
+          <h1 className="text-2xl font-bold text-foreground">الأسئلة الشائعة</h1>
+          <p className="text-sm text-muted-foreground mt-1">إدارة الأسئلة التي تظهر للعامة للإجابة عن استفساراتهم</p>
         </div>
         <Button asChild className="bg-[#0F3D2E] hover:bg-[#0F3D2E]/90">
           <Link href="/faqs/new">
@@ -25,7 +25,7 @@ export default function FaqsPage() {
         </Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+      <div className="bg-card rounded-xl shadow-sm border border-border">
         <FaqsList />
       </div>
     </div>

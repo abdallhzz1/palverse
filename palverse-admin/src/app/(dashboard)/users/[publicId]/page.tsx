@@ -35,12 +35,12 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
 
   if (error || !user) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-[#1F2522] rounded-xl border border-red-100 dark:border-red-900/30 p-8">
+      <div className="flex flex-col items-center justify-center h-64 bg-card dark:bg-[#1F2522] rounded-xl border border-red-100 dark:border-red-900/30 p-8">
         <AlertTriangle className="w-12 h-12 text-red-500 mb-4 opacity-80" />
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+        <h3 className="text-xl font-bold text-foreground dark:text-white mb-2">
           {error?.status === 404 ? "لم يتم العثور على المستخدم" : "حدث خطأ"}
         </h3>
-        <p className="text-slate-500 mb-6">{error?.message || "تعذر تحميل بيانات المستخدم."}</p>
+        <p className="text-muted-foreground mb-6">{error?.message || "تعذر تحميل بيانات المستخدم."}</p>
         <Link href="/users">
           <Button variant="outline">العودة إلى المستخدمين</Button>
         </Link>
@@ -53,10 +53,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
   return (
     <div className="space-y-6 pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border dark:border-slate-800 pb-4">
         <div className="flex items-center gap-4">
           <Link href="/users">
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground dark:hover:text-white">
               <ArrowRight className="w-5 h-5" />
             </Button>
           </Link>
@@ -65,7 +65,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
               {user.name.charAt(0)}
             </div>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white flex items-center gap-2">
                 {user.name}
                 <UserStatusBadge status={user.status} />
               </h2>
@@ -89,16 +89,16 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Account Overview */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+          <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-foreground dark:text-white mb-6 flex items-center gap-2">
               <UserCircle className="w-5 h-5 text-[#1E7D4E]" />
               البيانات الأساسية
             </h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4">
               <div>
-                <p className="text-sm text-slate-500 mb-1 flex items-center gap-2"><Mail className="w-4 h-4" />البريد الإلكتروني</p>
-                <p className="font-medium text-slate-900 dark:text-white" dir="ltr">{user.email}</p>
+                <p className="text-sm text-muted-foreground mb-1 flex items-center gap-2"><Mail className="w-4 h-4" />البريد الإلكتروني</p>
+                <p className="font-medium text-foreground dark:text-white" dir="ltr">{user.email}</p>
                 {user.email_verified_at ? (
                   <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded mt-1 inline-block">تم التحقق</span>
                 ) : (
@@ -107,23 +107,23 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
               </div>
               
               <div>
-                <p className="text-sm text-slate-500 mb-1 flex items-center gap-2"><Phone className="w-4 h-4" />رقم الهاتف</p>
-                <p className="font-medium text-slate-900 dark:text-white" dir="ltr">{user.phone}</p>
+                <p className="text-sm text-muted-foreground mb-1 flex items-center gap-2"><Phone className="w-4 h-4" />رقم الهاتف</p>
+                <p className="font-medium text-foreground dark:text-white" dir="ltr">{user.phone}</p>
               </div>
 
               <div>
-                <p className="text-sm text-slate-500 mb-1">اللغة المفضلة</p>
-                <p className="font-medium text-slate-900 dark:text-white">{user.preferred_locale === "ar" ? "العربية" : "English"}</p>
+                <p className="text-sm text-muted-foreground mb-1">اللغة المفضلة</p>
+                <p className="font-medium text-foreground dark:text-white">{user.preferred_locale === "ar" ? "العربية" : "English"}</p>
               </div>
 
               <div>
-                <p className="text-sm text-slate-500 mb-1 flex items-center gap-2"><Clock className="w-4 h-4" />تاريخ الانضمام</p>
-                <p className="font-medium text-slate-900 dark:text-white" dir="ltr">{formatDateTime(user.created_at)}</p>
+                <p className="text-sm text-muted-foreground mb-1 flex items-center gap-2"><Clock className="w-4 h-4" />تاريخ الانضمام</p>
+                <p className="font-medium text-foreground dark:text-white" dir="ltr">{formatDateTime(user.created_at)}</p>
               </div>
 
               <div>
-                <p className="text-sm text-slate-500 mb-1 flex items-center gap-2"><Clock className="w-4 h-4" />آخر تسجيل دخول</p>
-                <p className="font-medium text-slate-900 dark:text-white" dir="ltr">{user.last_login_at ? formatDateTime(user.last_login_at) : "لم يسجل الدخول"}</p>
+                <p className="text-sm text-muted-foreground mb-1 flex items-center gap-2"><Clock className="w-4 h-4" />آخر تسجيل دخول</p>
+                <p className="font-medium text-foreground dark:text-white" dir="ltr">{user.last_login_at ? formatDateTime(user.last_login_at) : "لم يسجل الدخول"}</p>
               </div>
             </div>
 
@@ -145,38 +145,38 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
         {/* Right Column: Merchant / Stats Overview */}
         <div className="space-y-6">
           {isMerchant && (
-            <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+            <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-foreground dark:text-white mb-6 flex items-center gap-2">
                 <Store className="w-5 h-5 text-[#1E7D4E]" />
                 نشاط التاجر
               </h3>
               
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted dark:bg-slate-800/50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-md text-emerald-600">
                       <Store className="w-4 h-4" />
                     </div>
                     <span className="font-medium text-slate-700 dark:text-slate-300">المحلات المملوكة</span>
                   </div>
-                  <span className="text-lg font-bold text-slate-900 dark:text-white">{user.stores_count || 0}</span>
+                  <span className="text-lg font-bold text-foreground dark:text-white">{user.stores_count || 0}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted dark:bg-slate-800/50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-md text-emerald-600">
                       <CreditCard className="w-4 h-4" />
                     </div>
                     <span className="font-medium text-slate-700 dark:text-slate-300">الاشتراكات النشطة</span>
                   </div>
-                  <span className="text-lg font-bold text-slate-900 dark:text-white">{user.active_subscriptions_count || 0}</span>
+                  <span className="text-lg font-bold text-foreground dark:text-white">{user.active_subscriptions_count || 0}</span>
                 </div>
               </div>
 
               {(user.stores_count || 0) > 0 && (
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="mt-6 pt-4 border-t border-border dark:border-slate-800">
                   {/* We don't implement full nested navigation here yet, but we will leave a placeholder message */}
-                  <p className="text-sm text-slate-500 text-center">
+                  <p className="text-sm text-muted-foreground text-center">
                     سيتم عرض قائمة المحلات والاشتراكات قريباً ضمن قسم المحلات.
                   </p>
                 </div>
@@ -185,19 +185,19 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
           )}
 
           {/* System Info */}
-          <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">معلومات النظام</h3>
+          <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+            <h3 className="text-sm font-bold text-foreground dark:text-white mb-4 uppercase tracking-wider">معلومات النظام</h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500">المعرف العام</span>
+              <div className="flex justify-between py-1 border-b border-border dark:border-slate-800">
+                <span className="text-muted-foreground">المعرف العام</span>
                 <span className="font-mono text-slate-700 dark:text-slate-300 text-xs">{user.public_id}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500">تم الإنشاء بواسطة</span>
+              <div className="flex justify-between py-1 border-b border-border dark:border-slate-800">
+                <span className="text-muted-foreground">تم الإنشاء بواسطة</span>
                 <span className="text-slate-700 dark:text-slate-300">{user.created_by?.name || "النظام"}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-500">تاريخ التحديث</span>
+                <span className="text-muted-foreground">تاريخ التحديث</span>
                 <span className="text-slate-700 dark:text-slate-300" dir="ltr">{formatDateTime(user.updated_at)}</span>
               </div>
             </div>

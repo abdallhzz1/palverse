@@ -25,7 +25,7 @@ export function CitySelect({
 
   if (error) {
     return (
-      <select disabled className={cn("flex h-10 w-full items-center justify-between rounded-md border border-red-500 bg-white px-3 py-2 text-sm text-red-500", className)}>
+      <select disabled className={cn("flex h-10 w-full items-center justify-between rounded-md border border-red-500 bg-card px-3 py-2 text-sm text-red-500", className)}>
         <option>فشل تحميل المدن</option>
       </select>
     );
@@ -45,7 +45,7 @@ export function CitySelect({
         }}
         disabled={disabled || isLoading}
         className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none",
+          "flex h-10 w-full items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none",
           className
         )}
       >
@@ -64,7 +64,7 @@ export function CitySelect({
       </select>
       {isLoading && (
         <div className="absolute left-3 top-1/2 -translate-y-1/2">
-          <Loader2 className="h-4 w-4 animate-spin text-slate-500" />
+          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
         </div>
       )}
     </div>

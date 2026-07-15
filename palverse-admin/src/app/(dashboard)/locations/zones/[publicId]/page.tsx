@@ -31,7 +31,7 @@ export default function ZoneDetailsPage({ params }: { params: Promise<{ publicId
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
         <h2 className="text-xl font-bold text-red-600">لم يتم العثور على المنطقة</h2>
-        <p className="text-slate-600">{error.message}</p>
+        <p className="text-muted-foreground">{error.message}</p>
         <Button asChild variant="outline">
           <Link href="/locations?tab=zones">العودة للمناطق</Link>
         </Button>
@@ -49,10 +49,10 @@ export default function ZoneDetailsPage({ params }: { params: Promise<{ publicId
             </Link>
           </Button>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">
               {isLoading ? <Skeleton className="h-8 w-48" /> : zone?.name_ar}
             </h2>
-            <p className="text-slate-500">تفاصيل المنطقة</p>
+            <p className="text-muted-foreground">تفاصيل المنطقة</p>
           </div>
         </div>
         {!isLoading && zone && (
@@ -84,15 +84,15 @@ export default function ZoneDetailsPage({ params }: { params: Promise<{ publicId
         ) : zone ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">الاسم بالعربية</p>
+              <p className="text-sm font-medium text-muted-foreground">الاسم بالعربية</p>
               <p className="text-lg font-semibold">{zone.name_ar}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">الاسم بالإنجليزية</p>
+              <p className="text-sm font-medium text-muted-foreground">الاسم بالإنجليزية</p>
               <p className="text-lg font-semibold">{zone.name_en || "-"}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">المدينة التابعة لها</p>
+              <p className="text-sm font-medium text-muted-foreground">المدينة التابعة لها</p>
               {zone.city ? (
                 <p>
                   <Link href={`/locations/cities/${zone.city.public_id}`} className="text-lg font-semibold text-[#1E7D4E] hover:underline">
@@ -104,13 +104,13 @@ export default function ZoneDetailsPage({ params }: { params: Promise<{ publicId
               )}
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">تاريخ الإنشاء</p>
+              <p className="text-sm font-medium text-muted-foreground">تاريخ الإنشاء</p>
               <p className="text-base text-slate-700">
                 {format(new Date(zone.created_at), "PPP p")}
               </p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">آخر تحديث</p>
+              <p className="text-sm font-medium text-muted-foreground">آخر تحديث</p>
               <p className="text-base text-slate-700">
                 {format(new Date(zone.updated_at), "PPP p")}
               </p>

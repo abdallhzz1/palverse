@@ -21,12 +21,12 @@ export function UserRoleBadge({ role, className = "" }: UserRoleBadgeProps) {
       case "customer":
         return {
           label: "مستخدم",
-          classes: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+          classes: "bg-muted text-muted-foreground dark:bg-slate-800 dark:text-muted-foreground",
         };
       default:
         return {
           label: role || "غير معروف",
-          classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+          classes: "bg-muted text-gray-700 dark:bg-gray-800 dark:text-gray-300",
         };
     }
   };

@@ -10,8 +10,8 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">الإشعارات</h1>
-        <p className="text-sm text-slate-500 mt-1">عرض الإشعارات المستلمة وإدارتها</p>
+        <h1 className="text-2xl font-bold text-foreground">الإشعارات</h1>
+        <p className="text-sm text-muted-foreground mt-1">عرض الإشعارات المستلمة وإدارتها</p>
       </div>
 
       <NotificationsList />

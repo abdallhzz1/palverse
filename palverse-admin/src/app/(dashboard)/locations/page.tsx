@@ -37,8 +37,8 @@ export default function LocationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">المدن والمناطق</h2>
-        <p className="text-slate-500">إدارة المواقع الجغرافية للمحلات</p>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">المدن والمناطق</h2>
+        <p className="text-muted-foreground">إدارة المواقع الجغرافية للمحلات</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">

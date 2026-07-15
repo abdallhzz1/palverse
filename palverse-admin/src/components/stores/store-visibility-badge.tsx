@@ -15,7 +15,7 @@ export function StoreVisibilityBadge({ store, activeSubscription, className = ""
       return {
         isVisible: false,
         reason: "المحل غير معتمد",
-        classes: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+        classes: "bg-muted text-muted-foreground dark:bg-slate-800 dark:text-muted-foreground border border-border dark:border-slate-700"
       };
     }
     
@@ -23,7 +23,7 @@ export function StoreVisibilityBadge({ store, activeSubscription, className = ""
       return {
         isVisible: false,
         reason: "المحل غير نشط",
-        classes: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+        classes: "bg-muted text-muted-foreground dark:bg-slate-800 dark:text-muted-foreground border border-border dark:border-slate-700"
       };
     }
 
@@ -51,7 +51,7 @@ export function StoreVisibilityBadge({ store, activeSubscription, className = ""
         {visibility.isVisible ? "ظاهر للعامة" : "مخفي"}
       </span>
       {showReason && !visibility.isVisible && (
-        <span className="text-[11px] text-slate-500 dark:text-slate-400 mr-1">
+        <span className="text-[11px] text-muted-foreground dark:text-muted-foreground mr-1">
           السبب: {visibility.reason}
         </span>
       )}

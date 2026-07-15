@@ -25,13 +25,13 @@ export function NotificationsList() {
   return (
     <div className="space-y-4">
       {/* Filters Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-xl border border-slate-200">
+      <div className="flex flex-col sm:flex-row gap-4 bg-card p-4 rounded-xl border border-border">
         <div className="w-full sm:w-64 space-y-1.5">
-          <label className="text-xs font-medium text-slate-500">نوع الإشعار</label>
+          <label className="text-xs font-medium text-muted-foreground">نوع الإشعار</label>
           <select 
             value={params.type || "all"} 
             onChange={(e) => setFilter("type", e.target.value === "all" ? "" : e.target.value)}
-            className="flex h-10 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+            className="flex h-10 w-full rounded-md border border-border bg-muted px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
           >
             <option value="all">الكل</option>
             <option value="store_approved">تم قبول المحل</option>
@@ -46,7 +46,7 @@ export function NotificationsList() {
         </div>
         
         <div className="w-full sm:w-64 space-y-1.5">
-          <label className="text-xs font-medium text-slate-500">حالة القراءة</label>
+          <label className="text-xs font-medium text-muted-foreground">حالة القراءة</label>
           <select 
             value={params.unread === true ? "unread" : params.unread === false ? "read" : "all"} 
             onChange={(e) => {
@@ -57,7 +57,7 @@ export function NotificationsList() {
                 setFilter("unread", val === "unread");
               }
             }}
-            className="flex h-10 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+            className="flex h-10 w-full rounded-md border border-border bg-muted px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
           >
             <option value="all">الكل</option>
             <option value="unread">غير مقروء</option>
@@ -67,10 +67,10 @@ export function NotificationsList() {
       </div>
 
       {/* Data Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50">
+            <TableHeader className="bg-muted">
               <TableRow>
                 <TableHead className="w-[150px]">النوع</TableHead>
                 <TableHead className="w-[300px]">عنوان ونص الإشعار</TableHead>
@@ -82,13 +82,13 @@ export function NotificationsList() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-slate-500">
+                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                     جاري تحميل الإشعارات...
                   </TableCell>
                 </TableRow>
               ) : !data?.data?.length ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-slate-500">
+                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                     لا توجد إشعارات مطابقة لخيارات البحث
                   </TableCell>
                 </TableRow>
@@ -100,10 +100,10 @@ export function NotificationsList() {
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <p className={`text-sm ${!notification.is_read ? "font-bold text-slate-900" : "font-medium text-slate-800"}`}>
+                        <p className={`text-sm ${!notification.is_read ? "font-bold text-foreground" : "font-medium text-slate-800"}`}>
                           {notification.title_ar || "إشعار جديد"}
                         </p>
-                        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                           {notification.message_ar}
                         </p>
                       </div>
@@ -111,7 +111,7 @@ export function NotificationsList() {
                     <TableCell>
                       <NotificationReadBadge isRead={notification.is_read} />
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600 font-sans" dir="ltr">
+                    <TableCell className="text-sm text-muted-foreground font-sans" dir="ltr">
                       {format(parseISO(notification.created_at), "yyyy-MM-dd HH:mm")}
                     </TableCell>
                     <TableCell>
@@ -130,11 +130,11 @@ export function NotificationsList() {
                             size="sm" 
                             onClick={() => markAsRead(notification.id, refresh)}
                             disabled={isMarking === notification.id}
-                            className="bg-white hover:bg-slate-50"
+                            className="bg-card hover:bg-muted"
                           >
                             {isMarking === notification.id ? "جاري..." : (
                               <>
-                                <CheckCircle2 className="h-4 w-4 ml-1.5 text-slate-400" />
+                                <CheckCircle2 className="h-4 w-4 ml-1.5 text-muted-foreground" />
                                 تحديد كمقروء
                               </>
                             )}
@@ -151,8 +151,8 @@ export function NotificationsList() {
 
         {/* Pagination */}
         {data && data.meta.last_page > 1 && (
-          <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-6 py-3">
-            <div className="text-sm text-slate-500 font-sans" dir="ltr">
+          <div className="flex items-center justify-between border-t border-border bg-muted px-6 py-3">
+            <div className="text-sm text-muted-foreground font-sans" dir="ltr">
               {data.meta.from} - {data.meta.to} of {data.meta.total}
             </div>
             <div className="flex gap-2">

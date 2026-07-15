@@ -76,8 +76,8 @@ export function AnalyticsPeriodSelector({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
       {selectedPeriod === "custom" && (
-        <div className="flex items-center gap-2 bg-white dark:bg-[#1F2522] border border-slate-200 dark:border-slate-700 rounded-md p-1 px-2 h-9">
-          <span className="text-xs text-slate-500">من</span>
+        <div className="flex items-center gap-2 bg-card dark:bg-[#1F2522] border border-border dark:border-slate-700 rounded-md p-1 px-2 h-9">
+          <span className="text-xs text-muted-foreground">من</span>
           <input 
             type="date" 
             className="text-sm bg-transparent border-none outline-none focus:ring-0 cursor-pointer"
@@ -87,7 +87,7 @@ export function AnalyticsPeriodSelector({
             disabled={disabled}
             max={customTo || undefined}
           />
-          <span className="text-xs text-slate-500">إلى</span>
+          <span className="text-xs text-muted-foreground">إلى</span>
           <input 
             type="date" 
             className="text-sm bg-transparent border-none outline-none focus:ring-0 cursor-pointer"
@@ -101,7 +101,7 @@ export function AnalyticsPeriodSelector({
       )}
 
       <Select value={selectedPeriod} onValueChange={handlePeriodChange} disabled={disabled}>
-        <SelectTrigger className="w-[160px] h-9 border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1F2522]">
+        <SelectTrigger className="w-[160px] h-9 border-border dark:border-slate-700 bg-card dark:bg-[#1F2522]">
           <SelectValue placeholder="اختر الفترة" />
         </SelectTrigger>
         <SelectContent>

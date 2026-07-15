@@ -31,7 +31,7 @@ export default function CategoryDetailsPage({ params }: { params: Promise<{ publ
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
         <h2 className="text-xl font-bold text-red-600">لم يتم العثور على التصنيف</h2>
-        <p className="text-slate-600">{error.message}</p>
+        <p className="text-muted-foreground">{error.message}</p>
         <Button asChild variant="outline">
           <Link href="/categories">العودة للتصنيفات</Link>
         </Button>
@@ -49,10 +49,10 @@ export default function CategoryDetailsPage({ params }: { params: Promise<{ publ
             </Link>
           </Button>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">
               {isLoading ? <Skeleton className="h-8 w-48" /> : category?.name_ar}
             </h2>
-            <p className="text-slate-500">تفاصيل التصنيف</p>
+            <p className="text-muted-foreground">تفاصيل التصنيف</p>
           </div>
         </div>
         {!isLoading && category && (
@@ -84,27 +84,27 @@ export default function CategoryDetailsPage({ params }: { params: Promise<{ publ
         ) : category ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">الاسم بالعربية</p>
+              <p className="text-sm font-medium text-muted-foreground">الاسم بالعربية</p>
               <p className="text-lg font-semibold">{category.name_ar}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">الاسم بالإنجليزية</p>
+              <p className="text-sm font-medium text-muted-foreground">الاسم بالإنجليزية</p>
               <p className="text-lg font-semibold">{category.name_en || "-"}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">الرابط المختصر</p>
-              <p dir="ltr" className="text-lg font-semibold text-right text-slate-700 bg-slate-50 rounded px-2 py-1 inline-block">
+              <p className="text-sm font-medium text-muted-foreground">الرابط المختصر</p>
+              <p dir="ltr" className="text-lg font-semibold text-right text-slate-700 bg-muted rounded px-2 py-1 inline-block">
                 {category.slug}
               </p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">تاريخ الإنشاء</p>
+              <p className="text-sm font-medium text-muted-foreground">تاريخ الإنشاء</p>
               <p className="text-base text-slate-700">
                 {format(new Date(category.created_at), "PPP p")}
               </p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-500">آخر تحديث</p>
+              <p className="text-sm font-medium text-muted-foreground">آخر تحديث</p>
               <p className="text-base text-slate-700">
                 {format(new Date(category.updated_at), "PPP p")}
               </p>

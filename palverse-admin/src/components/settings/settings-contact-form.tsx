@@ -57,15 +57,15 @@ export function SettingsContactForm() {
     });
   };
 
-  if (isLoading) return <div className="py-12 text-center text-slate-500">جاري التحميل...</div>;
+  if (isLoading) return <div className="py-12 text-center text-muted-foreground">جاري التحميل...</div>;
   if (error) return <div className="py-12 text-center text-red-600">{error.message}</div>;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">معلومات التواصل</h2>
-          <p className="text-sm text-slate-500">أرقام الهواتف والبريد الإلكتروني المخصص للدعم الفني</p>
+          <h2 className="text-lg font-semibold text-foreground">معلومات التواصل</h2>
+          <p className="text-sm text-muted-foreground">أرقام الهواتف والبريد الإلكتروني المخصص للدعم الفني</p>
         </div>
 
         {apiError && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{apiError.message}</div>}
@@ -146,7 +146,7 @@ export function SettingsContactForm() {
           />
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-slate-100">
+        <div className="flex justify-end pt-4 border-t border-border">
           <Button type="submit" disabled={isUpdating || !form.formState.isDirty} className="bg-[#0F3D2E] hover:bg-[#0F3D2E]/90 min-w-[120px]">
             {isUpdating ? "جاري الحفظ..." : "حفظ التغييرات"}
           </Button>

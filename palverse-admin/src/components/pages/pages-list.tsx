@@ -74,7 +74,7 @@ export function PagesList() {
     <div className="space-y-4 p-4">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="ابحث عن صفحة..."
             value={searchTerm}
@@ -105,7 +105,7 @@ export function PagesList() {
 
       <div className="rounded-md border">
         <Table>
-          <TableHeader className="bg-slate-50">
+          <TableHeader className="bg-muted">
             <TableRow>
               <TableHead>العنوان</TableHead>
               <TableHead>الرابط (Slug)</TableHead>
@@ -118,7 +118,7 @@ export function PagesList() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                   جاري تحميل الصفحات...
                 </TableCell>
               </TableRow>
@@ -130,26 +130,26 @@ export function PagesList() {
               </TableRow>
             ) : !data?.data?.length ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                   لا توجد صفحات مطابقة لخيارات البحث
                 </TableCell>
               </TableRow>
             ) : (
               data.data.map((pageData) => (
                 <TableRow key={pageData.public_id}>
-                  <TableCell className="font-medium text-slate-900">
+                  <TableCell className="font-medium text-foreground">
                     {pageData.title_ar}
                   </TableCell>
-                  <TableCell dir="ltr" className="text-right text-slate-600 text-sm font-mono">
+                  <TableCell dir="ltr" className="text-right text-muted-foreground text-sm font-mono">
                     /{pageData.slug}
                   </TableCell>
-                  <TableCell className="text-slate-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {pageData.sort_order}
                   </TableCell>
                   <TableCell>
                     <PageStatusBadge isPublished={pageData.is_published} />
                   </TableCell>
-                  <TableCell className="text-slate-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {pageData.updated_at ? format(new Date(pageData.updated_at), "dd MMMM yyyy", { locale: ar }) : "-"}
                   </TableCell>
                   <TableCell className="text-left">

@@ -41,7 +41,7 @@ export function PlansList() {
       {/* Filters Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="ابحث باسم الخطة أو الرمز..."
@@ -57,7 +57,7 @@ export function PlansList() {
         <select
           value={params.status || ""}
           onChange={(e) => setFilter("status", e.target.value)}
-          className="flex h-10 w-full sm:w-48 items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 appearance-none"
+          className="flex h-10 w-full sm:w-48 items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 appearance-none"
         >
           <option value="">جميع الحالات</option>
           <option value="active">نشطة</option>
@@ -70,7 +70,7 @@ export function PlansList() {
           {error.message || "حدث خطأ أثناء تحميل الخطط"}
         </div>
       ) : (
-        <div className="rounded-md border border-slate-200 bg-white">
+        <div className="rounded-md border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -91,7 +91,7 @@ export function PlansList() {
                 </TableRow>
               ) : data?.data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                     لا توجد خطط اشتراك مطابقة للبحث
                   </TableCell>
                 </TableRow>
@@ -100,8 +100,8 @@ export function PlansList() {
                   <TableRow key={plan.public_id}>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium text-slate-900">{plan.name_ar}</span>
-                        <span className="text-xs text-slate-500 font-sans" dir="ltr">{plan.code}</span>
+                        <span className="font-medium text-foreground">{plan.name_ar}</span>
+                        <span className="text-xs text-muted-foreground font-sans" dir="ltr">{plan.code}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -114,7 +114,7 @@ export function PlansList() {
                       <PlanStatusBadge isActive={plan.is_active} />
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-slate-600">
+                      <span className="text-sm text-muted-foreground">
                         {format(parseISO(plan.created_at), "d MMMM yyyy", { locale: ar })}
                       </span>
                     </TableCell>

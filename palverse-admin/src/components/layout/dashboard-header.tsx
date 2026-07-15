@@ -4,23 +4,15 @@ import { ThemeToggle } from "./theme-toggle";
 import { useAuth } from "@/providers/auth-provider";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AdminAvatar } from "./admin-avatar";
 
-export function DashboardHeader() {
+export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const { user } = useAuth();
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .substring(0, 2)
-      .toUpperCase();
-  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border bg-card px-4 shadow-sm sm:px-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="lg:hidden">
+        <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenuClick}>
           <Menu className="h-5 w-5" />
           <span className="sr-only">فتح القائمة</span>
         </Button>
@@ -36,9 +28,7 @@ export function DashboardHeader() {
               <span className="text-sm font-medium leading-none">{user.name}</span>
               <span className="text-xs text-muted-foreground mt-1">مدير النظام</span>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-primary font-semibold text-latin">
-              {getInitials(user.name)}
-            </div>
+            <AdminAvatar name={user.name} />
           </div>
         )}
       </div>

@@ -72,19 +72,19 @@ export default function CreateMerchantPage() {
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">إضافة تاجر جديد</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">إنشاء حساب جديد بصلاحيات تاجر</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">إضافة تاجر جديد</h2>
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">إنشاء حساب جديد بصلاحيات تاجر</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 shadow-sm p-6 sm:p-8">
-        <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 shadow-sm p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-8 pb-4 border-b border-border dark:border-slate-800">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">
             <Store className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">البيانات الأساسية</h3>
-            <p className="text-xs text-slate-500">أدخل بيانات التاجر وحساب الدخول</p>
+            <h3 className="font-semibold text-foreground dark:text-white">البيانات الأساسية</h3>
+            <p className="text-xs text-muted-foreground">أدخل بيانات التاجر وحساب الدخول</p>
           </div>
         </div>
 
@@ -136,7 +136,7 @@ export default function CreateMerchantPage() {
                 id="preferred_locale"
                 {...register("preferred_locale")}
                 disabled={isSubmitting}
-                className="flex h-10 w-full rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1F2522] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="flex h-10 w-full rounded-md border border-border dark:border-slate-800 bg-card dark:bg-[#1F2522] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="ar">العربية</option>
                 <option value="en">English</option>
@@ -158,7 +158,7 @@ export default function CreateMerchantPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-emerald-600 focus:outline-none"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -181,7 +181,7 @@ export default function CreateMerchantPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-emerald-600 focus:outline-none"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -191,7 +191,7 @@ export default function CreateMerchantPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+          <div className="pt-6 border-t border-border dark:border-slate-800 flex justify-end gap-3">
             <Link href="/users">
               <Button type="button" variant="outline" disabled={isSubmitting}>
                 إلغاء

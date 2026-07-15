@@ -18,7 +18,7 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-slate-500 animate-pulse">جاري التحميل...</div>
+        <div className="text-muted-foreground animate-pulse">جاري التحميل...</div>
       </div>
     );
   }
@@ -48,10 +48,10 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-slate-900">تفاصيل الاشتراك</h1>
+              <h1 className="text-2xl font-bold text-foreground">تفاصيل الاشتراك</h1>
               <SubscriptionStatusBadge status={subscription.status} />
             </div>
-            <p className="text-sm text-slate-500 mt-1 font-sans" dir="ltr">
+            <p className="text-sm text-muted-foreground mt-1 font-sans" dir="ltr">
               ID: {subscription.public_id}
             </p>
           </div>
@@ -76,10 +76,10 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
         <div className="space-y-6 md:col-span-2">
           
           {/* Main Info Card */}
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
+            <div className="px-6 py-4 border-b border-border bg-muted flex justify-between items-center">
               <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <Info className="h-5 w-5 text-slate-400" />
+                <Info className="h-5 w-5 text-muted-foreground" />
                 معلومات الاشتراك
               </h3>
               <RemainingDaysBadge endsAt={subscription.ends_at} status={subscription.status} />
@@ -87,29 +87,29 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
             <div className="p-6">
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4">
                 <div>
-                  <dt className="text-sm font-medium text-slate-500">حالة الاشتراك</dt>
-                  <dd className="mt-1 font-semibold text-slate-900">{getSubscriptionStatusLabel(subscription.status)}</dd>
+                  <dt className="text-sm font-medium text-muted-foreground">حالة الاشتراك</dt>
+                  <dd className="mt-1 font-semibold text-foreground">{getSubscriptionStatusLabel(subscription.status)}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-slate-500">سعر الخطة (وقت التعيين)</dt>
+                  <dt className="text-sm font-medium text-muted-foreground">سعر الخطة (وقت التعيين)</dt>
                   <dd className="mt-1 font-semibold text-[#1E7D4E] font-sans" dir="ltr">
                     {subscription.price_snapshot !== null ? formatPlanPrice(subscription.price_snapshot, subscription.currency_snapshot) : "مجاني"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-slate-500">اسم الخطة (وقت التعيين)</dt>
-                  <dd className="mt-1 font-medium text-slate-900">{subscription.plan_name_ar_snapshot || "-"}</dd>
+                  <dt className="text-sm font-medium text-muted-foreground">اسم الخطة (وقت التعيين)</dt>
+                  <dd className="mt-1 font-medium text-foreground">{subscription.plan_name_ar_snapshot || "-"}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-slate-500">عين بواسطة</dt>
-                  <dd className="mt-1 text-slate-900">{subscription.assigned_by?.name || "نظام"}</dd>
+                  <dt className="text-sm font-medium text-muted-foreground">عين بواسطة</dt>
+                  <dd className="mt-1 text-foreground">{subscription.assigned_by?.name || "نظام"}</dd>
                 </div>
               </dl>
               
               {subscription.notes && (
-                <div className="mt-6 pt-4 border-t border-slate-100">
-                  <dt className="text-sm font-medium text-slate-500 mb-2">ملاحظات الإدارة</dt>
-                  <dd className="text-sm text-slate-700 bg-slate-50 p-4 rounded-md">{subscription.notes}</dd>
+                <div className="mt-6 pt-4 border-t border-border">
+                  <dt className="text-sm font-medium text-muted-foreground mb-2">ملاحظات الإدارة</dt>
+                  <dd className="text-sm text-slate-700 bg-muted p-4 rounded-md">{subscription.notes}</dd>
                 </div>
               )}
 
@@ -123,32 +123,32 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
           </div>
 
           {/* Dates Card */}
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
+            <div className="px-6 py-4 border-b border-border bg-muted">
               <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-slate-400" />
+                <Calendar className="h-5 w-5 text-muted-foreground" />
                 السجل الزمني
               </h3>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4">
                 <div>
-                  <dt className="text-sm font-medium text-slate-500">تاريخ البدء</dt>
-                  <dd className="mt-1 font-medium text-slate-900 font-sans" dir="ltr">
+                  <dt className="text-sm font-medium text-muted-foreground">تاريخ البدء</dt>
+                  <dd className="mt-1 font-medium text-foreground font-sans" dir="ltr">
                     {subscription.starts_at ? format(parseISO(subscription.starts_at), "yyyy-MM-dd HH:mm") : "-"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-slate-500">تاريخ الانتهاء المتوقع</dt>
-                  <dd className="mt-1 font-medium text-slate-900 font-sans" dir="ltr">
+                  <dt className="text-sm font-medium text-muted-foreground">تاريخ الانتهاء المتوقع</dt>
+                  <dd className="mt-1 font-medium text-foreground font-sans" dir="ltr">
                     {subscription.ends_at ? format(parseISO(subscription.ends_at), "yyyy-MM-dd HH:mm") : "-"}
                   </dd>
                 </div>
                 
                 {subscription.activated_at && (
                   <div>
-                    <dt className="text-sm font-medium text-slate-500">تاريخ التفعيل الفعلي</dt>
-                    <dd className="mt-1 font-medium text-slate-900 font-sans" dir="ltr">
+                    <dt className="text-sm font-medium text-muted-foreground">تاريخ التفعيل الفعلي</dt>
+                    <dd className="mt-1 font-medium text-foreground font-sans" dir="ltr">
                       {format(parseISO(subscription.activated_at), "yyyy-MM-dd HH:mm")}
                     </dd>
                   </div>
@@ -157,19 +157,19 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
                 {subscription.cancelled_at && (
                   <div>
                     <dt className="text-sm font-medium text-red-500">تاريخ الإلغاء</dt>
-                    <dd className="mt-1 font-medium text-slate-900 font-sans" dir="ltr">
+                    <dd className="mt-1 font-medium text-foreground font-sans" dir="ltr">
                       {format(parseISO(subscription.cancelled_at), "yyyy-MM-dd HH:mm")}
                     </dd>
                     {subscription.cancelled_by && (
-                      <p className="text-xs text-slate-500 mt-1">بواسطة: {subscription.cancelled_by.name}</p>
+                      <p className="text-xs text-muted-foreground mt-1">بواسطة: {subscription.cancelled_by.name}</p>
                     )}
                   </div>
                 )}
                 
                 {subscription.expired_at && (
                   <div>
-                    <dt className="text-sm font-medium text-slate-500">تاريخ الانتهاء الفعلي</dt>
-                    <dd className="mt-1 font-medium text-slate-900 font-sans" dir="ltr">
+                    <dt className="text-sm font-medium text-muted-foreground">تاريخ الانتهاء الفعلي</dt>
+                    <dd className="mt-1 font-medium text-foreground font-sans" dir="ltr">
                       {format(parseISO(subscription.expired_at), "yyyy-MM-dd HH:mm")}
                     </dd>
                   </div>
@@ -184,10 +184,10 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
         <div className="space-y-6">
           
           {/* Store Card */}
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
+            <div className="px-6 py-4 border-b border-border bg-muted">
               <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <StoreIcon className="h-5 w-5 text-slate-400" />
+                <StoreIcon className="h-5 w-5 text-muted-foreground" />
                 المحل المرتبط
               </h3>
             </div>
@@ -195,17 +195,17 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
               {subscription.store ? (
                 <>
                   <div>
-                    <div className="font-semibold text-lg text-slate-900">{subscription.store.name_ar}</div>
-                    <div className="text-sm text-slate-500 font-sans" dir="ltr">{subscription.store.slug}</div>
+                    <div className="font-semibold text-lg text-foreground">{subscription.store.name_ar}</div>
+                    <div className="text-sm text-muted-foreground font-sans" dir="ltr">{subscription.store.slug}</div>
                   </div>
                   
                   <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Tag className="h-4 w-4 text-slate-400" />
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Tag className="h-4 w-4 text-muted-foreground" />
                       <span>{subscription.store.category?.name_ar || "-"}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <MapPin className="h-4 w-4 text-slate-400" />
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
                       <span>{subscription.store.city?.name_ar || "-"}</span>
                     </div>
                   </div>
@@ -215,16 +215,16 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
                   </Button>
                 </>
               ) : (
-                <div className="text-center text-slate-500 py-4">بيانات المحل غير متوفرة</div>
+                <div className="text-center text-muted-foreground py-4">بيانات المحل غير متوفرة</div>
               )}
             </div>
           </div>
 
           {/* Plan Card */}
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
+            <div className="px-6 py-4 border-b border-border bg-muted">
               <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <Tag className="h-5 w-5 text-slate-400" />
+                <Tag className="h-5 w-5 text-muted-foreground" />
                 الخطة الحالية
               </h3>
             </div>
@@ -232,8 +232,8 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
               {subscription.plan ? (
                 <>
                   <div>
-                    <div className="font-semibold text-lg text-slate-900">{subscription.plan.name_ar}</div>
-                    <div className="text-sm text-slate-500 mt-1">
+                    <div className="font-semibold text-lg text-foreground">{subscription.plan.name_ar}</div>
+                    <div className="text-sm text-muted-foreground mt-1">
                       {subscription.plan.is_active ? (
                         <span className="text-green-600 font-medium">متاحة حالياً</span>
                       ) : (
@@ -242,8 +242,8 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
                     </div>
                   </div>
                   
-                  <div className="py-3 border-y border-slate-100 flex justify-between items-center">
-                    <span className="text-slate-600">السعر القياسي:</span>
+                  <div className="py-3 border-y border-border flex justify-between items-center">
+                    <span className="text-muted-foreground">السعر القياسي:</span>
                     <span className="font-bold text-[#1E7D4E] font-sans" dir="ltr">
                       {formatPlanPrice(subscription.plan.price, subscription.plan.currency)}
                     </span>
@@ -254,7 +254,7 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
                   </Button>
                 </>
               ) : (
-                <div className="text-center text-slate-500 py-4">بيانات الخطة غير متوفرة</div>
+                <div className="text-center text-muted-foreground py-4">بيانات الخطة غير متوفرة</div>
               )}
             </div>
           </div>

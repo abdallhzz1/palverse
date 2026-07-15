@@ -80,8 +80,8 @@ export function UserActions({ user, onSuccess }: UserActionsProps) {
 
   return (
     <>
-      <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">الإجراءات الإدارية</h3>
+      <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+        <h3 className="text-lg font-bold text-foreground dark:text-white mb-4">الإجراءات الإدارية</h3>
         
         {isSelf && (
           <div className="mb-4 p-3 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 rounded-lg text-sm flex items-start gap-2">
@@ -110,7 +110,7 @@ export function UserActions({ user, onSuccess }: UserActionsProps) {
               <Button
                 onClick={() => setActiveModal("deactivate")}
                 variant="outline"
-                className="text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                className="text-slate-700 hover:text-foreground hover:bg-muted"
               >
                 <Ban className="w-4 h-4 mr-2 ml-2" />
                 تعطيل
@@ -200,7 +200,7 @@ export function UserActions({ user, onSuccess }: UserActionsProps) {
               { id: "merchant", label: "تاجر (Merchant)", desc: "إدارة المحلات الخاصة به وطلباته." },
               { id: "customer", label: "مستخدم (Customer)", desc: "التصفح والشراء في التطبيق فقط." }
             ].map(role => (
-              <div key={role.id} className="flex items-start gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-lg">
+              <div key={role.id} className="flex items-start gap-3 p-3 border border-border dark:border-slate-700 rounded-lg">
                 <input 
                   type="checkbox" 
                   id={`role_${role.id}`} 
@@ -211,7 +211,7 @@ export function UserActions({ user, onSuccess }: UserActionsProps) {
                 />
                 <div>
                   <Label htmlFor={`role_${role.id}`} className="font-semibold">{role.label}</Label>
-                  <p className="text-xs text-slate-500">{role.desc}</p>
+                  <p className="text-xs text-muted-foreground">{role.desc}</p>
                 </div>
               </div>
             ))}

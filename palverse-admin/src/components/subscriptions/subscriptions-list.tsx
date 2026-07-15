@@ -31,13 +31,13 @@ export function SubscriptionsList() {
   return (
     <div className="space-y-4">
       {/* Filters Toolbar */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-4 p-4 bg-white rounded-lg border border-slate-200">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-4 p-4 bg-card rounded-lg border border-border">
         <div className="w-full sm:w-48">
-          <label className="text-xs text-slate-500 mb-1 block">الحالة</label>
+          <label className="text-xs text-muted-foreground mb-1 block">الحالة</label>
           <select
             value={params.status || ""}
             onChange={(e) => setFilter("status", e.target.value)}
-            className="flex h-9 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-1 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+            className="flex h-9 w-full items-center justify-between rounded-md border border-border bg-card px-3 py-1 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
           >
             <option value="">الكل</option>
             <option value="active">نشط</option>
@@ -48,22 +48,22 @@ export function SubscriptionsList() {
         </div>
 
         <div className="w-full sm:w-48">
-          <label className="text-xs text-slate-500 mb-1 block">تاريخ البدء من</label>
+          <label className="text-xs text-muted-foreground mb-1 block">تاريخ البدء من</label>
           <input
             type="date"
             value={params.starts_from || ""}
             onChange={(e) => setFilter("starts_from", e.target.value)}
-            className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+            className="flex h-9 w-full rounded-md border border-border bg-card px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
           />
         </div>
 
         <div className="w-full sm:w-48">
-          <label className="text-xs text-slate-500 mb-1 block">تاريخ البدء إلى</label>
+          <label className="text-xs text-muted-foreground mb-1 block">تاريخ البدء إلى</label>
           <input
             type="date"
             value={params.starts_to || ""}
             onChange={(e) => setFilter("starts_to", e.target.value)}
-            className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+            className="flex h-9 w-full rounded-md border border-border bg-card px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
           />
         </div>
         
@@ -79,7 +79,7 @@ export function SubscriptionsList() {
           {error.message || "حدث خطأ أثناء تحميل الاشتراكات"}
         </div>
       ) : (
-        <div className="rounded-md border border-slate-200 bg-white overflow-hidden">
+        <div className="rounded-md border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -102,7 +102,7 @@ export function SubscriptionsList() {
                   </TableRow>
                 ) : data?.data.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center text-slate-500">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                       لا توجد اشتراكات مطابقة للبحث
                     </TableCell>
                   </TableRow>
@@ -114,7 +114,7 @@ export function SubscriptionsList() {
                           <Link href={`/stores/${subscription.store?.public_id}`} className="font-medium text-[#1E7D4E] hover:underline">
                             {subscription.store?.name_ar || "محل غير معروف"}
                           </Link>
-                          <span className="text-xs text-slate-500 font-sans" dir="ltr">
+                          <span className="text-xs text-muted-foreground font-sans" dir="ltr">
                             {subscription.store?.slug}
                           </span>
                         </div>
@@ -123,14 +123,14 @@ export function SubscriptionsList() {
                         <div className="flex flex-col">
                           <span className="font-medium">{subscription.plan_name_ar_snapshot || "خطة غير معروفة"}</span>
                           {subscription.plan && (
-                            <Link href={`/subscription-plans/${subscription.plan.public_id}`} className="text-xs text-slate-400 hover:text-[#1E7D4E] underline">
+                            <Link href={`/subscription-plans/${subscription.plan.public_id}`} className="text-xs text-muted-foreground hover:text-[#1E7D4E] underline">
                               عرض الخطة الحالية
                             </Link>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="font-medium text-slate-900 font-sans" dir="ltr">
+                        <span className="font-medium text-foreground font-sans" dir="ltr">
                           {formatPrice(subscription.price_snapshot, subscription.currency_snapshot)}
                         </span>
                       </TableCell>
@@ -138,15 +138,15 @@ export function SubscriptionsList() {
                         <SubscriptionStatusBadge status={subscription.status} />
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-col gap-1 text-xs text-slate-600">
+                        <div className="flex flex-col gap-1 text-xs text-muted-foreground">
                           <div>
-                            <span className="text-slate-400">من:</span>{" "}
+                            <span className="text-muted-foreground">من:</span>{" "}
                             <span className="font-sans" dir="ltr">
                               {subscription.starts_at ? format(parseISO(subscription.starts_at), "yyyy-MM-dd") : "-"}
                             </span>
                           </div>
                           <div>
-                            <span className="text-slate-400">إلى:</span>{" "}
+                            <span className="text-muted-foreground">إلى:</span>{" "}
                             <span className="font-sans" dir="ltr">
                               {subscription.ends_at ? format(parseISO(subscription.ends_at), "yyyy-MM-dd") : "-"}
                             </span>

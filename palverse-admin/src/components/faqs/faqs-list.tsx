@@ -54,7 +54,7 @@ export function FaqsList() {
     <div className="space-y-4 p-4">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="ابحث في الأسئلة الشائعة..."
             value={searchTerm}
@@ -85,7 +85,7 @@ export function FaqsList() {
 
       <div className="rounded-md border">
         <Table>
-          <TableHeader className="bg-slate-50">
+          <TableHeader className="bg-muted">
             <TableRow>
               <TableHead>السؤال</TableHead>
               <TableHead>التصنيف</TableHead>
@@ -98,7 +98,7 @@ export function FaqsList() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                   جاري تحميل الأسئلة...
                 </TableCell>
               </TableRow>
@@ -110,26 +110,26 @@ export function FaqsList() {
               </TableRow>
             ) : !data?.data?.length ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                   لا توجد أسئلة مطابقة لخيارات البحث
                 </TableCell>
               </TableRow>
             ) : (
               data.data.map((faq) => (
                 <TableRow key={faq.public_id}>
-                  <TableCell className="font-medium text-slate-900 max-w-sm truncate">
+                  <TableCell className="font-medium text-foreground max-w-sm truncate">
                     {faq.question_ar}
                   </TableCell>
-                  <TableCell className="text-slate-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {faq.category || "-"}
                   </TableCell>
-                  <TableCell className="text-slate-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {faq.sort_order}
                   </TableCell>
                   <TableCell>
                     <FaqStatusBadge isActive={faq.is_active} />
                   </TableCell>
-                  <TableCell className="text-slate-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {faq.created_at ? format(new Date(faq.created_at), "dd MMMM yyyy", { locale: ar }) : "-"}
                   </TableCell>
                   <TableCell className="text-left">

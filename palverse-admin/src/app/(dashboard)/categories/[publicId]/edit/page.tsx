@@ -64,7 +64,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ publicI
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
         <h2 className="text-xl font-bold text-red-600">لم يتم العثور على التصنيف</h2>
-        <p className="text-slate-600">{error.message}</p>
+        <p className="text-muted-foreground">{error.message}</p>
         <Button asChild variant="outline">
           <Link href="/categories">العودة للتصنيفات</Link>
         </Button>
@@ -81,8 +81,8 @@ export default function EditCategoryPage({ params }: { params: Promise<{ publicI
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">تعديل التصنيف</h2>
-          <p className="text-slate-500">تحديث بيانات التصنيف</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">تعديل التصنيف</h2>
+          <p className="text-muted-foreground">تحديث بيانات التصنيف</p>
         </div>
       </div>
 

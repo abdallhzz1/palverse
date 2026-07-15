@@ -14,7 +14,7 @@ export function PageStatusBadge({ isPublished }: PageStatusBadgeProps) {
   }
 
   return (
-    <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100 hover:text-slate-600 border-slate-200 border font-normal">
+    <Badge className="bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground border-border border font-normal">
       غير منشورة
     </Badge>
   );

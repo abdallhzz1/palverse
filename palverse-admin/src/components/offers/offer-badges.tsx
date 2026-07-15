@@ -75,7 +75,7 @@ export function OfferTimeStateBadge({ offer }: { offer: AdminOffer }) {
       );
     case "expired":
       return (
-        <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100/80 border-none">
+        <Badge className="bg-muted text-slate-700 hover:bg-muted/80 border-none">
           منتهي
         </Badge>
       );

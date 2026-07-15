@@ -60,7 +60,7 @@ export interface DropdownMenuContentProps {
 
 export const DropdownMenuContent = ({ children, align = "center", setIsOpen }: DropdownMenuContentProps) => {
   return (
-    <div className={`absolute z-50 mt-2 min-w-[8rem] overflow-hidden rounded-md border border-slate-200 bg-white p-1 shadow-md animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ${align === "end" ? "left-0" : align === "start" ? "right-0" : "left-1/2 -translate-x-1/2"}`}>
+    <div className={`absolute z-50 mt-2 min-w-[8rem] overflow-hidden rounded-md border border-border bg-card p-1 shadow-md animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ${align === "end" ? "left-0" : align === "start" ? "right-0" : "left-1/2 -translate-x-1/2"}`}>
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,7 +86,7 @@ export const DropdownMenuItem = ({ children, className, onClick, setIsOpen, asCh
     setIsOpen?.(false)
   }
 
-  const baseClassName = `relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 focus:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 ${className || ""}`
+  const baseClassName = `relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 ${className || ""}`
 
   if (asChild && React.isValidElement(children)) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

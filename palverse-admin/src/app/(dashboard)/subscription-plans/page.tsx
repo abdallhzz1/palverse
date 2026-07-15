@@ -14,8 +14,8 @@ export default function SubscriptionPlansPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">خطط الاشتراك</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">خطط الاشتراك</h2>
+          <p className="text-muted-foreground dark:text-muted-foreground mt-1">
             إدارة كافة خطط الاشتراك المتاحة للمتاجر
           </p>
         </div>

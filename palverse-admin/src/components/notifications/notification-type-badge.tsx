@@ -56,7 +56,7 @@ export function getNotificationTypeInfo(type: NotificationType) {
       return {
         label: "إشعار نظام",
         icon: Info,
-        className: "bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200",
+        className: "bg-muted text-slate-700 hover:bg-muted border-border",
       };
   }
 }

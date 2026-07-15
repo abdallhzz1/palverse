@@ -58,15 +58,15 @@ export function SettingsBrandingForm() {
     });
   };
 
-  if (isLoading) return <div className="py-12 text-center text-slate-500">جاري التحميل...</div>;
+  if (isLoading) return <div className="py-12 text-center text-muted-foreground">جاري التحميل...</div>;
   if (error) return <div className="py-12 text-center text-red-600">{error.message}</div>;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">الهوية البصرية</h2>
-          <p className="text-sm text-slate-500">إعدادات الشعار والألوان الخاصة بالمنصة</p>
+          <h2 className="text-lg font-semibold text-foreground">الهوية البصرية</h2>
+          <p className="text-sm text-muted-foreground">إعدادات الشعار والألوان الخاصة بالمنصة</p>
         </div>
 
         {apiError && (
@@ -128,7 +128,7 @@ export function SettingsBrandingForm() {
                 <FormLabel>اللون الأساسي (Primary Color)</FormLabel>
                 <div className="flex gap-2">
                   <div 
-                    className="w-10 h-10 rounded-md border border-slate-200 shrink-0" 
+                    className="w-10 h-10 rounded-md border border-border shrink-0" 
                     style={{ backgroundColor: field.value || "#0F3D2E" }}
                   />
                   <FormControl>
@@ -148,7 +148,7 @@ export function SettingsBrandingForm() {
                 <FormLabel>اللون الثانوي (Secondary Color)</FormLabel>
                 <div className="flex gap-2">
                   <div 
-                    className="w-10 h-10 rounded-md border border-slate-200 shrink-0" 
+                    className="w-10 h-10 rounded-md border border-border shrink-0" 
                     style={{ backgroundColor: field.value || "#1E7D4E" }}
                   />
                   <FormControl>
@@ -161,7 +161,7 @@ export function SettingsBrandingForm() {
           />
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-slate-100">
+        <div className="flex justify-end pt-4 border-t border-border">
           <Button type="submit" disabled={isUpdating || !form.formState.isDirty} className="bg-[#0F3D2E] hover:bg-[#0F3D2E]/90 min-w-[120px]">
             {isUpdating ? "جاري الحفظ..." : "حفظ التغييرات"}
           </Button>

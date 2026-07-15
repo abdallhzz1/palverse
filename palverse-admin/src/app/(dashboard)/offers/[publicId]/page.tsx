@@ -37,7 +37,7 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-[#1E7D4E]" />
-        <p className="text-slate-500">جاري تحميل تفاصيل العرض...</p>
+        <p className="text-muted-foreground">جاري تحميل تفاصيل العرض...</p>
       </div>
     );
   }
@@ -70,7 +70,7 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
               <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">
             تفاصيل العرض
           </h2>
         </div>
@@ -110,7 +110,7 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
             <CardContent className="space-y-6">
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Image */}
-                <div className="w-full md:w-1/3 aspect-square rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+                <div className="w-full md:w-1/3 aspect-square rounded-lg bg-muted flex items-center justify-center overflow-hidden border border-border">
                   {offer.image_url ? (
                     <img 
                       src={offer.image_url} 
@@ -125,30 +125,30 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
                 {/* Details */}
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">{offer.title_ar}</h3>
-                    {offer.title_en && <p className="text-slate-500 font-sans" dir="ltr">{offer.title_en}</p>}
+                    <h3 className="text-xl font-bold text-foreground">{offer.title_ar}</h3>
+                    {offer.title_en && <p className="text-muted-foreground font-sans" dir="ltr">{offer.title_en}</p>}
                   </div>
                   
                   {(offer.description_ar || offer.description_en) && (
                     <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-slate-900">الوصف</h4>
+                      <h4 className="text-sm font-medium text-foreground">الوصف</h4>
                       {offer.description_ar && (
-                        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{offer.description_ar}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{offer.description_ar}</p>
                       )}
                       {offer.description_en && (
-                        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap font-sans" dir="ltr">{offer.description_en}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap font-sans" dir="ltr">{offer.description_en}</p>
                       )}
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-slate-100 flex flex-wrap gap-y-4 gap-x-8">
+                  <div className="pt-4 border-t border-border flex flex-wrap gap-y-4 gap-x-8">
                     <div>
-                      <h4 className="text-sm font-medium text-slate-500 mb-1">السعر</h4>
+                      <h4 className="text-sm font-medium text-muted-foreground mb-1">السعر</h4>
                       <OfferPrice offer={offer} className="text-lg" />
                     </div>
                     {offer.discount_percentage && (
                       <div>
-                        <h4 className="text-sm font-medium text-slate-500 mb-1">نسبة الخصم</h4>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-1">نسبة الخصم</h4>
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                           {offer.discount_percentage}% خصم
                         </span>
@@ -168,7 +168,7 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-sm font-medium text-slate-500 mb-1">حالة الظهور والإدارة</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1">حالة الظهور والإدارة</h4>
                   <div className="flex gap-2 items-center mt-2">
                     <OfferAdminStatusBadge isActive={offer.is_active} />
                     <OfferTimeStateBadge offer={offer} />
@@ -176,9 +176,9 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
                 </div>
                 
                 <div>
-                  <h4 className="text-sm font-medium text-slate-500 mb-1">التواريخ</h4>
-                  <OfferPeriod offer={offer} className="mt-2 text-base font-medium text-slate-900" />
-                  <div className="mt-4 space-y-1 text-xs text-slate-500">
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1">التواريخ</h4>
+                  <OfferPeriod offer={offer} className="mt-2 text-base font-medium text-foreground" />
+                  <div className="mt-4 space-y-1 text-xs text-muted-foreground">
                     <p>تاريخ الإنشاء: {offer.created_at ? format(parseISO(offer.created_at), "d MMMM yyyy, h:mm a", { locale: ar }) : "-"}</p>
                     <p>آخر تحديث: {offer.updated_at ? format(parseISO(offer.updated_at), "d MMMM yyyy, h:mm a", { locale: ar }) : "-"}</p>
                   </div>
@@ -187,9 +187,9 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
               
               <div className={cn(
                 "mt-6 p-4 rounded-lg flex items-start gap-3",
-                visibility.visible ? "bg-[#EAF3EC] text-[#0F3D2E]" : "bg-slate-50 text-slate-700"
+                visibility.visible ? "bg-[#EAF3EC] text-[#0F3D2E]" : "bg-muted text-slate-700"
               )}>
-                <Info className={cn("h-5 w-5 shrink-0 mt-0.5", visibility.visible ? "text-[#1E7D4E]" : "text-slate-400")} />
+                <Info className={cn("h-5 w-5 shrink-0 mt-0.5", visibility.visible ? "text-[#1E7D4E]" : "text-muted-foreground")} />
                 <div>
                   <h5 className="font-semibold">{visibility.label}</h5>
                   <p className="text-sm mt-1">
@@ -208,7 +208,7 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Store className="h-5 w-5 text-slate-400" />
+                <Store className="h-5 w-5 text-muted-foreground" />
                 المحل التابع له
               </CardTitle>
             </CardHeader>
@@ -216,18 +216,18 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
               {offer.store ? (
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-bold text-slate-900">{offer.store.name_ar}</h4>
-                    {offer.store.name_en && <p className="text-sm text-slate-500 font-sans" dir="ltr">{offer.store.name_en}</p>}
+                    <h4 className="font-bold text-foreground">{offer.store.name_ar}</h4>
+                    {offer.store.name_en && <p className="text-sm text-muted-foreground font-sans" dir="ltr">{offer.store.name_en}</p>}
                   </div>
                   
                   <div className="flex flex-col gap-2 text-sm">
-                    <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                      <span className="text-slate-500">حالة المحل</span>
-                      <span className="font-medium text-slate-900">{offer.store.is_active ? "نشط" : "غير نشط"}</span>
+                    <div className="flex justify-between items-center py-2 border-b border-border">
+                      <span className="text-muted-foreground">حالة المحل</span>
+                      <span className="font-medium text-foreground">{offer.store.is_active ? "نشط" : "غير نشط"}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                      <span className="text-slate-500">حالة الاعتماد</span>
-                      <span className="font-medium text-slate-900">
+                    <div className="flex justify-between items-center py-2 border-b border-border">
+                      <span className="text-muted-foreground">حالة الاعتماد</span>
+                      <span className="font-medium text-foreground">
                         {offer.store.status === "approved" ? "معتمد" : offer.store.status === "rejected" ? "مرفوض" : "قيد المراجعة"}
                       </span>
                     </div>
@@ -241,7 +241,7 @@ export default function OfferDetailsPage({ params }: { params: { publicId: strin
                   </Button>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 text-center py-4">بيانات المحل غير متوفرة</p>
+                <p className="text-sm text-muted-foreground text-center py-4">بيانات المحل غير متوفرة</p>
               )}
             </CardContent>
           </Card>

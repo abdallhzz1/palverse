@@ -35,9 +35,9 @@ export function ZonesList() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-md bg-white">
+      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-md bg-card">
         <h2 className="text-xl font-bold text-red-600 mb-2">حدث خطأ</h2>
-        <p className="text-slate-600 mb-4">{error.message}</p>
+        <p className="text-muted-foreground mb-4">{error.message}</p>
         <Button onClick={refresh} variant="outline">
           إعادة المحاولة
         </Button>
@@ -64,7 +64,7 @@ export function ZonesList() {
         </Button>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -88,7 +88,7 @@ export function ZonesList() {
               ))
             ) : data?.data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-12 text-slate-500">
+                <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                   {params.city ? "لا توجد مناطق مطابقة للفلتر المحدد" : "لا توجد مناطق حتى الآن"}
                 </TableCell>
               </TableRow>

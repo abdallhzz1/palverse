@@ -20,8 +20,8 @@ export default function NewSubscriptionPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">تعيين اشتراك جديد</h1>
-          <p className="text-sm text-slate-500 mt-1">تخصيص خطة اشتراك لمحل معين</p>
+          <h1 className="text-2xl font-bold text-foreground">تعيين اشتراك جديد</h1>
+          <p className="text-sm text-muted-foreground mt-1">تخصيص خطة اشتراك لمحل معين</p>
         </div>
       </div>
 

@@ -13,7 +13,7 @@ export default function EditPage({ params }: { params: Promise<{ publicId: strin
   const { updatePage, isMutating, apiError } = usePageActions();
 
   if (isLoading) {
-    return <div className="py-24 text-center text-slate-500">جاري تحميل بيانات الصفحة...</div>;
+    return <div className="py-24 text-center text-muted-foreground">جاري تحميل بيانات الصفحة...</div>;
   }
 
   if (error || !pageData) {
@@ -37,8 +37,8 @@ export default function EditPage({ params }: { params: Promise<{ publicId: strin
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">تعديل الصفحة: {pageData.title_ar}</h1>
-            <p className="text-sm text-slate-500 mt-1">تحديث محتوى الصفحة وإعدادات النشر</p>
+            <h1 className="text-2xl font-bold text-foreground">تعديل الصفحة: {pageData.title_ar}</h1>
+            <p className="text-sm text-muted-foreground mt-1">تحديث محتوى الصفحة وإعدادات النشر</p>
           </div>
         </div>
         

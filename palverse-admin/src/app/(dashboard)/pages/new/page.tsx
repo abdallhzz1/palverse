@@ -18,8 +18,8 @@ export default function NewPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">إضافة صفحة جديدة</h1>
-          <p className="text-sm text-slate-500 mt-1">إنشاء صفحة ثابتة جديدة باللغتين العربية والإنجليزية</p>
+          <h1 className="text-2xl font-bold text-foreground">إضافة صفحة جديدة</h1>
+          <p className="text-sm text-muted-foreground mt-1">إنشاء صفحة ثابتة جديدة باللغتين العربية والإنجليزية</p>
         </div>
       </div>
 

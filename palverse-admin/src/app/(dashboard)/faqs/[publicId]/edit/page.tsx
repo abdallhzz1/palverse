@@ -13,7 +13,7 @@ export default function EditFaqPage({ params }: { params: Promise<{ publicId: st
   const { updateFaq, isMutating, apiError } = useFaqActions();
 
   if (isLoading) {
-    return <div className="py-24 text-center text-slate-500">جاري تحميل بيانات السؤال...</div>;
+    return <div className="py-24 text-center text-muted-foreground">جاري تحميل بيانات السؤال...</div>;
   }
 
   if (error || !faqData) {
@@ -36,8 +36,8 @@ export default function EditFaqPage({ params }: { params: Promise<{ publicId: st
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">تعديل السؤال الشائع</h1>
-          <p className="text-sm text-slate-500 mt-1">تحديث بيانات السؤال وحالته</p>
+          <h1 className="text-2xl font-bold text-foreground">تعديل السؤال الشائع</h1>
+          <p className="text-sm text-muted-foreground mt-1">تحديث بيانات السؤال وحالته</p>
         </div>
       </div>
 

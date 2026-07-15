@@ -54,8 +54,8 @@ export default function CreateCityPage() {
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">إضافة مدينة جديدة</h2>
-          <p className="text-slate-500">أدخل بيانات المدينة الجديدة</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">إضافة مدينة جديدة</h2>
+          <p className="text-muted-foreground">أدخل بيانات المدينة الجديدة</p>
         </div>
       </div>
 

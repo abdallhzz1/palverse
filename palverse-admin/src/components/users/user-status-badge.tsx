@@ -16,7 +16,7 @@ export function UserStatusBadge({ status, className = "" }: UserStatusBadgeProps
       case "inactive":
         return {
           label: "غير نشط",
-          classes: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700",
+          classes: "bg-muted text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-border dark:border-slate-700",
         };
       case "suspended":
         return {
@@ -26,7 +26,7 @@ export function UserStatusBadge({ status, className = "" }: UserStatusBadgeProps
       default:
         return {
           label: status || "غير معروف",
-          classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700",
+          classes: "bg-muted text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-border dark:border-gray-700",
         };
     }
   };

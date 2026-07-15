@@ -55,29 +55,29 @@ export function SettingsMaintenanceForm() {
     });
   };
 
-  if (isLoading) return <div className="py-12 text-center text-slate-500">جاري التحميل...</div>;
+  if (isLoading) return <div className="py-12 text-center text-muted-foreground">جاري التحميل...</div>;
   if (error) return <div className="py-12 text-center text-red-600">{error.message}</div>;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">الصيانة والتسجيل</h2>
-          <p className="text-sm text-slate-500">التحكم بفتح وإغلاق التسجيل، ورسائل الصيانة</p>
+          <h2 className="text-lg font-semibold text-foreground">الصيانة والتسجيل</h2>
+          <p className="text-sm text-muted-foreground">التحكم بفتح وإغلاق التسجيل، ورسائل الصيانة</p>
         </div>
 
         {apiError && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{apiError.message}</div>}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-muted p-4 rounded-xl border border-border">
           <FormField
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={form.control as any}
             name="registration_enabled"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border bg-white p-4">
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border bg-card p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">تسجيل المستخدمين</FormLabel>
-                  <p className="text-sm text-slate-500">السماح للمستخدمين الجدد بالتسجيل كزبائن</p>
+                  <p className="text-sm text-muted-foreground">السماح للمستخدمين الجدد بالتسجيل كزبائن</p>
                 </div>
                 <FormControl>
                   <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -90,10 +90,10 @@ export function SettingsMaintenanceForm() {
             control={form.control as any}
             name="merchant_registration_enabled"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border bg-white p-4">
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border bg-card p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">تسجيل التجار</FormLabel>
-                  <p className="text-sm text-slate-500">السماح للتجار الجدد بالتسجيل وطلب فتح متجر</p>
+                  <p className="text-sm text-muted-foreground">السماح للتجار الجدد بالتسجيل وطلب فتح متجر</p>
                 </div>
                 <FormControl>
                   <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -134,7 +134,7 @@ export function SettingsMaintenanceForm() {
           />
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-slate-100">
+        <div className="flex justify-end pt-4 border-t border-border">
           <Button type="submit" disabled={isUpdating || !form.formState.isDirty} className="bg-[#0F3D2E] hover:bg-[#0F3D2E]/90 min-w-[120px]">
             {isUpdating ? "جاري الحفظ..." : "حفظ التغييرات"}
           </Button>

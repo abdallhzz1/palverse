@@ -93,8 +93,8 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">التقارير التحليلية</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">تقارير تفصيلية لأداء المنصة</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">التقارير التحليلية</h2>
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">تقارير تفصيلية لأداء المنصة</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -110,7 +110,7 @@ export default function ReportsPage() {
             variant="outline" 
             size="icon" 
             disabled={isRefreshing || isInitialLoading}
-            className="h-9 w-9 border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1F2522]"
+            className="h-9 w-9 border-border dark:border-slate-700 bg-card dark:bg-[#1F2522]"
             aria-label="تحديث البيانات"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
@@ -119,7 +119,7 @@ export default function ReportsPage() {
       </div>
 
       <Tabs value={filters.section} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-2 bg-transparent justify-start border-b border-slate-200 dark:border-slate-800 rounded-none pb-4">
+        <TabsList className="flex flex-wrap h-auto gap-2 bg-transparent justify-start border-b border-border dark:border-slate-800 rounded-none pb-4">
           <TabsTrigger value="overview" className="data-[state=active]:bg-[#1E7D4E] data-[state=active]:text-white rounded-full px-6">
             نظرة عامة
           </TabsTrigger>
@@ -170,8 +170,8 @@ export default function ReportsPage() {
 
           <TabsContent value="stores" className="m-0 space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">توزيع المحلات حسب التصنيف</h3>
+              <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-foreground dark:text-white mb-6">توزيع المحلات حسب التصنيف</h3>
                 {storesByCategory.error ? (
                   <div className="h-[300px] flex items-center justify-center text-red-500">
                     <AlertTriangle className="w-6 h-6 mr-2" /> خطأ في التحميل
@@ -185,8 +185,8 @@ export default function ReportsPage() {
                 )}
               </div>
               
-              <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">توزيع المحلات حسب المدينة</h3>
+              <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-foreground dark:text-white mb-6">توزيع المحلات حسب المدينة</h3>
                 {storesByCity.error ? (
                   <div className="h-[300px] flex items-center justify-center text-red-500">
                     <AlertTriangle className="w-6 h-6 mr-2" /> خطأ في التحميل
@@ -226,8 +226,8 @@ export default function ReportsPage() {
               />
             </div>
 
-            <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">توزيع الاشتراكات حسب الباقة</h3>
+            <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-foreground dark:text-white mb-6">توزيع الاشتراكات حسب الباقة</h3>
               {subscriptionsByPlan.error ? (
                 <div className="h-[300px] flex items-center justify-center text-red-500">
                   <AlertTriangle className="w-6 h-6 mr-2" /> خطأ في التحميل
@@ -261,7 +261,7 @@ export default function ReportsPage() {
                 title="العروض المنتهية" 
                 value={summary.data?.offers?.expired_offers} 
                 icon={<AlertTriangle className="w-5 h-5" />} 
-                iconClassName="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                iconClassName="bg-muted dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground"
                 isLoading={summary.isLoading}
               />
               <KpiCard 

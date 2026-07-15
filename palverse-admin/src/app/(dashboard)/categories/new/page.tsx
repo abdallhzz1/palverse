@@ -54,8 +54,8 @@ export default function CreateCategoryPage() {
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">إضافة تصنيف جديد</h2>
-          <p className="text-slate-500">أدخل بيانات التصنيف الجديد</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">إضافة تصنيف جديد</h2>
+          <p className="text-muted-foreground">أدخل بيانات التصنيف الجديد</p>
         </div>
       </div>
 

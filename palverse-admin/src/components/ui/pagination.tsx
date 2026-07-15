@@ -12,7 +12,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, disabled = f
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1F2522] px-4 py-3 sm:px-6 rounded-b-lg">
+    <div className="flex items-center justify-between border-t border-border dark:border-slate-800 bg-card dark:bg-[#1F2522] px-4 py-3 sm:px-6 rounded-b-lg">
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-slate-700 dark:text-slate-300">
@@ -42,7 +42,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, disabled = f
               <ChevronRight className="h-4 w-4" />
             </Button>
             
-            <span className="flex h-8 w-8 items-center justify-center text-sm font-semibold text-slate-900 dark:text-white">
+            <span className="flex h-8 w-8 items-center justify-center text-sm font-semibold text-foreground dark:text-white">
               {currentPage}
             </span>
 

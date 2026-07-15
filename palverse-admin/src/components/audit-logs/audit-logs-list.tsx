@@ -50,10 +50,10 @@ export function AuditLogsList() {
         <h2 className="text-xl font-semibold text-slate-800">سجل العمليات</h2>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row gap-4 items-center">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border bg-muted/50 flex flex-col sm:flex-row gap-4 items-center">
           <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="ابحث في سجل العمليات (باسم المستخدم، رقم الطلب...)"
               value={query}
@@ -113,7 +113,7 @@ export function AuditLogsList() {
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50 hover:bg-slate-50">
+              <TableRow className="bg-muted hover:bg-muted">
                 <TableHead>العملية</TableHead>
                 <TableHead>المستخدم</TableHead>
                 <TableHead>العنصر</TableHead>
@@ -124,7 +124,7 @@ export function AuditLogsList() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-slate-500">
+                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                     جاري تحميل سجل العمليات...
                   </TableCell>
                 </TableRow>
@@ -136,13 +136,13 @@ export function AuditLogsList() {
                 </TableRow>
               ) : !data?.data?.length ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-slate-500">
+                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                     {query || actionFilter !== "all" ? "لا توجد عمليات مطابقة لخيارات البحث" : "لا توجد عمليات مسجلة"}
                   </TableCell>
                 </TableRow>
               ) : (
                 data.data.map((log) => (
-                  <TableRow key={log.public_id} className="hover:bg-slate-50/50">
+                  <TableRow key={log.public_id} className="hover:bg-muted/50">
                     <TableCell>
                       <AuditActionBadge action={log.action} />
                     </TableCell>
@@ -152,13 +152,13 @@ export function AuditLogsList() {
                     <TableCell>
                       <AuditEntityBadge subject={log.subject} />
                     </TableCell>
-                    <TableCell className="text-slate-500 text-sm whitespace-nowrap">
+                    <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
                       {log.created_at ? format(new Date(log.created_at), "dd MMMM yyyy HH:mm", { locale: ar }) : "-"}
                     </TableCell>
                     <TableCell className="text-left">
                       <Button variant="ghost" size="icon" asChild>
                         <Link href={`/audit-logs/${log.public_id}`}>
-                          <Eye className="h-4 w-4 text-slate-400" />
+                          <Eye className="h-4 w-4 text-muted-foreground" />
                         </Link>
                       </Button>
                     </TableCell>
@@ -170,8 +170,8 @@ export function AuditLogsList() {
         </div>
 
         {data?.meta && data.meta.last_page > 1 && (
-          <div className="p-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
-            <span className="text-sm text-slate-500">
+          <div className="p-4 border-t border-border flex items-center justify-between bg-muted/50">
+            <span className="text-sm text-muted-foreground">
               إجمالي السجلات: {data.meta.total}
             </span>
             <div className="flex gap-2">

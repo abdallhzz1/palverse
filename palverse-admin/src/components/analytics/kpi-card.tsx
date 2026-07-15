@@ -27,12 +27,12 @@ export function KpiCard({
   return (
     <div
       className={cn(
-        "bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 p-5 shadow-sm transition-all hover:shadow-md",
+        "bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-5 shadow-sm transition-all hover:shadow-md",
         className
       )}
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <h3 className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
           {title}
         </h3>
         <div
@@ -54,7 +54,7 @@ export function KpiCard({
             <span className="text-sm font-medium">خطأ في التحميل</span>
           </div>
         ) : (
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">
+          <div className="text-2xl font-bold text-foreground dark:text-white">
             {value !== undefined ? value.toLocaleString("ar-EG") : "—"}
           </div>
         )}

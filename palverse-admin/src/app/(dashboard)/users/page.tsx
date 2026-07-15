@@ -32,8 +32,8 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">المستخدمون والتجار</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">إدارة حسابات المستخدمين والتجار وصلاحياتهم</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">المستخدمون والتجار</h2>
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">إدارة حسابات المستخدمين والتجار وصلاحياتهم</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -42,7 +42,7 @@ export default function UsersPage() {
             variant="outline" 
             size="icon" 
             disabled={isLoading}
-            className="h-10 w-10 border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1F2522]"
+            className="h-10 w-10 border-border dark:border-slate-700 bg-card dark:bg-[#1F2522]"
             aria-label="تحديث البيانات"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
@@ -56,12 +56,12 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#1F2522] rounded-xl border border-slate-100 dark:border-emerald-900/30 shadow-sm flex flex-col">
+      <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 shadow-sm flex flex-col">
         
         {/* Filters Toolbar */}
-        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-4">
+        <div className="p-4 border-b border-border dark:border-slate-800 flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
               type="text" 
               placeholder="ابحث بالاسم أو البريد أو رقم الهاتف" 
@@ -75,7 +75,7 @@ export default function UsersPage() {
             <select
               value={filters.status || ""}
               onChange={(e) => setFilter("status", e.target.value as UserStatus | "")}
-              className="h-10 rounded-md border border-slate-200 dark:border-slate-700 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+              className="h-10 rounded-md border border-border dark:border-slate-700 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             >
               <option value="">جميع الحالات</option>
               <option value="active">نشط</option>
@@ -86,7 +86,7 @@ export default function UsersPage() {
             <select
               value={filters.role || ""}
               onChange={(e) => setFilter("role", e.target.value as UserRole | "")}
-              className="h-10 rounded-md border border-slate-200 dark:border-slate-700 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+              className="h-10 rounded-md border border-border dark:border-slate-700 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             >
               <option value="">جميع الأدوار</option>
               <option value="admin">مدير</option>
@@ -101,14 +101,14 @@ export default function UsersPage() {
           {error ? (
             <div className="flex flex-col items-center justify-center h-64 text-center p-6">
               <AlertTriangle className="w-10 h-10 text-red-500 mb-4 opacity-80" />
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">حدث خطأ أثناء تحميل البيانات</h3>
-              <p className="text-slate-500 max-w-md mb-4">{error.message}</p>
+              <h3 className="text-lg font-medium text-foreground dark:text-white mb-2">حدث خطأ أثناء تحميل البيانات</h3>
+              <p className="text-muted-foreground max-w-md mb-4">{error.message}</p>
               <Button onClick={refresh} variant="outline">إعادة المحاولة</Button>
             </div>
           ) : isLoading && (!data || !data.data) ? (
             <div className="w-full">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800 animate-pulse">
+                <div key={i} className="flex items-center px-6 py-4 border-b border-border dark:border-slate-800 animate-pulse">
                   <div className="flex items-center gap-3 w-1/3">
                     <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700"></div>
                     <div className="space-y-2">
@@ -124,9 +124,9 @@ export default function UsersPage() {
             </div>
           ) : data?.data.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center p-6">
-              <UserCircle className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-1">لا يوجد مستخدمون</h3>
-              <p className="text-slate-500 max-w-md">لا يوجد مستخدمون مطابقون لخيارات البحث الحالية.</p>
+              <UserCircle className="w-12 h-12 text-slate-300 dark:text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground dark:text-white mb-1">لا يوجد مستخدمون</h3>
+              <p className="text-muted-foreground max-w-md">لا يوجد مستخدمون مطابقون لخيارات البحث الحالية.</p>
               {(filters.query || filters.status || filters.role) && (
                 <Button 
                   onClick={() => {
@@ -144,7 +144,7 @@ export default function UsersPage() {
             </div>
           ) : (
             <table className="w-full text-right text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
+              <thead className="bg-muted dark:bg-slate-800/50 text-muted-foreground dark:text-muted-foreground border-b border-border dark:border-slate-800">
                 <tr>
                   <th className="px-6 py-4 font-medium">المستخدم</th>
                   <th className="px-6 py-4 font-medium">الدور</th>
@@ -156,16 +156,16 @@ export default function UsersPage() {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {data?.data.map((user) => (
-                  <tr key={user.public_id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+                  <tr key={user.public_id} className="hover:bg-muted/50 dark:hover:bg-slate-800/30 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold uppercase shrink-0">
                           {user.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-900 dark:text-white">{user.name}</p>
-                          <p className="text-xs text-slate-500 dir-ltr text-left" dir="ltr">{user.email}</p>
-                          <p className="text-xs text-slate-500 dir-ltr text-left" dir="ltr">{user.phone}</p>
+                          <p className="font-medium text-foreground dark:text-white">{user.name}</p>
+                          <p className="text-xs text-muted-foreground dir-ltr text-left" dir="ltr">{user.email}</p>
+                          <p className="text-xs text-muted-foreground dir-ltr text-left" dir="ltr">{user.phone}</p>
                         </div>
                       </div>
                     </td>
@@ -179,15 +179,15 @@ export default function UsersPage() {
                     <td className="px-6 py-4">
                       <UserStatusBadge status={user.status} />
                     </td>
-                    <td className="px-6 py-4 text-slate-500" dir="ltr">
+                    <td className="px-6 py-4 text-muted-foreground" dir="ltr">
                       {formatDateTime(user.created_at)}
                     </td>
-                    <td className="px-6 py-4 text-slate-500" dir="ltr">
+                    <td className="px-6 py-4 text-muted-foreground" dir="ltr">
                       {user.last_login_at ? formatDateTime(user.last_login_at) : "لم يسجل دخول"}
                     </td>
                     <td className="px-6 py-4">
                       <Link href={`/users/${user.public_id}`}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-emerald-600">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-emerald-600">
                           <MoreVertical className="w-4 h-4" />
                           <span className="sr-only">التفاصيل</span>
                         </Button>

@@ -27,7 +27,7 @@ export function formatPlanDuration(days: number): string {
 
 export function PlanPrice({ plan, className }: { plan: SubscriptionPlan; className?: string }) {
   return (
-    <span className={cn("font-semibold text-slate-900 dark:text-white font-sans", className)} dir="ltr">
+    <span className={cn("font-semibold text-foreground dark:text-white font-sans", className)} dir="ltr">
       {formatPlanPrice(plan.price, plan.currency)}
     </span>
   );

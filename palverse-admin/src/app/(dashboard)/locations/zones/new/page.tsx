@@ -76,8 +76,8 @@ export default function CreateZonePage() {
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">إضافة منطقة جديدة</h2>
-          <p className="text-slate-500">أدخل بيانات المنطقة الجديدة واربطها بمدينة</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">إضافة منطقة جديدة</h2>
+          <p className="text-muted-foreground">أدخل بيانات المنطقة الجديدة واربطها بمدينة</p>
         </div>
       </div>
 

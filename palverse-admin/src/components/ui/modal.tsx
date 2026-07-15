@@ -52,15 +52,15 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
         aria-modal="true"
         aria-labelledby="modal-title"
         aria-describedby={description ? "modal-description" : undefined}
-        className="relative z-50 w-full max-w-lg mx-4 bg-white dark:bg-[#1F2522] rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200"
+        className="relative z-50 w-full max-w-lg mx-4 bg-card dark:bg-[#1F2522] rounded-xl shadow-xl border border-border dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-slate-800">
           <div>
-            <h2 id="modal-title" className="text-lg font-bold text-slate-900 dark:text-white">
+            <h2 id="modal-title" className="text-lg font-bold text-foreground dark:text-white">
               {title}
             </h2>
             {description && (
-              <p id="modal-description" className="text-sm text-slate-500 mt-1">
+              <p id="modal-description" className="text-sm text-muted-foreground mt-1">
                 {description}
               </p>
             )}
@@ -69,7 +69,7 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="h-8 w-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+            className="h-8 w-8 rounded-full text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-300"
           >
             <X className="h-4 w-4" />
             <span className="sr-only">إغلاق</span>

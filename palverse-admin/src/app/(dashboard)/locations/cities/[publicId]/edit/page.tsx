@@ -64,7 +64,7 @@ export default function EditCityPage({ params }: { params: Promise<{ publicId: s
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
         <h2 className="text-xl font-bold text-red-600">لم يتم العثور على المدينة</h2>
-        <p className="text-slate-600">{error.message}</p>
+        <p className="text-muted-foreground">{error.message}</p>
         <Button asChild variant="outline">
           <Link href="/locations?tab=cities">العودة للمدن</Link>
         </Button>
@@ -81,8 +81,8 @@ export default function EditCityPage({ params }: { params: Promise<{ publicId: s
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">تعديل المدينة</h2>
-          <p className="text-slate-500">تحديث بيانات المدينة</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">تعديل المدينة</h2>
+          <p className="text-muted-foreground">تحديث بيانات المدينة</p>
         </div>
       </div>
 

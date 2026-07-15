@@ -3,7 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import {
   LayoutDashboard,
   Users,
@@ -19,10 +21,9 @@ import {
   LogOut,
   CheckSquare,
   Bell,
+  PieChart
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
-
-import { PieChart } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "لوحة التحكم" },
@@ -41,16 +42,28 @@ const navItems = [
   { href: "/settings", icon: Settings, label: "الإعدادات" },
 ];
 
-export function DashboardSidebar() {
+interface DashboardSidebarProps {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function DashboardSidebar({ isOpen, onOpenChange }: DashboardSidebarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
 
-  return (
-    <aside className="fixed right-0 top-0 z-40 hidden h-screen w-64 flex-col border-l border-sidebar-border bg-sidebar-background text-sidebar-foreground lg:flex transition-all duration-300">
-      <div className="flex h-16 items-center justify-center border-b border-sidebar-border px-6">
+  // Close sidebar on route change for mobile
+  useEffect(() => {
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
+  }, [pathname, onOpenChange]);
+
+  const SidebarContent = (
+    <>
+      <div className="flex h-16 shrink-0 items-center justify-center border-b border-sidebar-border px-6">
         <Link href="/dashboard" className="flex items-center gap-2">
-          {/* Fallback to text if image not found to prevent errors, but try to load image */}
-          <div className="relative h-8 w-8">
+          {/* Apply brightness-0 invert so the logo renders white against the dark green background */}
+          <div className="relative h-8 w-8 brightness-0 invert">
             <Image
               src="/brand/palverse-icon.png"
               alt="Palverse Icon"
@@ -59,7 +72,7 @@ export function DashboardSidebar() {
               unoptimized
             />
           </div>
-          <span className="text-xl font-bold tracking-tight">Palverse Admin</span>
+          <span className="text-xl font-bold tracking-tight text-white">Palverse Admin</span>
         </Link>
       </div>
 
@@ -86,7 +99,7 @@ export function DashboardSidebar() {
         </nav>
       </div>
 
-      <div className="border-t border-sidebar-border p-4">
+      <div className="border-t border-sidebar-border p-4 shrink-0">
         <button
           onClick={logout}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-active hover:text-white"
@@ -98,6 +111,25 @@ export function DashboardSidebar() {
           Palverse Admin v{process.env.NEXT_PUBLIC_ADMIN_VERSION || "1.0.0"}
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="fixed right-0 top-0 z-40 hidden h-screen w-64 flex-col border-l border-sidebar-border bg-sidebar-background text-sidebar-foreground lg:flex transition-all duration-300">
+        {SidebarContent}
+      </aside>
+
+      {/* Mobile Sidebar */}
+      <Sheet open={isOpen} onOpenChange={onOpenChange}>
+        <SheetContent side="right" className="w-64 p-0 bg-sidebar-background text-sidebar-foreground border-sidebar-border">
+          <SheetTitle className="sr-only">قائمة التنقل</SheetTitle>
+          <div className="flex h-full flex-col">
+            {SidebarContent}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }

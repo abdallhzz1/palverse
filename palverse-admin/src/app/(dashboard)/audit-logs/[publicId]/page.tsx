@@ -26,9 +26,9 @@ export default function AuditLogDetailsPage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowRight className="h-4 w-4" />
           </Button>
-          <div className="h-8 w-48 bg-slate-100 rounded-md animate-pulse" />
+          <div className="h-8 w-48 bg-muted rounded-md animate-pulse" />
         </div>
-        <div className="h-[400px] w-full bg-slate-50 rounded-xl border border-slate-100 animate-pulse" />
+        <div className="h-[400px] w-full bg-muted rounded-xl border border-border animate-pulse" />
       </main>
     );
   }
@@ -63,12 +63,12 @@ export default function AuditLogDetailsPage() {
               </h2>
               <AuditActionBadge action={log.action} />
             </div>
-            <span className="text-sm text-slate-500 font-mono mt-1">ID: {log.public_id}</span>
+            <span className="text-sm text-muted-foreground font-mono mt-1">ID: {log.public_id}</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-sm text-slate-600">
-          <Clock className="w-4 h-4 text-slate-400" />
+        <div className="flex items-center gap-2 bg-muted px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground">
+          <Clock className="w-4 h-4 text-muted-foreground" />
           {log.created_at ? format(new Date(log.created_at), "dd MMMM yyyy, HH:mm", { locale: ar }) : "-"}
         </div>
       </div>
@@ -76,29 +76,29 @@ export default function AuditLogDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Main Info */}
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-6">
-            <h3 className="text-lg font-medium text-slate-800 flex items-center gap-2 pb-4 border-b border-slate-100">
-              <Activity className="w-5 h-5 text-slate-400" />
+          <div className="bg-card p-6 rounded-xl border border-border shadow-sm flex flex-col gap-6">
+            <h3 className="text-lg font-medium text-slate-800 flex items-center gap-2 pb-4 border-b border-border">
+              <Activity className="w-5 h-5 text-muted-foreground" />
               أطراف العملية
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col gap-2 p-4 bg-slate-50 rounded-lg border border-slate-100">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">المنفذ (Actor)</span>
+              <div className="flex flex-col gap-2 p-4 bg-muted rounded-lg border border-border">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">المنفذ (Actor)</span>
                 <AuditActorCard actor={log.actor} />
               </div>
               
-              <div className="flex flex-col gap-2 p-4 bg-slate-50 rounded-lg border border-slate-100">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">العنصر (Subject)</span>
+              <div className="flex flex-col gap-2 p-4 bg-muted rounded-lg border border-border">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">العنصر (Subject)</span>
                 <AuditEntityBadge subject={log.subject} />
               </div>
             </div>
           </div>
 
           {/* Changes Viewer */}
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-6">
-            <h3 className="text-lg font-medium text-slate-800 flex items-center gap-2 pb-4 border-b border-slate-100">
-              <Database className="w-5 h-5 text-slate-400" />
+          <div className="bg-card p-6 rounded-xl border border-border shadow-sm flex flex-col gap-6">
+            <h3 className="text-lg font-medium text-slate-800 flex items-center gap-2 pb-4 border-b border-border">
+              <Database className="w-5 h-5 text-muted-foreground" />
               تفاصيل التغييرات
             </h3>
             
@@ -108,7 +108,7 @@ export default function AuditLogDetailsPage() {
 
         {/* Sidebar / Timeline */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
             <h3 className="text-lg font-medium text-slate-800 mb-6">المعلومات التقنية</h3>
             <AuditTimeline log={log} />
           </div>
