@@ -33,7 +33,7 @@ export function AuditEntityBadge({ subject }: AuditEntityBadgeProps) {
 
   return (
     <div className="flex flex-col items-start gap-1">
-      <Badge variant="outline" className="bg-slate-50 text-slate-700 font-normal text-xs">
+      <Badge className="bg-slate-50 text-slate-700 font-normal text-xs border border-slate-200 hover:bg-slate-100">
         {getTypeLabel(subject.type)}
       </Badge>
       {subject.label && (

@@ -1,4 +1,4 @@
-import { RecentActivityItem } from "@/types/dashboard";
+import { RecentActivityItem } from "@/types/analytics";
 import { formatDateTime } from "@/lib/utils/formatters";
 import { Activity, Clock } from "lucide-react";
 
@@ -19,7 +19,7 @@ export function RecentActivityList({ items }: RecentActivityListProps) {
   return (
     <div className="space-y-6 pr-2">
       {items.map((item, index) => (
-        <div key={item.id || item.public_id || index} className="relative pl-4 rtl:pl-0 rtl:pr-4">
+        <div key={item.public_id || index} className="relative pl-4 rtl:pl-0 rtl:pr-4">
           {/* Timeline connecting line */}
           {index !== items.length - 1 && (
             <div className="absolute top-8 left-[11px] rtl:left-auto rtl:right-[11px] bottom-[-24px] w-px bg-slate-100 dark:bg-slate-800" />

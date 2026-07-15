@@ -5,12 +5,13 @@ import {
   DashboardBreakdownItem,
   DashboardTrendItem,
   RecentActivityItem,
-  DashboardDateRange,
-} from "@/types/dashboard";
+  AnalyticsDateRange,
+  AnalyticsInterval,
+} from "@/types/analytics";
 import { ApiSuccessResponse } from "@/types/api";
 
-export const dashboardService = {
-  getSummary: async (params?: DashboardDateRange): Promise<DashboardSummaryResponse> => {
+export const analyticsService = {
+  getSummary: async (params?: AnalyticsDateRange): Promise<DashboardSummaryResponse> => {
     const response = await apiClient.get<unknown, ApiSuccessResponse<DashboardSummaryResponse>>(
       "/admin/dashboard/summary",
       { params }
@@ -24,8 +25,6 @@ export const dashboardService = {
       { params: { limit } }
     );
     
-    // The backend returns an object with arrays (e.g., recent_stores, recent_pending_stores)
-    // We flatten these into a unified RecentActivityItem array.
     const activityItems: RecentActivityItem[] = [];
     const rawData = response.data || {};
 
@@ -84,7 +83,6 @@ export const dashboardService = {
           action: "عرض جديد",
           description: `تمت إضافة عرض ${item.title_ar} لمحل ${item.store_name}`,
           created_at: item.created_at,
-          user_name: undefined,
         });
       });
     }
@@ -96,7 +94,6 @@ export const dashboardService = {
           action: "انتهاء اشتراك",
           description: `انتهى اشتراك باقة ${item.plan_name} لمحل ${item.store_name}`,
           created_at: item.ends_at || new Date().toISOString(),
-          user_name: undefined,
         });
       });
     }
@@ -105,7 +102,7 @@ export const dashboardService = {
     return activityItems.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, limit);
   },
 
-  getStoresByStatus: async (params?: DashboardDateRange): Promise<DashboardBreakdownItem[]> => {
+  getStoresByStatus: async (params?: AnalyticsDateRange): Promise<DashboardBreakdownItem[]> => {
     const response = await apiClient.get<unknown, ApiSuccessResponse<DashboardBreakdownItem[]>>(
       "/admin/dashboard/stores-by-status",
       { params }
@@ -113,7 +110,7 @@ export const dashboardService = {
     return response.data;
   },
 
-  getSubscriptionsByStatus: async (params?: DashboardDateRange): Promise<DashboardBreakdownItem[]> => {
+  getSubscriptionsByStatus: async (params?: AnalyticsDateRange): Promise<DashboardBreakdownItem[]> => {
     const response = await apiClient.get<unknown, ApiSuccessResponse<DashboardBreakdownItem[]>>(
       "/admin/dashboard/subscriptions-by-status",
       { params }
@@ -122,7 +119,7 @@ export const dashboardService = {
   },
 
   getStoresByCategory: async (
-    params?: DashboardDateRange & { limit?: number }
+    params?: AnalyticsDateRange & { limit?: number }
   ): Promise<DashboardBreakdownItem[]> => {
     const response = await apiClient.get<unknown, ApiSuccessResponse<DashboardBreakdownItem[]>>(
       "/admin/dashboard/stores-by-category",
@@ -132,7 +129,7 @@ export const dashboardService = {
   },
 
   getStoresByCity: async (
-    params?: DashboardDateRange & { limit?: number }
+    params?: AnalyticsDateRange & { limit?: number }
   ): Promise<DashboardBreakdownItem[]> => {
     const response = await apiClient.get<unknown, ApiSuccessResponse<DashboardBreakdownItem[]>>(
       "/admin/dashboard/stores-by-city",
@@ -142,7 +139,7 @@ export const dashboardService = {
   },
 
   getSubscriptionsByPlan: async (
-    params?: DashboardDateRange & { limit?: number }
+    params?: AnalyticsDateRange & { limit?: number }
   ): Promise<DashboardBreakdownItem[]> => {
     const response = await apiClient.get<unknown, ApiSuccessResponse<DashboardBreakdownItem[]>>(
       "/admin/dashboard/subscriptions-by-plan",
@@ -153,8 +150,8 @@ export const dashboardService = {
 
   getTrends: async (
     metric: "stores" | "subscriptions" | "offers" | "users",
-    grouping: "day" | "week" | "month",
-    params?: DashboardDateRange
+    grouping: AnalyticsInterval,
+    params?: AnalyticsDateRange
   ): Promise<DashboardTrendItem[]> => {
     const response = await apiClient.get<unknown, ApiSuccessResponse<DashboardTrendItem[]>>(
       "/admin/dashboard/trends",

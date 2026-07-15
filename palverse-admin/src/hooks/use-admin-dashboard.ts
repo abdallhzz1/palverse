@@ -1,13 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { dashboardService } from "@/services/dashboard.service";
+import { analyticsService } from "@/services/analytics.service";
 import {
   DashboardSummaryResponse,
   DashboardBreakdownItem,
   DashboardTrendItem,
   RecentActivityItem,
-  DashboardPeriod,
-  DashboardDateRange,
-} from "@/types/dashboard";
+  AnalyticsPeriod,
+  AnalyticsDateRange,
+  AnalyticsInterval,
+} from "@/types/analytics";
 import { NormalizedApiError } from "@/lib/api/error";
 import { toast } from "sonner";
 
@@ -27,11 +28,15 @@ interface UseAdminDashboardReturn {
   isRefreshing: boolean;
   hasAnyData: boolean;
   
-  selectedPeriod: DashboardPeriod;
-  setSelectedPeriod: (period: DashboardPeriod) => void;
-  dateRange: DashboardDateRange;
-  setDateRange: (range: DashboardDateRange) => void;
+  selectedPeriod: AnalyticsPeriod;
+  setSelectedPeriod: (period: AnalyticsPeriod) => void;
+  dateRange: AnalyticsDateRange;
+  setDateRange: (range: AnalyticsDateRange) => void;
   refresh: () => Promise<void>;
+  
+  // Trend chart specific
+  activeTrendMetric: "stores" | "subscriptions" | "offers" | "users";
+  setActiveTrendMetric: (metric: "stores" | "subscriptions" | "offers" | "users") => void;
 }
 
 const initialSectionState = {
@@ -39,6 +44,25 @@ const initialSectionState = {
   isLoading: true,
   error: null,
 };
+
+function getIntervalFromPeriod(period?: string, from?: string, to?: string): AnalyticsInterval {
+  if (period === "today" || period === "last_7_days" || period === "last_30_days" || period === "current_month" || period === "previous_month") {
+    return "day";
+  }
+  if (period === "current_year") {
+    return "month";
+  }
+  if (period === "custom" && from && to) {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays > 90) return "month";
+    if (diffDays > 31) return "week";
+    return "day";
+  }
+  return "day";
+}
 
 export function useAdminDashboard(): UseAdminDashboardReturn {
   const [summary, setSummary] = useState<SectionState<DashboardSummaryResponse>>(initialSectionState);
@@ -49,14 +73,16 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   
-  const [selectedPeriod, setSelectedPeriod] = useState<DashboardPeriod>("last_30_days");
-  const [dateRange, setDateRange] = useState<DashboardDateRange>({ period: "last_30_days" });
+  const [selectedPeriod, setSelectedPeriod] = useState<AnalyticsPeriod>("last_30_days");
+  const [dateRange, setDateRange] = useState<AnalyticsDateRange>({ period: "last_30_days" });
+  
+  const [activeTrendMetric, setActiveTrendMetric] = useState<"stores" | "subscriptions" | "offers" | "users">("stores");
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Update dateRange when selectedPeriod changes
+  // Update dateRange when selectedPeriod changes (except for custom which is handled separately)
   useEffect(() => {
-    if (selectedPeriod === "custom") return; // Let custom handle its own date range
+    if (selectedPeriod === "custom") return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDateRange({ period: selectedPeriod });
   }, [selectedPeriod]);
@@ -79,11 +105,12 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
     }
 
     try {
+      const interval = getIntervalFromPeriod(dateRange.period, dateRange.from, dateRange.to);
       const [summaryReq, activityReq, statusReq, trendsReq] = await Promise.allSettled([
-        dashboardService.getSummary(dateRange),
-        dashboardService.getRecentActivity(10),
-        dashboardService.getStoresByStatus(dateRange),
-        dashboardService.getTrends("stores", "day", dateRange)
+        analyticsService.getSummary(dateRange),
+        analyticsService.getRecentActivity(10),
+        analyticsService.getStoresByStatus(dateRange),
+        analyticsService.getTrends(activeTrendMetric, interval, dateRange)
       ]);
 
       if (abortController.signal.aborted) return;
@@ -125,7 +152,7 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
         setIsRefreshing(false);
       }
     }
-  }, [dateRange]);
+  }, [dateRange, activeTrendMetric]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -157,5 +184,7 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
     dateRange,
     setDateRange,
     refresh,
+    activeTrendMetric,
+    setActiveTrendMetric,
   };
 }

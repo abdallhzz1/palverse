@@ -47,10 +47,13 @@ export function AuditActionBadge({ action }: AuditActionBadgeProps) {
   
   return (
     <Badge 
-      variant={variant === "success" ? "default" : variant} 
       className={
         variant === "success" ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border border-emerald-200" : 
-        isDanger ? "bg-red-100 text-red-800 hover:bg-red-100 border border-red-200" : ""
+        isDanger ? "bg-red-100 text-red-800 hover:bg-red-100 border border-red-200" : 
+        variant === "secondary" ? "bg-slate-100 text-slate-800 hover:bg-slate-100 border border-slate-200" :
+        variant === "destructive" ? "bg-red-100 text-red-800 hover:bg-red-100 border border-red-200" :
+        variant === "outline" ? "bg-transparent text-slate-800 hover:bg-slate-50 border border-slate-200" :
+        "bg-slate-900 text-white hover:bg-slate-800 border border-slate-900"
       }
     >
       {label}
