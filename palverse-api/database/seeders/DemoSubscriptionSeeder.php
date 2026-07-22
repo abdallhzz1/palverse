@@ -28,7 +28,7 @@ class DemoSubscriptionSeeder extends Seeder
                 'currency' => 'ILS',
                 'duration_days' => 30,
                 'max_offers' => 0,
-                'max_gallery_images' => 0,
+                'max_gallery_images' => 5,
                 'is_active' => true,
                 'sort_order' => 1,
             ]

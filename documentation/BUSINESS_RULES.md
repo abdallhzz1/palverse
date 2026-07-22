@@ -7,8 +7,13 @@ This document outlines the core business rules and workflows that govern the Pal
 ## 1. Store Lifecycle & Moderation
 
 ### Submission & Status Flow
-A store listing must progress through specific statuses before being publicly viewable:
-1.  **Draft / Pending**: When a merchant creates or edits a store, its status is set to `Pending Approval`. It is not visible to the public.
+New merchants/stores are **not** created by merchant self-registration.
+Inbound creation paths only:
+1. **Representative store-registration request** (submitted → admin/follow-up review → approve creates merchant + store).
+2. **Public merchant join request** (submitted → admin/follow-up review → approve creates merchant + store + pending subscription).
+
+Store listing statuses for an existing store:
+1.  **Draft / Pending**: When a store awaits moderation it is not visible to the public.
 2.  **Approved**: An Admin must review and approve the store. Once approved, the store becomes live (if active).
 3.  **Rejected**: If a store fails to meet standards, an Admin rejects it. The store remains hidden, and the merchant is notified.
 4.  **Active / Inactive**: Admins or Merchants can toggle the visibility. Even if approved, an inactive store is hidden from public browse/search.

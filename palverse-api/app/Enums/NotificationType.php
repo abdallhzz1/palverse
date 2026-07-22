@@ -13,4 +13,5 @@ enum NotificationType: string
     case SUBSCRIPTION_EXPIRING_SOON = 'subscription_expiring_soon';
     case SUBSCRIPTION_EXPIRED = 'subscription_expired';
     case NEW_JOIN_REQUEST = 'new_join_request';
+    case NEW_STORE_REGISTRATION_REQUEST = 'new_store_registration_request';
 }

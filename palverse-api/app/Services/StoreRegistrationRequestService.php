@@ -10,12 +10,17 @@ use App\Models\Store;
 use App\Models\CommissionRecord;
 use App\Enums\StoreStatus;
 use App\Enums\CommissionStatus;
+use App\Notifications\NewStoreRegistrationRequestNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class StoreRegistrationRequestService
 {
+    public function __construct(
+        private NotificationService $notificationService
+    ) {
+    }
     /**
      * Create a draft request for a representative.
      */
@@ -110,6 +115,12 @@ class StoreRegistrationRequestService
                 'to_status' => StoreRequestStatus::SUBMITTED->value,
                 'note' => 'تم تقديم الطلب للمراجعة.',
             ]);
+
+            $recipients = User::role(['admin', 'follow_up'])->get();
+            $notification = new NewStoreRegistrationRequestNotification($request);
+            foreach ($recipients as $recipient) {
+                $this->notificationService->send($recipient, clone $notification);
+            }
 
             return $request;
         });

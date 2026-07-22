@@ -315,11 +315,11 @@ class SystemSettingSeeder extends Seeder
             [
                 'group' => 'maintenance',
                 'key' => 'merchant_registration_enabled',
-                'value' => '1',
+                'value' => '0',
                 'type' => 'boolean',
                 'is_public' => true,
-                'description_ar' => 'تفعيل تسجيل حسابات التجار الجديدة',
-                'description_en' => 'Enable new merchant registrations',
+                'description_ar' => 'تفعيل تسجيل حسابات التجار الذاتية (معطّل — التسجيل عبر المندوب أو طلب الانضمام فقط)',
+                'description_en' => 'Enable merchant self-registration (disabled — use representative or join request only)',
             ],
         ];
 

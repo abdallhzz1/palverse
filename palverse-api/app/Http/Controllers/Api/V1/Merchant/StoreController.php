@@ -38,80 +38,15 @@ class StoreController extends Controller
 
     public function store(StoreMerchantStoreRequest $request): JsonResponse
     {
-        if ($request->user()->stores()->count() >= 1) {
-            return response()->json([
-                'success' => false,
-                'message' => 'لا يمكن إضافة أكثر من محل واحد لنفس الحساب.',
-                'errors' => ['store' => ['You can only have one store per account.']],
-                'meta' => [],
-            ], 422);
-        }
-
-        $validated = $request->validated();
-
-        $category = Category::where('public_id', $validated['category_public_id'])->first();
-        $city = City::where('public_id', $validated['city_public_id'])->first();
-        $zone = Zone::where('public_id', $validated['zone_public_id'])->first();
-
-        DB::beginTransaction();
-        try {
-            $store = new Store;
-            $store->owner_id = $request->user()->id;
-            $store->category_id = $category->id;
-            $store->city_id = $city->id;
-            $store->zone_id = $zone->id;
-            $store->name_ar = $validated['name_ar'];
-            $store->name_en = $validated['name_en'] ?? null;
-            $store->description_ar = $validated['description_ar'];
-            $store->description_en = $validated['description_en'] ?? null;
-            $store->phone = $validated['phone'];
-            $store->whatsapp = $validated['whatsapp'] ?? null;
-            $store->email = $validated['email'] ?? null;
-            $store->website = $validated['website'] ?? null;
-            $store->address_ar = $validated['address_ar'];
-            $store->address_en = $validated['address_en'] ?? null;
-            $store->latitude = $validated['latitude'] ?? null;
-            $store->longitude = $validated['longitude'] ?? null;
-
-            $store->status = StoreStatus::PENDING;
-            $store->is_active = false;
-            $store->save();
-
-            DB::table('store_status_history')->insert([
-                'store_id' => $store->id,
-                'admin_id' => null,
-                'old_status' => null,
-                'new_status' => StoreStatus::PENDING->value,
-                'action' => 'submitted',
-                'reason' => 'Store submitted for review',
-                'created_at' => now(),
-            ]);
-
-            $this->auditLogService->recordFromRequest(
-                action: AuditAction::StoreCreated,
-                subject: $store,
-                newValues: $store->only(['name_ar', 'name_en', 'phone', 'email', 'status', 'is_active', 'category_id', 'city_id', 'zone_id'])
-            );
-            $this->auditLogService->recordFromRequest(
-                action: AuditAction::StoreSubmitted,
-                subject: $store,
-                newValues: ['status' => StoreStatus::PENDING->value, 'reason' => 'Store submitted for review']
-            );
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-        $store->load(['category', 'city', 'zone']);
-
         return response()->json([
-            'success' => true,
-            'message' => 'تم إنشاء المتجر بنجاح وبانتظار الموافقة.',
-            'data' => new StoreResource($store),
+            'success' => false,
+            'message' => 'لا يمكن للتاجر إنشاء محل بنفسه. يتم تسجيل المحلات عبر المندوب أو طلب الانضمام فقط.',
+            'error' => [
+                'code' => 'MERCHANT_SELF_STORE_CREATE_DISABLED',
+                'details' => [],
+            ],
             'meta' => [],
-        ], 201);
+        ], 403);
     }
 
     public function show(string $publicId, Request $request): JsonResponse

@@ -33,7 +33,7 @@ class MerchantStoreTest extends TestCase
         $this->getJson('/api/v1/merchant/stores')->assertUnauthorized();
     }
 
-    public function test_merchant_can_create_a_store(): void
+    public function test_merchant_cannot_self_create_a_store(): void
     {
         $category = Category::factory()->create();
         $city = City::factory()->create();
@@ -49,19 +49,13 @@ class MerchantStoreTest extends TestCase
             'address_ar' => 'عنوان الاختبار',
         ];
 
-        $response = $this->actingAs($this->merchant)
+        $this->actingAs($this->merchant)
             ->postJson('/api/v1/merchant/stores', $payload)
-            ->assertCreated()
-            ->assertJsonPath('data.status', StoreStatus::PENDING->value)
-            ->assertJsonPath('data.is_active', false);
+            ->assertForbidden()
+            ->assertJsonPath('error.code', 'MERCHANT_SELF_STORE_CREATE_DISABLED');
 
-        $this->assertDatabaseHas('stores', [
+        $this->assertDatabaseMissing('stores', [
             'name_ar' => 'متجر اختبار',
-            'status' => StoreStatus::PENDING->value,
-        ]);
-
-        $this->assertDatabaseHas('store_status_history', [
-            'action' => 'submitted',
         ]);
     }
 

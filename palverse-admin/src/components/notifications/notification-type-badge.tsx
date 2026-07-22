@@ -58,6 +58,12 @@ export function getNotificationTypeInfo(type: NotificationType) {
         icon: UserPlus,
         className: "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-none",
       };
+    case "new_store_registration_request":
+      return {
+        label: "طلب تسجيل من مندوب",
+        icon: Store,
+        className: "bg-teal-50 text-teal-700 hover:bg-teal-100 border-none",
+      };
     default:
       return {
         label: "إشعار نظام",
