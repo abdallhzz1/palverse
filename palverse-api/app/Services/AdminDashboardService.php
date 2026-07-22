@@ -102,6 +102,15 @@ class AdminDashboardService
             'notifications_sent_in_period' => DB::table('notifications')->whereBetween('created_at', [$range->from, $range->to])->count(),
         ];
 
+        // Field Sales
+        $fieldSalesCount = [
+            'total_representatives' => User::role('representative')->count(),
+            'total_rejection_reports' => \App\Models\RepresentativeRejectionReport::count(),
+            'total_receipts_amount' => \App\Models\CollectionReceipt::sum('amount'),
+            'unpaid_commissions_count' => \App\Models\CommissionRecord::where('status', 'pending')->count(),
+            'unpaid_commissions_amount' => \App\Models\CommissionRecord::where('status', 'pending')->sum('amount'),
+        ];
+
         return [
             'users' => $usersCount,
             'stores' => $storesCount,
@@ -109,6 +118,7 @@ class AdminDashboardService
             'offers' => $offersCount,
             'taxonomy' => $taxonomyCount,
             'notifications' => $notificationsCount,
+            'field_sales' => $fieldSalesCount,
         ];
     }
 

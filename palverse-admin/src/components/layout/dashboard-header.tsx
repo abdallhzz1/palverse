@@ -1,6 +1,8 @@
 "use client";
 
 import { ThemeToggle } from "./theme-toggle";
+import { HeaderNotificationsButton } from "./header-notifications-button";
+import { HeaderLogoutButton } from "./header-logout-button";
 import { useAuth } from "@/providers/auth-provider";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,14 +21,16 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
         <h1 className="text-lg font-semibold">لوحة الإدارة</h1>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-1 sm:gap-2">
+        <HeaderNotificationsButton />
         <ThemeToggle />
-        
+        <HeaderLogoutButton />
+
         {user && (
-          <div className="flex items-center gap-3 border-r border-border pr-4">
-            <div className="flex flex-col items-end">
+          <div className="mr-1 flex items-center gap-3 border-r border-border pr-3 sm:mr-2 sm:pr-4">
+            <div className="hidden flex-col items-end sm:flex">
               <span className="text-sm font-medium leading-none">{user.name}</span>
-              <span className="text-xs text-muted-foreground mt-1">مدير النظام</span>
+              <span className="mt-1 text-xs text-muted-foreground">مدير النظام</span>
             </div>
             <AdminAvatar name={user.name} />
           </div>

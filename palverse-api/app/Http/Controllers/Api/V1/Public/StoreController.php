@@ -51,7 +51,9 @@ class StoreController extends Controller
                 },
             ])
             ->withCount('activeOffers')
-            ->where('slug', $slug)
+            ->where(function ($q) use ($slug) {
+                $q->where('slug', $slug)->orWhere('public_id', $slug);
+            })
             ->first();
 
         if (! $store) {
@@ -77,7 +79,9 @@ class StoreController extends Controller
     public function offers(Request $request, string $slug): JsonResponse
     {
         $store = Store::publicVisible()
-            ->where('slug', $slug)
+            ->where(function ($q) use ($slug) {
+                $q->where('slug', $slug)->orWhere('public_id', $slug);
+            })
             ->first();
 
         if (! $store) {

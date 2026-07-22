@@ -15,14 +15,25 @@ export function UserRoleBadge({ role, className = "" }: UserRoleBadgeProps) {
         };
       case "merchant":
         return {
-          label: "تاجر",
+          label: "صاحب محل",
           classes: "bg-[#1E7D4E]/10 text-[#1E7D4E] dark:bg-[#1E7D4E]/30 dark:text-[#EAF3EC]",
         };
       case "customer":
         return {
-          label: "مستخدم",
-          classes: "bg-muted text-muted-foreground dark:bg-slate-800 dark:text-muted-foreground",
+          label: "مستخدم (دور قديم)",
+          classes: "bg-muted text-muted-foreground dark:bg-slate-800 dark:text-muted-foreground line-through decoration-gray-400",
         };
+      case "representative":
+        return {
+          label: "مندوب مبيعات",
+          classes: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+        };
+      case "follow_up":
+        return {
+          label: "متابعة",
+          classes: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+        };
+
       default:
         return {
           label: role || "غير معروف",

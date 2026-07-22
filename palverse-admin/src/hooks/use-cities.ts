@@ -54,13 +54,13 @@ export function useCitiesList(initialParams: CitiesListParams = { page: 1, per_p
     fetchCities(params);
   }, [params, fetchCities]);
 
-  const setFilter = (key: keyof CitiesListParams, value: string | number) => {
+  const setFilter = useCallback((key: keyof CitiesListParams, value: string | number) => {
     setParams(prev => {
       const newParams = { ...prev, [key]: value };
       if (key !== "page") newParams.page = 1;
       return newParams;
     });
-  };
+  }, []);
 
   return { data, isLoading, error, params, setFilter, refresh: () => fetchCities(params) };
 }

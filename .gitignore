@@ -1,0 +1,14 @@
+﻿# Archives / accidental dumps (block GitHub push)
+*.zip
+*.7z
+*.rar
+
+# OS / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Local env
+.env
+.env.local
+.env.*.local

@@ -9,6 +9,7 @@ export type NotificationType =
   | "subscription_cancelled"
   | "subscription_expiring_soon"
   | "subscription_expired"
+  | "new_join_request"
   | "unknown";
 
 export interface UserNotification {

@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
+            'avatar_url' => $this->avatar_url,
             'preferred_locale' => $this->preferred_locale,
             'status' => $this->status instanceof UserStatus
                 ? $this->status->value

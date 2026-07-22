@@ -24,6 +24,12 @@ export function useUsersList() {
     direction: (searchParams.get("direction") as "asc" | "desc") || "desc",
   });
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const fetchUsers = useCallback(async (currentFilters: UsersListParams, isSilent = false) => {
     if (!isSilent) setIsLoading(true);
     setError(null);
@@ -39,25 +45,33 @@ export function useUsersList() {
   }, []);
 
   // Sync URL to Filters
-  const updateUrl = useCallback(
-    (newFilters: UsersListParams) => {
-      const params = new URLSearchParams(searchParams.toString());
-      
-      Object.entries(newFilters).forEach(([key, value]) => {
-        if (value) {
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    let hasChanges = false;
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        if (params.get(key) !== String(value)) {
           params.set(key, String(value));
-        } else {
-          params.delete(key);
+          hasChanges = true;
         }
-      });
+      } else {
+        if (params.has(key)) {
+          params.delete(key);
+          hasChanges = true;
+        }
+      }
+    });
 
-      router.push(`${pathname}?${params.toString()}`);
-    },
-    [pathname, router, searchParams]
-  );
+    if (hasChanges) {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+  }, [filters, isMounted, pathname, router, searchParams]);
 
-  // When filters change, update URL and refetch
-  const handleFilterChange = <K extends keyof UsersListParams>(key: K, value: UsersListParams[K]) => {
+  // When filters change, update state
+  const handleFilterChange = useCallback(<K extends keyof UsersListParams>(key: K, value: UsersListParams[K]) => {
     setFilters((prev) => {
       const newFilters = { ...prev, [key]: value };
       
@@ -66,10 +80,9 @@ export function useUsersList() {
         newFilters.page = 1;
       }
 
-      updateUrl(newFilters);
       return newFilters;
     });
-  };
+  }, []);
 
   // Fetch data on initial load and when filters state changes
   useEffect(() => {

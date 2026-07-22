@@ -28,7 +28,7 @@ class StorePolicy
             // For merchants, they can only view if they own it or if they have global view and it's active/public (though admin panel might differ)
         }
 
-        return $store->owner_id === $user->id;
+        return $store->owner_id == $user->id;
     }
 
     /**
@@ -44,7 +44,7 @@ class StorePolicy
      */
     public function update(User $user, Store $store): bool
     {
-        if ($user->can('stores.update') && $store->owner_id === $user->id) {
+        if ($user->can('stores.update') && $store->owner_id == $user->id) {
             return true;
         }
 

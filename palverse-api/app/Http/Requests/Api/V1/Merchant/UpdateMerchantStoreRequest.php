@@ -74,8 +74,8 @@ class UpdateMerchantStoreRequest extends FormRequest
             'website' => ['nullable', 'url', 'max:2048'],
             'address_ar' => ['sometimes', 'string', 'max:500'],
             'address_en' => ['nullable', 'string', 'max:500'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'latitude' => ['nullable', 'required_with:longitude', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'required_with:latitude', 'numeric', 'between:-180,180'],
         ];
     }
 }

@@ -17,7 +17,7 @@ export interface StoreSubscriptionSummary {
   [key: string]: unknown;
 }
 
-export type UserRole = "admin" | "merchant" | "customer";
+export type UserRole = "admin" | "merchant" | "customer" | "representative" | "follow_up";
 export type UserStatus = "active" | "inactive" | "suspended";
 
 export interface ManagedUser {

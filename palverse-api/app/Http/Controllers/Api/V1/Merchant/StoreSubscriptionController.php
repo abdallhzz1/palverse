@@ -24,10 +24,7 @@ class StoreSubscriptionController extends Controller
             ], 403);
         }
 
-        $subscription = clone $store->currentSubscription;
-        if (! $subscription) {
-            $subscription = $store->latestSubscription;
-        }
+        $subscription = $store->currentSubscription ?? $store->latestSubscription;
 
         if ($subscription) {
             $subscription->load(['plan']);

@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --font-cairo: "Cairo", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-ibm-plex: "IBM Plex Sans Arabic", sans-serif;
+
+  --color-palverse-dark-green: #0F3D2E;
+  --color-palverse-green: #1E7D4E;
+  --color-palverse-muted-green: #7FA789;
+  --color-palverse-light-green: #EAF3EC;
+  --color-palverse-surface: #F5F7F6;
+
+  --color-background: #F5F7F6;
+  --color-foreground: #0F3D2E;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme dark {
+  --color-background: #F5F7F6; /* Force light theme colors for now to match UI kit */
+  --color-foreground: #0F3D2E;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-ibm-plex);
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-cairo);
+}
+
+.text-tech {
+  font-family: var(--font-inter);
+}

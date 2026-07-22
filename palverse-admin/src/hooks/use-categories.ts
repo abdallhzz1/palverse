@@ -51,13 +51,13 @@ export function useCategoriesList(initialParams: CategoriesListParams = { page: 
     fetchCategories(params);
   }, [params, fetchCategories]);
 
-  const setFilter = (key: keyof CategoriesListParams, value: string | number) => {
+  const setFilter = useCallback((key: keyof CategoriesListParams, value: string | number) => {
     setParams(prev => {
       const newParams = { ...prev, [key]: value };
       if (key !== "page") newParams.page = 1;
       return newParams;
     });
-  };
+  }, []);
 
   return { data, isLoading, error, params, setFilter, refresh: () => fetchCategories(params) };
 }

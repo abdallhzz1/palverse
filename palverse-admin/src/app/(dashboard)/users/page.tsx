@@ -32,8 +32,8 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">المستخدمون والتجار</h2>
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">إدارة حسابات المستخدمين والتجار وصلاحياتهم</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">إدارة المستخدمين</h2>
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">إدارة حسابات مستخدمي النظام وأصحاب المحلات</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -47,12 +47,6 @@ export default function UsersPage() {
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
           </Button>
-          <Link href="/users/new">
-            <Button className="bg-[#1E7D4E] hover:bg-[#1E7D4E]/90 text-white gap-2">
-              <Plus className="w-4 h-4" />
-              <span>إضافة تاجر</span>
-            </Button>
-          </Link>
         </div>
       </div>
 
@@ -90,8 +84,9 @@ export default function UsersPage() {
             >
               <option value="">جميع الأدوار</option>
               <option value="admin">مدير</option>
-              <option value="merchant">تاجر</option>
-              <option value="customer">مستخدم</option>
+              <option value="merchant">صاحب محل</option>
+              <option value="representative">مندوب مبيعات</option>
+              <option value="follow_up">متابعة</option>
             </select>
           </div>
         </div>

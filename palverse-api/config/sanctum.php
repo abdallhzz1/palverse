@@ -50,7 +50,9 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => env('PALVERSE_TOKEN_EXPIRATION_MINUTES') !== null
+        ? (int) env('PALVERSE_TOKEN_EXPIRATION_MINUTES')
+        : null,
 
     /*
     |--------------------------------------------------------------------------

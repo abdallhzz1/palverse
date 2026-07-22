@@ -169,6 +169,7 @@ export default function ReportsPage() {
           </TabsContent>
 
           <TabsContent value="stores" className="m-0 space-y-6">
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
                 <h3 className="text-lg font-bold text-foreground dark:text-white mb-6">توزيع المحلات حسب التصنيف</h3>
@@ -283,7 +284,7 @@ export default function ReportsPage() {
                 isLoading={summary.isLoading}
               />
               <KpiCard 
-                title="إجمالي التجار" 
+                title="إجمالي أصحاب المحلات" 
                 value={summary.data?.users?.total_merchants} 
                 icon={<Store className="w-5 h-5" />} 
                 isLoading={summary.isLoading}

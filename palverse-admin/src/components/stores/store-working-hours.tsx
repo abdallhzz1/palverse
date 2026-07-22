@@ -27,38 +27,28 @@ export function StoreWorkingHours({ workingHours }: StoreWorkingHoursProps) {
     );
   }
 
-  // Group by day to handle multiple periods
-  const grouped = workingHours.reduce((acc, curr) => {
-    if (!acc[curr.day]) {
-      acc[curr.day] = [];
-    }
-    acc[curr.day].push(curr);
-    return acc;
-  }, {} as Record<string, StoreWorkingHour[]>);
-
-  // Sort by defined order
-  const sortedDays = Object.keys(grouped).sort((a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b));
-
   return (
     <div className="space-y-3">
-      {sortedDays.map((day) => {
-        const periods = grouped[day];
-        // If there's any record that says is_closed = true, we treat the day as closed
-        const isClosed = periods.some(p => p.is_closed);
+      {workingHours.map((dayData, index) => {
+        const isClosed = dayData.is_closed;
 
         return (
-          <div key={day} className="flex justify-between items-center py-2 border-b border-border dark:border-slate-800 last:border-0 last:pb-0">
-            <span className="font-medium text-sm">{dayMapping[day] || day}</span>
+          <div key={index} className="flex justify-between items-center py-2 border-b border-border dark:border-slate-800 last:border-0 last:pb-0">
+            <span className="font-medium text-sm">{dayData.day_label_ar}</span>
             <div className="text-sm text-muted-foreground dark:text-slate-300 text-left" dir="ltr">
               {isClosed ? (
                 <span className="text-red-500 dark:text-red-400 font-medium">مغلق</span>
               ) : (
                 <div className="space-y-1">
-                  {periods.map((p, idx) => (
-                    <div key={idx}>
-                      {p.open_time && p.close_time ? `${p.open_time} - ${p.close_time}` : "مفتوح"}
-                    </div>
-                  ))}
+                  {dayData.periods && dayData.periods.length > 0 ? (
+                    dayData.periods.map((p, idx) => (
+                      <div key={idx}>
+                        {p.opens_at && p.closes_at ? `${p.opens_at} - ${p.closes_at}` : "مفتوح"}
+                      </div>
+                    ))
+                  ) : (
+                    <div>مفتوح</div>
+                  )}
                 </div>
               )}
             </div>

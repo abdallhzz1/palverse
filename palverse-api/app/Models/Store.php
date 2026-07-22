@@ -34,6 +34,9 @@ class Store extends Model
         'category_id',
         'city_id',
         'zone_id',
+        'owner_id',
+        'status',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -47,6 +50,10 @@ class Store extends Model
         'rejected_at' => 'datetime',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
+        'owner_id' => 'integer',
+        'category_id' => 'integer',
+        'city_id' => 'integer',
+        'zone_id' => 'integer',
     ];
 
     protected static function boot()
@@ -157,6 +164,11 @@ class Store extends Model
         return $this->hasMany(Offer::class);
     }
 
+    public function advertisements(): HasMany
+    {
+        return $this->hasMany(StoreAdvertisement::class);
+    }
+
     public function activeOffers(): HasMany
     {
         return $this->offers()->active()->currentlyValid()->ordered();
@@ -195,5 +207,15 @@ class Store extends Model
             && $this->is_active
             && $hasActiveSubscription
             && ! $this->trashed();
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(StoreReview::class);
+    }
+
+    public function publishedReviews(): HasMany
+    {
+        return $this->hasMany(StoreReview::class)->where('status', \App\Enums\StoreReviewStatus::PUBLISHED->value);
     }
 }

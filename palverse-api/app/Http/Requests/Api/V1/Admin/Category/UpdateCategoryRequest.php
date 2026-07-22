@@ -36,6 +36,11 @@ class UpdateCategoryRequest extends FormRequest
                 'max:191',
                 Rule::unique('categories', 'name_en')->ignore($category?->id),
             ],
+            'icon' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
         ];
     }
 }

@@ -6,7 +6,7 @@ import { NotificationReadBadge } from "./notification-read-badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format, parseISO } from "date-fns";
-import { ExternalLink, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
+import { CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 export function NotificationsList() {
@@ -116,14 +116,7 @@ export function NotificationsList() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">
-                        {notification.action_url && (
-                          <Button variant="ghost" size="sm" asChild className="text-[#1E7D4E] hover:text-[#1E7D4E] hover:bg-[#1E7D4E]/10">
-                            <Link href={notification.action_url}>
-                              <ExternalLink className="h-4 w-4 ml-1.5" />
-                              عرض المرتبط
-                            </Link>
-                          </Button>
-                        )}
+
                         {!notification.is_read && (
                           <Button 
                             variant="outline" 

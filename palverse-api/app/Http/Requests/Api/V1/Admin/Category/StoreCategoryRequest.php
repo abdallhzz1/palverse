@@ -19,7 +19,8 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name_ar' => ['required', 'string', 'max:191', 'unique:categories,name_ar'],
             'name_en' => ['nullable', 'string', 'max:191', 'unique:categories,name_en'],
-            'slug' => ['nullable', 'string', 'max:191', 'unique:categories,slug', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            'slug'    => ['required', 'string', 'max:191', 'unique:categories,slug', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            'icon'    => ['nullable', 'string', 'max:100'],
         ];
     }
 

@@ -32,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'preferred_locale',
         'status',
         'suspension_reason',
+        'avatar_url',
     ];
 
     protected $hidden = [
@@ -105,6 +106,52 @@ class User extends Authenticatable implements MustVerifyEmail
     public function storesRejected(): HasMany
     {
         return $this->hasMany(Store::class, 'rejected_by');
+    }
+
+    public function representativeProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(RepresentativeProfile::class);
+    }
+
+    public function representativeZoneAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RepresentativeZoneAssignment::class, 'representative_id');
+    }
+
+    public function activeZoneAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RepresentativeZoneAssignment::class, 'representative_id')
+                    ->where('is_active', true);
+    }
+
+    public function storeRegistrationRequests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StoreRegistrationRequest::class, 'representative_id');
+    }
+
+    public function commissionRecords(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CommissionRecord::class, 'representative_id');
+    }
+
+    public function collectionReceipts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CollectionReceipt::class, 'representative_id');
+    }
+
+    public function isRepresentative(): bool
+    {
+        return $this->hasRole('representative');
+    }
+
+    public function followUpCalls(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(FollowUpCall::class, 'representative_id');
+    }
+
+    public function refusalReports(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RepresentativeRejectionReport::class, 'representative_id');
     }
 
     // Scopes

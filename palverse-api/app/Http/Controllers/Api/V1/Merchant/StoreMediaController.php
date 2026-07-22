@@ -24,9 +24,15 @@ class StoreMediaController extends Controller
 
     public function storeLogo(UploadStoreLogoRequest $request, string $publicId): JsonResponse
     {
+        \Log::info('StoreLogo Request Received', ['user_id' => $request->user()?->id, 'publicId' => $publicId]);
         $store = Store::where('public_id', $publicId)->firstOrFail();
+        \Log::info('Store retrieved', ['store_owner_id' => $store->owner_id, 'can_update' => $request->user()->can('update', $store)]);
 
         if ($request->user()->cannot('update', $store)) {
+            \Log::error('StoreLogo Access Denied', [
+                'user' => $request->user(),
+                'store' => $store
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied.',
@@ -120,6 +126,9 @@ class StoreMediaController extends Controller
 
     public function storeGallery(UploadStoreGalleryRequest $request, string $publicId): JsonResponse
     {
+        \Log::info('storeGallery called', [
+            'error_code' => $_FILES['files']['error'] ?? 'missing'
+        ]);
         $store = Store::where('public_id', $publicId)->firstOrFail();
 
         if ($request->user()->cannot('update', $store)) {

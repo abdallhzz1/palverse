@@ -84,6 +84,7 @@ class StorePublicationFlowTest extends EndToEndTestCase
         $hiddenPublicStoreResponse->assertStatus(404);
 
         // 18. Merchant API remains accessible.
+        \Illuminate\Support\Facades\Auth::forgetGuards();
         $merchantToken = $merchant->createToken('device')->plainTextToken;
         $merchantStoreResponse = $this->withToken($merchantToken)->getJson("/api/v1/merchant/stores/{$store->public_id}");
         $this->assertApiSuccess($merchantStoreResponse);

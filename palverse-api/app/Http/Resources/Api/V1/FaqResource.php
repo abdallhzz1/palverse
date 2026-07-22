@@ -15,7 +15,7 @@ class FaqResource extends JsonResource
         $isAdmin = $request->is('*/admin/*');
 
         return [
-            'public_id' => $this->when($isAdmin, $this->public_id),
+            'public_id' => $this->public_id,
             'question_ar' => $this->question_ar,
             'question_en' => $this->question_en,
             'answer_ar' => $this->answer_ar,

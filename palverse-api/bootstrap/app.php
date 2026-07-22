@@ -37,11 +37,16 @@ return Application::configure(basePath: dirname(__DIR__))
             AssignRequestId::class,
         ]);
 
+        $middleware->api(append: [
+            'throttle:api',
+        ]);
+
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'verified.api' => EnsureEmailIsVerified::class,
+            'user.active' => \App\Http\Middleware\EnsureUserIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -83,8 +88,6 @@ return Application::configure(basePath: dirname(__DIR__))
                     'code' => 'VALIDATION_ERROR',
                     'details' => $validationErrors,
                 ],
-                // Included for backward compatibility with test helpers that check the root 'errors' key.
-                // Clients should read from error.details instead.
                 'errors' => $validationErrors,
             ], 422);
         });

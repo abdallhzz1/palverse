@@ -56,6 +56,13 @@ export interface DashboardSummaryResponse {
     unread_notifications_total: number;
     notifications_sent_in_period: number;
   };
+  field_sales?: {
+    total_representatives: number;
+    total_rejection_reports: number;
+    total_receipts_amount: number;
+    unpaid_commissions_count: number;
+    unpaid_commissions_amount: number;
+  };
 }
 
 export interface DashboardBreakdownItem {

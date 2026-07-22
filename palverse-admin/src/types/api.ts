@@ -62,7 +62,7 @@ export interface LoginRequest {
 }
 
 export interface BackendLoginData {
-  token: string;
+  token?: string;
   token_type: string;
   user: AuthUser;
 }
@@ -72,7 +72,7 @@ export interface BackendMeData {
 }
 
 export interface LoginResponse {
-  token: string;
+  token?: string;
   tokenType: string;
   user: AuthUser;
 }

@@ -111,6 +111,15 @@ class StoreSearchService
             $query->whereHas('cover');
         }
 
+        // 7. Featured Filter (Advertised Stores)
+        if (isset($filters['is_featured']) && filter_var($filters['is_featured'], FILTER_VALIDATE_BOOLEAN)) {
+            $query->whereHas('advertisements', function ($q) {
+                $q->where('is_active', true)
+                  ->where('start_date', '<=', now()->toDateString())
+                  ->where('end_date', '>=', now()->toDateString());
+            });
+        }
+
         // 7. Open Now Filter
         if (isset($filters['open_now']) && filter_var($filters['open_now'], FILTER_VALIDATE_BOOLEAN)) {
             $now = Carbon::now(config('app.timezone'));

@@ -45,11 +45,9 @@ export default function LoginPage() {
         ...values,
         device_name: "Admin Dashboard",
       });
-      
-      const token = typeof response.token === 'string' ? response.token.trim() : "";
 
-      if (!token || !response.user) {
-        toast.error("لم يتم استلام رمز الدخول من الخادم");
+      if (!response.user) {
+        toast.error("لم يتم استلام بيانات المستخدم من الخادم");
         setIsLoading(false);
         return;
       }
@@ -61,8 +59,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Update provider state
-      login(token, response.user);
+      login(response.user);
       toast.success("تم تسجيل الدخول بنجاح");
       
       // Explicit deterministic redirect

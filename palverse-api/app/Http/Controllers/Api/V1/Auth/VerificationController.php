@@ -55,6 +55,15 @@ class VerificationController extends Controller
      */
     public function verify(Request $request, string $id, string $hash): JsonResponse
     {
+        if (! $request->hasValidSignature()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid verification link.',
+                'error' => ['code' => 'EMAIL_VERIFICATION_LINK_INVALID', 'details' => []],
+                'meta' => [],
+            ], 403);
+        }
+
         // Must validate user exists and is not deleted
         $user = User::withTrashed()->find($id);
 

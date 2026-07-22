@@ -134,13 +134,13 @@ class AdminUserManagementTest extends TestCase
     public function test_admin_can_update_roles(): void
     {
         $response = $this->actingAs($this->admin)->patchJson("/api/v1/admin/users/{$this->merchant->public_id}/roles", [
-            'roles' => ['customer'],
+            'roles' => ['representative'],
         ]);
 
         $response->assertStatus(200);
 
         $this->assertFalse($this->merchant->fresh()->hasRole('merchant'));
-        $this->assertTrue($this->merchant->fresh()->hasRole('customer'));
+        $this->assertTrue($this->merchant->fresh()->hasRole('representative'));
     }
 
     public function test_admin_can_reset_password(): void

@@ -197,8 +197,9 @@ export function UserActions({ user, onSuccess }: UserActionsProps) {
           <div className="space-y-3">
             {[
               { id: "admin", label: "مدير (Admin)", desc: "صلاحيات كاملة للوصول إلى لوحة التحكم." },
-              { id: "merchant", label: "تاجر (Merchant)", desc: "إدارة المحلات الخاصة به وطلباته." },
-              { id: "customer", label: "مستخدم (Customer)", desc: "التصفح والشراء في التطبيق فقط." }
+              { id: "merchant", label: "صاحب محل", desc: "إدارة المحلات الخاصة به وطلباته." },
+              { id: "representative", label: "مندوب مبيعات (Representative)", desc: "إدارة طلبات المتاجر، الزيارات الميدانية وعمولات التسجيل." },
+              { id: "follow_up", label: "متابعة (Follow-up)", desc: "متابعة الاشتراكات غير المدفوعة والتواصل مع التجار." }
             ].map(role => (
               <div key={role.id} className="flex items-start gap-3 p-3 border border-border dark:border-slate-700 rounded-lg">
                 <input 

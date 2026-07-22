@@ -33,7 +33,8 @@ export const SETTINGS_GROUPS = [
   "contact",
   "social",
   "application",
-  "maintenance"
+  "maintenance",
+  "financial"
 ] as const;
 
 export type SettingsGroupName = typeof SETTINGS_GROUPS[number];

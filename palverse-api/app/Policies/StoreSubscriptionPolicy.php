@@ -12,7 +12,9 @@ class StoreSubscriptionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('subscriptions.view');
+        return $user->hasPermissionTo('subscriptions.view') 
+            || $user->hasPermissionTo('renewals.view') 
+            || $user->hasPermissionTo('unpaid_subscriptions.view');
     }
 
     /**
@@ -20,7 +22,9 @@ class StoreSubscriptionPolicy
      */
     public function view(User $user, StoreSubscription $storeSubscription): bool
     {
-        if ($user->hasPermissionTo('subscriptions.view')) {
+        if ($user->hasPermissionTo('subscriptions.view') 
+            || $user->hasPermissionTo('renewals.view') 
+            || $user->hasPermissionTo('unpaid_subscriptions.view')) {
             return true;
         }
 
@@ -70,5 +74,21 @@ class StoreSubscriptionPolicy
     public function forceDelete(User $user, StoreSubscription $storeSubscription): bool
     {
         return $user->hasPermissionTo('subscriptions.manage');
+    }
+
+    public function activateUnpaid(User $user): bool
+    {
+        return $user->hasPermissionTo('renewals.follow_up')
+            && $user->hasPermissionTo('unpaid_subscriptions.view');
+    }
+
+    public function renew(User $user): bool
+    {
+        return $user->hasPermissionTo('renewals.follow_up');
+    }
+
+    public function cancelFollowUp(User $user): bool
+    {
+        return $user->hasPermissionTo('renewals.follow_up');
     }
 }

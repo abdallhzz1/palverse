@@ -26,7 +26,7 @@ export default function DashboardLayout({
     }
   }, [isAuthenticated, isLoading, isAdmin, router]);
 
-  if (isLoading || (!isAuthenticated && !isAdmin)) {
+  if (isLoading || !isAuthenticated || !isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Spinner size="lg" />

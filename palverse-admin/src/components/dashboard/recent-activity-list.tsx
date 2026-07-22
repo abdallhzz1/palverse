@@ -1,6 +1,6 @@
 import { RecentActivityItem } from "@/types/analytics";
 import { formatDateTime } from "@/lib/utils/formatters";
-import { Activity, Clock } from "lucide-react";
+import { Activity, Clock, User } from "lucide-react";
 
 interface RecentActivityListProps {
   items: RecentActivityItem[];
@@ -9,46 +9,48 @@ interface RecentActivityListProps {
 export function RecentActivityList({ items }: RecentActivityListProps) {
   if (!items || items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
-        <Activity className="w-12 h-12 mb-4 opacity-20" />
-        <p>لا يوجد نشاطات حديثة لعرضها</p>
+      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 py-16 text-muted-foreground">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+          <Activity className="h-7 w-7 opacity-40" />
+        </div>
+        <p className="font-medium">لا يوجد نشاط حديث</p>
+        <p className="mt-1 text-sm">ستظهر هنا آخر العمليات على المنصة</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pr-2">
+    <div className="space-y-3">
       {items.map((item, index) => (
-        <div key={item.public_id || index} className="relative pl-4 rtl:pl-0 rtl:pr-4">
-          {/* Timeline connecting line */}
-          {index !== items.length - 1 && (
-            <div className="absolute top-8 left-[11px] rtl:left-auto rtl:right-[11px] bottom-[-24px] w-px bg-muted dark:bg-slate-800" />
-          )}
-          
-          <div className="flex gap-4">
-            <div className="relative z-10 flex items-center justify-center w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 ring-4 ring-white dark:ring-[#1F2522]">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            </div>
-            
-            <div className="flex-1 pb-1">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                <h4 className="text-sm font-medium text-foreground dark:text-white">
-                  {item.action}
-                </h4>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3 ml-1" />
-                  <span dir="ltr">{formatDateTime(item.created_at)}</span>
-                </div>
+        <div
+          key={item.public_id || index}
+          className="group relative flex gap-4 rounded-xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+        >
+          <div className="relative z-10 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0F3D2E] text-white dark:bg-[#1E7D4E]">
+            <Activity className="h-4 w-4" />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <h4 className="text-sm font-semibold text-foreground">{item.action}</h4>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  {item.description}
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-                {item.description}
-              </p>
-              {item.user_name && (
-                <div className="mt-2 text-xs font-medium px-2 py-1 bg-muted dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground rounded w-fit">
-                  بواسطة: {item.user_name}
-                </div>
-              )}
+
+              <div className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                <span dir="ltr">{formatDateTime(item.created_at)}</span>
+              </div>
             </div>
+
+            {item.user_name && (
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border">
+                <User className="h-3 w-3" />
+                {item.user_name}
+              </div>
+            )}
           </div>
         </div>
       ))}

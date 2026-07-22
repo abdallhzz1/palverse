@@ -1,18 +1,22 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { AuthUser } from "@/types/api";
 import { authService } from "@/services/auth.service";
-import { TOKEN_STORAGE_KEY } from "@/lib/constants";
 
 interface AuthContextType {
   user: AuthUser | null;
-  token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  login: (token: string, user: AuthUser) => void;
-  logout: () => void;
+  login: (user: AuthUser) => void;
+  logout: () => Promise<void>;
   hasRole: (user: AuthUser | null, role: string) => boolean;
 }
 
@@ -20,66 +24,54 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  // Start with true to prevent premature redirects on first load
   const [isLoading, setIsLoading] = useState(true);
 
-  const clearSession = useCallback(() => {
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
-    setToken(null);
-    setUser(null);
-  }, []);
-
   const fetchUser = useCallback(async () => {
-    const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-    if (!storedToken) {
-      setIsLoading(false);
-      return;
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("palverse_admin_token");
     }
 
-    setToken(storedToken);
     try {
-      const user = await authService.me();
-      setUser(user);
-    } catch (error) {
-      clearSession();
+      const currentUser = await authService.me();
+      setUser(currentUser);
+    } catch {
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
-  }, [clearSession]);
+  }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchUser();
   }, [fetchUser]);
 
-  const login = (newToken: string, newUser: AuthUser) => {
-    localStorage.setItem(TOKEN_STORAGE_KEY, newToken);
-    setToken(newToken);
+  const login = (newUser: AuthUser) => {
     setUser(newUser);
   };
 
-  const logout = () => {
+  const logout = async () => {
     try {
-      void authService.logout();
-    } catch (error) {
-      // API failed, but session will be cleared anyway
+      await authService.logout();
+    } catch {
+      // Cookie is cleared server-side when possible.
     } finally {
-      clearSession();
+      setUser(null);
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
     }
   };
 
-  const hasRole = (user: AuthUser | null, role: string) => {
-    if (!user || !Array.isArray(user.roles)) return false;
-    return user.roles.includes(role);
+  const hasRole = (currentUser: AuthUser | null, role: string) => {
+    if (!currentUser || !Array.isArray(currentUser.roles)) return false;
+    return currentUser.roles.includes(role);
   };
 
-  const isAuthenticated = !!token && !!user;
+  const isAuthenticated = !!user;
   const isAdmin = isAuthenticated && hasRole(user, "admin");
 
   const value: AuthContextType = {
     user,
-    token,
     isLoading,
     isAuthenticated,
     isAdmin,

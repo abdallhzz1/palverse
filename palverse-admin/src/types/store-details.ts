@@ -1,9 +1,9 @@
 export interface StoreWorkingHour {
-  id?: number;
-  day: "sunday" | "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday";
+  day_of_week: number;
+  day_label_ar: string;
+  day_label_en: string;
   is_closed: boolean;
-  open_time: string | null;
-  close_time: string | null;
+  periods: { opens_at: string; closes_at: string }[];
 }
 
 export interface StoreSocialLink {

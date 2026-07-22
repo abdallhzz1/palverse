@@ -5,15 +5,15 @@ import { normalizeApiError, NormalizedApiError } from "@/lib/api/error";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-export function useZonesList(initialParams: ZonesListParams = { page: 1, per_page: 15 }) {
+export function useZonesList(initialParams: ZonesListParams = { page: 1, per_page: 15 }, syncUrl: boolean = true) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [params, setParams] = useState<ZonesListParams>(() => {
     const urlParams: ZonesListParams = { ...initialParams };
-    if (searchParams.has("page")) urlParams.page = parseInt(searchParams.get("page")!, 10);
-    if (searchParams.has("city")) urlParams.city = searchParams.get("city")!;
+    if (syncUrl && searchParams.has("page")) urlParams.page = parseInt(searchParams.get("page")!, 10);
+    if (syncUrl && searchParams.has("city")) urlParams.city = searchParams.get("city")!;
     return urlParams;
   });
 
@@ -22,6 +22,7 @@ export function useZonesList(initialParams: ZonesListParams = { page: 1, per_pag
   const [error, setError] = useState<NormalizedApiError | null>(null);
 
   useEffect(() => {
+    if (!syncUrl) return;
     const newSearchParams = new URLSearchParams(searchParams.toString());
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== "" && value !== null) {
@@ -34,7 +35,7 @@ export function useZonesList(initialParams: ZonesListParams = { page: 1, per_pag
     if (newQueryString !== searchParams.toString()) {
       router.replace(`${pathname}?${newQueryString}`, { scroll: false });
     }
-  }, [params, pathname, router, searchParams]);
+  }, [params, pathname, router, searchParams, syncUrl]);
 
   const fetchZones = useCallback(async (currentParams: ZonesListParams) => {
     setIsLoading(true);
@@ -54,13 +55,13 @@ export function useZonesList(initialParams: ZonesListParams = { page: 1, per_pag
     fetchZones(params);
   }, [params, fetchZones]);
 
-  const setFilter = (key: keyof ZonesListParams, value: string | number) => {
+  const setFilter = useCallback((key: keyof ZonesListParams, value: string | number) => {
     setParams(prev => {
       const newParams = { ...prev, [key]: value };
       if (key !== "page") newParams.page = 1;
       return newParams;
     });
-  };
+  }, []);
 
   return { data, isLoading, error, params, setFilter, refresh: () => fetchZones(params) };
 }

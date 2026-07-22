@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\Api\V1\OfferResource;
+use App\Http\Resources\StoreWorkingHourResource;
 use App\Services\StoreLinkService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,7 +21,7 @@ class StoreResource extends JsonResource
             'name_en' => $this->name_en,
             'description_ar' => $this->description_ar,
             'description_en' => $this->description_en,
-            'slug' => $this->slug,
+            'slug' => $this->slug ?? $this->public_id,
             'web_url' => $this->when($this->slug !== null, fn () => $linkService->generateWebUrl($this->resource)),
             'deep_link' => $this->when($this->slug !== null, fn () => $linkService->generateDeepLink($this->resource)),
             'qr_url' => $this->when($this->slug !== null && ! $isList, fn () => route('api.v1.public.stores.qr', ['slug' => $this->slug])),
@@ -66,6 +67,16 @@ class StoreResource extends JsonResource
             'offers' => OfferResource::collection($this->whenLoaded('activeOffers')),
             'offers_count' => $this->whenCounted('activeOffers'),
             'current_offers_count' => $this->whenCounted('activeOffers'),
+            'working_hours' => $this->whenLoaded('workingHours', fn () =>
+                StoreWorkingHourResource::collectionGroupedByDay($this->workingHours)
+            ),
+            'social_links' => $this->whenLoaded('socialLinks', fn () =>
+                $this->socialLinks->map(fn ($link) => [
+                    'public_id' => $link->public_id,
+                    'platform'  => $link->platform,
+                    'url'       => $link->url,
+                ])->values()
+            ),
         ];
     }
 

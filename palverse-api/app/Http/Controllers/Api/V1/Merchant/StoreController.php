@@ -23,7 +23,7 @@ class StoreController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $stores = Store::with(['category', 'city', 'zone'])
+        $stores = Store::with(['category', 'city', 'zone', 'logo', 'cover'])
             ->ownedBy($request->user())
             ->ordered()
             ->paginate($request->input('per_page', 15));
@@ -38,6 +38,15 @@ class StoreController extends Controller
 
     public function store(StoreMerchantStoreRequest $request): JsonResponse
     {
+        if ($request->user()->stores()->count() >= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'لا يمكن إضافة أكثر من محل واحد لنفس الحساب.',
+                'errors' => ['store' => ['You can only have one store per account.']],
+                'meta' => [],
+            ], 422);
+        }
+
         $validated = $request->validated();
 
         $category = Category::where('public_id', $validated['category_public_id'])->first();
@@ -107,7 +116,7 @@ class StoreController extends Controller
 
     public function show(string $publicId, Request $request): JsonResponse
     {
-        $store = Store::with(['category', 'city', 'zone'])
+        $store = Store::with(['category', 'city', 'zone', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks'])
             ->where('public_id', $publicId)
             ->firstOrFail();
 

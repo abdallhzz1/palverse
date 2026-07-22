@@ -151,3 +151,9 @@ The Dashboard Statistics Module will support pre-defined periods (`today`, `last
 ## ADR-028: System Settings, Static Pages, and FAQs
 *   **Decision**: Settings are stored in a dedicated `system_settings` table (excluding environment secrets/keys) with type casting. Static pages content is sanitized using a lightweight regex sanitizer in `StaticPageService` to block executable HTML scripts and iframes. Bootstrap data is exposed through a lightweight public endpoint cacheable for 5 minutes.
 *   **Rationale**: Protects platform security, prevents binary bloat, and optimizes initial application bootstrap payload size.
+
+---
+
+## ADR-029: Customer Role Removed from Active Product Scope
+*   **Decision**: The explicit database `customer` role and generic authenticated customer capabilities are deprecated and removed from the active product scope.
+*   **Rationale**: Public visitors do not need to log in to browse Palverse content. The operational roles (Admin, Merchant, Representative, Follow-up) are sufficient. Managing a separate customer role introduced unnecessary overhead, speculative feature bloat (like unrequired favorites functionality), and authentication complexity without clear product requirements. Existing users with this role are preserved but the role is marked deprecated.

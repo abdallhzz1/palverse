@@ -25,6 +25,7 @@ class Category extends Model
         'name_ar',
         'name_en',
         'slug',
+        'icon',
     ];
 
     protected $hidden = [

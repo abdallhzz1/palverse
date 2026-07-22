@@ -148,39 +148,23 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
             <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
               <h3 className="text-lg font-bold text-foreground dark:text-white mb-6 flex items-center gap-2">
                 <Store className="w-5 h-5 text-[#1E7D4E]" />
-                نشاط التاجر
+                المحل المرتبط
               </h3>
               
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-muted dark:bg-slate-800/50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-md text-emerald-600">
-                      <Store className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium text-slate-700 dark:text-slate-300">المحلات المملوكة</span>
+              <div className="space-y-4 text-center">
+                <div className="p-4 bg-muted dark:bg-slate-800/50 rounded-lg flex flex-col items-center justify-center gap-3">
+                  <Store className="w-10 h-10 text-emerald-600/50" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground dark:text-white">هذا الحساب مخصص لإدارة محل</p>
+                    <p className="text-xs text-muted-foreground mt-1">يُرجى التوجه إلى قسم المحلات للبحث وعرض تفاصيل المحل والاشتراكات المتعلقة بهذا المستخدم.</p>
                   </div>
-                  <span className="text-lg font-bold text-foreground dark:text-white">{user.stores_count || 0}</span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-muted dark:bg-slate-800/50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-md text-emerald-600">
-                      <CreditCard className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium text-slate-700 dark:text-slate-300">الاشتراكات النشطة</span>
-                  </div>
-                  <span className="text-lg font-bold text-foreground dark:text-white">{user.active_subscriptions_count || 0}</span>
+                  <Link href={`/stores?query=${encodeURIComponent(user.email)}`}>
+                    <Button variant="outline" size="sm" className="mt-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900/50 dark:hover:bg-emerald-900/20">
+                      البحث في المحلات
+                    </Button>
+                  </Link>
                 </div>
               </div>
-
-              {(user.stores_count || 0) > 0 && (
-                <div className="mt-6 pt-4 border-t border-border dark:border-slate-800">
-                  {/* We don't implement full nested navigation here yet, but we will leave a placeholder message */}
-                  <p className="text-sm text-muted-foreground text-center">
-                    سيتم عرض قائمة المحلات والاشتراكات قريباً ضمن قسم المحلات.
-                  </p>
-                </div>
-              )}
             </div>
           )}
 

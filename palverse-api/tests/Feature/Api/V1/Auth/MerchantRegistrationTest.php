@@ -84,12 +84,12 @@ class MerchantRegistrationTest extends TestCase
         $this->assertFalse($user->hasRole('admin'));
     }
 
-    public function test_registered_user_does_not_have_customer_role(): void
+    public function test_registered_user_does_not_have_representative_role(): void
     {
         $this->postJson('/api/v1/auth/register/merchant', $this->validPayload());
 
         $user = User::where('email', 'ahmad@example.com')->firstOrFail();
-        $this->assertFalse($user->hasRole('customer'));
+        $this->assertFalse($user->hasRole('representative'));
     }
 
     public function test_password_is_hashed_not_stored_in_plain_text(): void

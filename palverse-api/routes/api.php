@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\ZoneController as AdminZoneController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\V1\Auth\ProfileController;
 use App\Http\Controllers\Api\V1\Auth\RegisterMerchantController;
 use App\Http\Controllers\Api\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\V1\Auth\SessionController;
@@ -58,9 +59,13 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/reset-password', ResetPasswordController::class)
             ->middleware('throttle:password-reset');
 
-        Route::middleware('auth:sanctum')->group(function (): void {
+        Route::middleware(['auth:sanctum', 'user.active'])->group(function (): void {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
+
+            // Profile
+            Route::put('/profile', [ProfileController::class, 'update']);
+            Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar']);
 
             // Email Verification
             Route::prefix('email')->group(function (): void {
@@ -69,8 +74,8 @@ Route::prefix('v1')->group(function (): void {
                     ->middleware('throttle:verification-notification');
                 Route::get('/verify/{id}/{hash}', [VerificationController::class, 'verify'])
                     ->name('verification.verify')
-                    ->withoutMiddleware('auth:sanctum') // Support verification without active session
-                    ->middleware('throttle:email-verification');
+                    ->withoutMiddleware('auth:sanctum')
+                    ->middleware(['signed', 'throttle:email-verification']);
             });
 
             // Session Management
@@ -86,7 +91,7 @@ Route::prefix('v1')->group(function (): void {
 
     // ─── Notifications (Authenticated User) ───────────────────────────────────
     Route::prefix('notifications')
-        ->middleware(['auth:sanctum'])
+        ->middleware(['auth:sanctum', 'user.active'])
         ->group(function (): void {
             Route::get('/', [NotificationController::class, 'index']);
             Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
@@ -124,6 +129,8 @@ Route::prefix('v1')->group(function (): void {
 
     Route::get('/faqs', [FaqController::class, 'index']);
 
+    Route::post('/merchant-join-requests', [\App\Http\Controllers\Api\V1\Public\MerchantJoinRequestController::class, 'store']);
+
     Route::get('/search/suggestions', [SearchSuggestionController::class, 'suggest']);
 
     Route::prefix('stores')->group(function (): void {
@@ -133,11 +140,28 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/{slug}/related', [PublicStoreController::class, 'related']);
         Route::get('/{slug}', [PublicStoreController::class, 'show']);
         Route::get('/{slug}/offers', [PublicStoreController::class, 'offers']);
+
+        Route::get('/{slug}/reviews', [\App\Http\Controllers\Api\V1\Public\ReviewController::class, 'index']);
+        Route::get('/{slug}/reviews/summary', [\App\Http\Controllers\Api\V1\Public\ReviewController::class, 'summary']);
+        Route::post('/{slug}/reviews', [\App\Http\Controllers\Api\V1\Public\ReviewController::class, 'store']);
     });
+
+    // Global Offers
+    Route::get('/offers', [App\Http\Controllers\Api\V1\Public\OfferController::class, 'index']);
+
+    // Advertisements (Public)
+    Route::get('/advertisements/banners', [\App\Http\Controllers\Api\V1\Public\AdvertisementController::class, 'banners']);
+
+    // Statistics (Public)
+    Route::get('/stats', [\App\Http\Controllers\Api\V1\Public\StatsController::class, 'index']);
+
+    // Articles (Blog)
+    Route::get('/articles', [\App\Http\Controllers\Api\V1\Public\ArticleController::class, 'index']);
+    Route::get('/articles/{slug}', [\App\Http\Controllers\Api\V1\Public\ArticleController::class, 'show']);
 
     // ─── Merchant (Sanctum + merchant role/permissions required) ───────────────
     Route::prefix('merchant')
-        ->middleware(['auth:sanctum']) // Role/permission is handled by Policies and route scopes
+        ->middleware(['auth:sanctum', 'user.active', 'role:merchant'])
         ->group(function (): void {
             // Dashboard
             Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
@@ -185,12 +209,52 @@ Route::prefix('v1')->group(function (): void {
                 // Links & QR Code
                 Route::get('/{storePublicId}/links', [App\Http\Controllers\Api\V1\Merchant\StoreLinkController::class, 'links']);
                 Route::get('/{storePublicId}/qr', [App\Http\Controllers\Api\V1\Merchant\StoreLinkController::class, 'qr']);
+
+                // Reviews
+                Route::get('/{publicId}/reviews', [\App\Http\Controllers\Api\V1\Merchant\ReviewController::class, 'index']);
+                Route::get('/{publicId}/reviews/summary', [\App\Http\Controllers\Api\V1\Merchant\ReviewController::class, 'summary']);
+                Route::post('/{publicId}/reviews/{reviewPublicId}/report', [\App\Http\Controllers\Api\V1\Merchant\ReviewController::class, 'report']);
+            });
+        });
+
+    // ─── Representative (Sanctum + representative role/permissions required) ───────────────
+    Route::prefix('representative')
+        ->middleware(['auth:sanctum', 'user.active', 'role:representative'])
+        ->group(function (): void {
+            // Dashboard
+            Route::get('/dashboard/summary', [\App\Http\Controllers\Api\V1\Representative\DashboardController::class, '__invoke']);
+
+            // Zones
+            Route::get('/zones', [\App\Http\Controllers\Api\V1\Representative\ZoneController::class, 'index']);
+
+            // Store Requests
+            Route::prefix('store-requests')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'store']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'show']);
+                Route::put('/{publicId}', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'update']);
+                Route::post('/{publicId}/submit', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'submit']);
+            });
+
+            // Rejection Reports
+            Route::prefix('rejection-reports')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Representative\RejectionReportController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\Representative\RejectionReportController::class, 'store']);
+            });
+
+            // Commissions
+            Route::get('/commissions', [\App\Http\Controllers\Api\V1\Representative\CommissionController::class, 'index']);
+
+            // Receipts
+            Route::prefix('receipts')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Representative\ReceiptController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\Representative\ReceiptController::class, 'store']);
             });
         });
 
     // ─── Administration (Sanctum + admin role required) ────────────────────────
     Route::prefix('admin')
-        ->middleware(['auth:sanctum', 'role:admin'])
+        ->middleware(['auth:sanctum', 'user.active', 'role:admin'])
         ->group(function (): void {
             // Dashboard
             Route::prefix('dashboard')->group(function (): void {
@@ -297,6 +361,7 @@ Route::prefix('v1')->group(function (): void {
                 Route::post('/', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'store']);
                 Route::get('/{publicId}', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'show']);
                 Route::put('/{publicId}', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'update']);
+
                 Route::delete('/{publicId}', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'destroy']);
                 Route::patch('/{publicId}/publish', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'publish']);
                 Route::patch('/{publicId}/unpublish', [App\Http\Controllers\Api\V1\Admin\StaticPageController::class, 'unpublish']);
@@ -311,10 +376,132 @@ Route::prefix('v1')->group(function (): void {
                 Route::delete('/{publicId}', [App\Http\Controllers\Api\V1\Admin\FaqController::class, 'destroy']);
             });
 
+            // Representatives
+            Route::prefix('representatives')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Admin\RepresentativeController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\Admin\RepresentativeController::class, 'store']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\Admin\RepresentativeController::class, 'show']);
+                Route::put('/{publicId}', [\App\Http\Controllers\Api\V1\Admin\RepresentativeController::class, 'update']);
+                Route::post('/{publicId}/assign-zones', [\App\Http\Controllers\Api\V1\Admin\RepresentativeController::class, 'assignZones']);
+            });
+
+            // Commissions
+            Route::prefix('commissions')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Admin\CommissionController::class, 'index']);
+                Route::post('/{publicId}/pay', [\App\Http\Controllers\Api\V1\Admin\CommissionController::class, 'markAsPaid']);
+            });
+
+            // Store Requests (Admin Review)
+            Route::prefix('store-requests')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Admin\StoreRegistrationRequestController::class, 'index']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\Admin\StoreRegistrationRequestController::class, 'show']);
+                Route::post('/{publicId}/review', [\App\Http\Controllers\Api\V1\Admin\StoreRegistrationRequestController::class, 'review']);
+            });
+
+            // Join Requests from website
+            Route::prefix('join-requests')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Admin\MerchantJoinRequestController::class, 'index']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\Admin\MerchantJoinRequestController::class, 'show']);
+                Route::put('/{publicId}/status', [\App\Http\Controllers\Api\V1\Admin\MerchantJoinRequestController::class, 'updateStatus']);
+            });
+
             // Audit Logs
             Route::prefix('audit-logs')->group(function (): void {
                 Route::get('/', [AuditLogController::class, 'index']);
                 Route::get('/{publicId}', [AuditLogController::class, 'show']);
+            });
+
+            // Reviews
+            Route::prefix('reviews')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Admin\ReviewController::class, 'index']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\Admin\ReviewController::class, 'show']);
+                Route::patch('/{publicId}/{action}', [\App\Http\Controllers\Api\V1\Admin\ReviewController::class, 'moderate']);
+            });
+
+            // System Settings
+            Route::prefix('settings')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'index']);
+                Route::put('/', [\App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'update']);
+            });
+
+            // Receipts
+            Route::get('/receipts', [\App\Http\Controllers\Api\V1\Admin\ReceiptController::class, 'index']);
+            Route::post('/receipts/{publicId}/settle', [\App\Http\Controllers\Api\V1\Admin\ReceiptController::class, 'settle']);
+
+            // Rejection Reports
+            Route::get('/rejection-reports', [\App\Http\Controllers\Api\V1\Admin\RejectionReportController::class, 'index']);
+        });
+
+    // ─── Follow-Up (Authenticated Follow-Up Role) ─────────────────────────────
+    Route::prefix('follow-up')
+        ->middleware(['auth:sanctum', 'user.active', 'role:follow_up'])
+        ->group(function (): void {
+            // Dashboard Summary
+            Route::get('/dashboard/summary', [\App\Http\Controllers\Api\V1\FollowUp\DashboardController::class, 'summary']);
+
+            // Store Requests (Shared Queue)
+            Route::prefix('store-requests')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\StoreRequestController::class, 'index']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\StoreRequestController::class, 'show']);
+                Route::post('/{publicId}/review', [\App\Http\Controllers\Api\V1\FollowUp\StoreRequestController::class, 'review']);
+            });
+
+            // Merchant Join Requests (Public Site)
+            Route::prefix('merchant-join-requests')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\MerchantJoinRequestController::class, 'index']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\MerchantJoinRequestController::class, 'show']);
+                Route::put('/{publicId}/status', [\App\Http\Controllers\Api\V1\FollowUp\MerchantJoinRequestController::class, 'updateStatus']);
+            });
+
+            // Renewals
+            Route::get('/renewals', [\App\Http\Controllers\Api\V1\FollowUp\RenewalController::class, 'index']);
+            Route::get('/renewals/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\RenewalController::class, 'show']);
+            Route::post('/renewals/{publicId}/renew', [\App\Http\Controllers\Api\V1\FollowUp\RenewalController::class, 'renew']);
+            Route::put('/renewals/{publicId}/cancel', [\App\Http\Controllers\Api\V1\FollowUp\RenewalController::class, 'cancel']);
+
+            // Unpaid Subscriptions
+            Route::get('/unpaid-subscriptions', [\App\Http\Controllers\Api\V1\FollowUp\UnpaidSubscriptionController::class, 'index']);
+            Route::get('/unpaid-subscriptions/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\UnpaidSubscriptionController::class, 'show']);
+            Route::put('/unpaid-subscriptions/{publicId}/pay', [\App\Http\Controllers\Api\V1\FollowUp\UnpaidSubscriptionController::class, 'pay']);
+            Route::put('/unpaid-subscriptions/{publicId}/cancel', [\App\Http\Controllers\Api\V1\FollowUp\UnpaidSubscriptionController::class, 'cancel']);
+
+            // Calls
+            Route::prefix('calls')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\CallController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\FollowUp\CallController::class, 'store']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\CallController::class, 'show']);
+                Route::put('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\CallController::class, 'update']);
+            });
+
+            // Receipts
+            Route::get('/receipts', [\App\Http\Controllers\Api\V1\FollowUp\ReceiptController::class, 'index']);
+            Route::post('/receipts/{publicId}/settle', [\App\Http\Controllers\Api\V1\FollowUp\ReceiptController::class, 'settle']);
+
+            // Rejection Reports
+            Route::get('/rejection-reports', [\App\Http\Controllers\Api\V1\FollowUp\RejectionReportController::class, 'index']);
+
+            // Advertisements
+            Route::prefix('advertisements')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'store']);
+                Route::put('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'update']);
+                Route::delete('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'destroy']);
+            });
+
+            // Representatives
+            Route::prefix('representatives')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\RepresentativeController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\FollowUp\RepresentativeController::class, 'store']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\RepresentativeController::class, 'show']);
+            });
+
+            // Articles (Blog)
+            Route::prefix('articles')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\ArticleController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\FollowUp\ArticleController::class, 'store']);
+                Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\ArticleController::class, 'show']);
+                Route::put('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\ArticleController::class, 'update']);
+                Route::delete('/{publicId}', [\App\Http\Controllers\Api\V1\FollowUp\ArticleController::class, 'destroy']);
             });
         });
 });

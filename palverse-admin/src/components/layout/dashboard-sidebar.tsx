@@ -14,32 +14,36 @@ import {
   MapPin,
   Percent,
   CreditCard,
-  Settings,
-  FileText,
   HelpCircle,
   Activity,
-  LogOut,
   CheckSquare,
-  Bell,
-  PieChart
+  PieChart,
+  ClipboardList,
+  Star,
+  ShieldCheck,
+  Banknote,
+  FileX,
 } from "lucide-react";
-import { useAuth } from "@/providers/auth-provider";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "لوحة التحكم" },
   { href: "/reports", icon: PieChart, label: "التقارير" },
-  { href: "/users", icon: Users, label: "المستخدمون والتجار" },
+  { href: "/users", icon: Users, label: "المستخدمون" },
+  { href: "/representatives", icon: ShieldCheck, label: "إدارة المناديب" },
+  { href: "/commissions", icon: CreditCard, label: "العمولات" },
+  { href: "/join-requests", icon: Users, label: "طلبات الانضمام المباشرة" },
+  { href: "/store-requests", icon: ClipboardList, label: "طلبات تسجيل المحلات" },
   { href: "/stores", icon: Store, label: "المحلات" },
+  { href: "/receipts", icon: Banknote, label: "سندات القبض" },
+  { href: "/rejection-reports", icon: FileX, label: "تقارير الرفض" },
   { href: "/categories", icon: Tags, label: "التصنيفات" },
   { href: "/locations", icon: MapPin, label: "المدن والمناطق" },
   { href: "/offers", icon: Percent, label: "العروض" },
   { href: "/subscription-plans", icon: CreditCard, label: "خطط الاشتراك" },
   { href: "/subscriptions", icon: CheckSquare, label: "اشتراكات المحلات" },
-  { href: "/notifications", icon: Bell, label: "الإشعارات" },
-  { href: "/pages", icon: FileText, label: "الصفحات" },
+  { href: "/reviews", icon: Star, label: "التقييمات" },
   { href: "/faqs", icon: HelpCircle, label: "الأسئلة الشائعة" },
   { href: "/audit-logs", icon: Activity, label: "سجل العمليات" },
-  { href: "/settings", icon: Settings, label: "الإعدادات" },
 ];
 
 interface DashboardSidebarProps {
@@ -47,11 +51,42 @@ interface DashboardSidebarProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+function SidebarNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-3">
+      <div className="flex flex-1 flex-col justify-evenly">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-sidebar-active text-white"
+                  : "text-sidebar-foreground/80 hover:bg-sidebar-active hover:text-white"
+              )}
+            >
+              <item.icon className="h-5 w-5 shrink-0" />
+              <span className="leading-snug">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+
+      <p className="shrink-0 pt-3 text-center text-xs text-sidebar-foreground/50 text-latin">
+        v{process.env.NEXT_PUBLIC_ADMIN_VERSION || "1.0.0"}
+      </p>
+    </nav>
+  );
+}
+
 export function DashboardSidebar({ isOpen, onOpenChange }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const { logout } = useAuth();
 
-  // Close sidebar on route change for mobile
   useEffect(() => {
     if (onOpenChange) {
       onOpenChange(false);
@@ -62,7 +97,6 @@ export function DashboardSidebar({ isOpen, onOpenChange }: DashboardSidebarProps
     <>
       <div className="flex h-16 shrink-0 items-center justify-center border-b border-sidebar-border px-6">
         <Link href="/dashboard" className="flex items-center gap-2">
-          {/* Apply brightness-0 invert so the logo renders white against the dark green background */}
           <div className="relative h-8 w-8 brightness-0 invert">
             <Image
               src="/brand/palverse-icon.png"
@@ -76,58 +110,23 @@ export function DashboardSidebar({ isOpen, onOpenChange }: DashboardSidebarProps
         </Link>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-        <nav className="space-y-1 px-3">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-sidebar-active text-white"
-                    : "text-sidebar-foreground/80 hover:bg-sidebar-active hover:text-white"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
-      <div className="border-t border-sidebar-border p-4 shrink-0">
-        <button
-          onClick={logout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-active hover:text-white"
-        >
-          <LogOut className="h-5 w-5" />
-          تسجيل الخروج
-        </button>
-        <div className="mt-4 text-center text-xs text-sidebar-foreground/50 text-latin">
-          Palverse Admin v{process.env.NEXT_PUBLIC_ADMIN_VERSION || "1.0.0"}
-        </div>
-      </div>
+      <SidebarNav />
     </>
   );
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside className="fixed right-0 top-0 z-40 hidden h-screen w-64 flex-col border-l border-sidebar-border bg-sidebar-background text-sidebar-foreground lg:flex transition-all duration-300">
+      <aside className="fixed right-0 top-0 z-40 hidden h-screen w-64 flex-col overflow-hidden border-l border-sidebar-border bg-sidebar-background text-sidebar-foreground lg:flex">
         {SidebarContent}
       </aside>
 
-      {/* Mobile Sidebar */}
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="w-64 p-0 bg-sidebar-background text-sidebar-foreground border-sidebar-border">
+        <SheetContent
+          side="right"
+          className="w-64 overflow-hidden border-sidebar-border bg-sidebar-background p-0 text-sidebar-foreground"
+        >
           <SheetTitle className="sr-only">قائمة التنقل</SheetTitle>
-          <div className="flex h-full flex-col">
-            {SidebarContent}
-          </div>
+          <div className="flex h-full flex-col overflow-hidden">{SidebarContent}</div>
         </SheetContent>
       </Sheet>
     </>

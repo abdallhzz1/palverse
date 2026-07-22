@@ -13,6 +13,15 @@ class SystemSettingSeeder extends Seeder
     public function run(): void
     {
         $settings = [
+            [
+                'group' => 'financial',
+                'key' => 'representative_commission_amount',
+                'value' => '100.00',
+                'type' => 'decimal',
+                'is_public' => false,
+                'description_ar' => 'قيمة عمولة المندوب عن كل متجر معتمد',
+                'description_en' => 'Commission amount per approved store',
+            ],
             // General
             [
                 'group' => 'general',

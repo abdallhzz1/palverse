@@ -1,6 +1,6 @@
 import { NotificationType } from "@/types/notifications";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Store, AlertTriangle, Info } from "lucide-react";
+import { CheckCircle2, XCircle, Store, AlertTriangle, Info, UserPlus } from "lucide-react";
 
 export function getNotificationTypeInfo(type: NotificationType) {
   switch (type) {
@@ -51,6 +51,12 @@ export function getNotificationTypeInfo(type: NotificationType) {
         label: "انتهاء الاشتراك",
         icon: XCircle,
         className: "bg-red-50 text-red-700 hover:bg-red-100 border-none",
+      };
+    case "new_join_request":
+      return {
+        label: "طلب انضمام جديد",
+        icon: UserPlus,
+        className: "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-none",
       };
     default:
       return {

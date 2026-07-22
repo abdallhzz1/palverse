@@ -37,4 +37,14 @@ class Zone extends Model
     {
         return $this->belongsTo(City::class);
     }
+
+    public function representativeAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RepresentativeZoneAssignment::class);
+    }
+
+    public function activeRepresentativeAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RepresentativeZoneAssignment::class)->where('is_active', true);
+    }
 }

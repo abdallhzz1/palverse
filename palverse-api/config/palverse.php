@@ -13,9 +13,9 @@ return [
     'media' => [
         'limits' => [
             'store_gallery_limit' => (int) env('STORE_GALLERY_LIMIT', 10),
-            'store_logo_max_kb' => (int) env('STORE_LOGO_MAX_KB', 4096), // 4MB
-            'store_cover_max_kb' => (int) env('STORE_COVER_MAX_KB', 6144), // 6MB
-            'store_gallery_image_max_kb' => (int) env('STORE_GALLERY_IMAGE_MAX_KB', 4096), // 4MB
+            'store_logo_max_kb' => (int) env('STORE_LOGO_MAX_KB', 20480), // 20MB
+            'store_cover_max_kb' => (int) env('STORE_COVER_MAX_KB', 20480), // 20MB
+            'store_gallery_image_max_kb' => (int) env('STORE_GALLERY_IMAGE_MAX_KB', 20480), // 20MB
         ],
         'allowed_image_mimes' => [
             'jpeg',
@@ -37,7 +37,7 @@ return [
     'offers' => [
         'default_currency' => env('DEFAULT_CURRENCY', 'ILS'),
         'limits' => [
-            'offer_image_max_kb' => (int) env('OFFER_IMAGE_MAX_KB', 4096), // 4MB
+            'offer_image_max_kb' => (int) env('OFFER_IMAGE_MAX_KB', 20480), // 20MB
             'merchant_offer_limit_per_store' => (int) env('MERCHANT_OFFER_LIMIT_PER_STORE', 50),
         ],
     ],
@@ -165,6 +165,9 @@ return [
                 'maintenance_message_en',
                 'registration_enabled',
                 'merchant_registration_enabled',
+            ],
+            'financial' => [
+                'representative_commission_amount',
             ],
         ],
     ],

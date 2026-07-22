@@ -239,6 +239,7 @@ class SystemSettingsAndFaqTest extends TestCase
         $response->assertStatus(200);
         $this->assertCount(1, $response->json('data'));
         $response->assertJsonPath('data.0.question_ar', 'كيف أسجل؟');
+        $response->assertJsonStructure(['data' => [['public_id', 'question_ar', 'answer_ar']]]);
 
         // 4. Admin CRUD
         $response = $this->actingAs($this->admin)

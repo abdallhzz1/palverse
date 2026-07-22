@@ -1,0 +1,8 @@
+export const env = {
+  NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1',
+  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Palverse',
+  NEXT_PUBLIC_APP_LOCALE: process.env.NEXT_PUBLIC_APP_LOCALE || 'ar',
+  NEXT_PUBLIC_APP_DIRECTION: process.env.NEXT_PUBLIC_APP_DIRECTION || 'rtl',
+  NEXT_PUBLIC_API_VERSION: process.env.NEXT_PUBLIC_API_VERSION || '1.0.0',
+  NEXT_PUBLIC_WEB_VERSION: process.env.NEXT_PUBLIC_WEB_VERSION || '0.1.0',
+};

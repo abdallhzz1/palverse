@@ -12,4 +12,5 @@ enum NotificationType: string
     case SUBSCRIPTION_CANCELLED = 'subscription_cancelled';
     case SUBSCRIPTION_EXPIRING_SOON = 'subscription_expiring_soon';
     case SUBSCRIPTION_EXPIRED = 'subscription_expired';
+    case NEW_JOIN_REQUEST = 'new_join_request';
 }
