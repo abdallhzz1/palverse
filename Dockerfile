@@ -1,5 +1,5 @@
 # Build Palverse API from monorepo root (Railway default).
-FROM php:8.3-cli-bookworm
+FROM php:8.4-cli-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev \
@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
 
