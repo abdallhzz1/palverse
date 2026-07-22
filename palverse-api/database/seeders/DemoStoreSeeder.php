@@ -107,19 +107,19 @@ class DemoStoreSeeder extends Seeder
                     'rejected_by' => $data['status'] === StoreStatus::REJECTED ? $admin->id : null,
                     'rejected_at' => $data['status'] === StoreStatus::REJECTED ? now() : null,
                 ]);
-
-                // Attach Media (Logo and Cover) for approved stores
-                if ($data['status'] === StoreStatus::APPROVED) {
-                    $this->attachMedia($store);
-                    $this->addWorkingHours($store);
-                    $this->addSocialLinks($store);
-                }
             } else {
                 // Update existing
                 $store->update([
                     'status' => $data['status']->value,
                     'is_active' => $data['active'],
                 ]);
+            }
+
+            // Attach demo media/hours/social for approved stores (also on re-seed).
+            if ($data['status'] === StoreStatus::APPROVED) {
+                $this->attachMedia($store);
+                $this->addWorkingHours($store);
+                $this->addSocialLinks($store);
             }
         }
     }
@@ -136,14 +136,20 @@ class DemoStoreSeeder extends Seeder
         $logoFile = new UploadedFile($logoPath, 'logo.png', 'image/png', null, true);
         try {
             $this->mediaService->uploadLogo($store, $logoFile);
-        } catch (\Exception $e) {}
+            $this->command?->info("Attached logo for {$store->name_en}");
+        } catch (\Exception $e) {
+            $this->command?->warn("Logo upload failed for {$store->name_en}: {$e->getMessage()}");
+        }
 
         // Generate PNG cover
         $coverPath = $this->generatePngPlaceholder(1200, 400, $store->name_en, '#1E293B', '#FFFFFF');
         $coverFile = new UploadedFile($coverPath, 'cover.png', 'image/png', null, true);
         try {
             $this->mediaService->uploadCover($store, $coverFile);
-        } catch (\Exception $e) {}
+            $this->command?->info("Attached cover for {$store->name_en}");
+        } catch (\Exception $e) {
+            $this->command?->warn("Cover upload failed for {$store->name_en}: {$e->getMessage()}");
+        }
     }
 
     private function addWorkingHours(Store $store)
@@ -201,8 +207,10 @@ class DemoStoreSeeder extends Seeder
         $path = sys_get_temp_dir() . '/' . uniqid('palverse_demo_') . '.png';
         
         if (!function_exists('imagecreatetruecolor')) {
-            // Fallback: create an empty file (may fail validation, but better than fatal error)
-            file_put_contents($path, '');
+            // Minimal valid 1x1 PNG fallback when GD is unavailable.
+            file_put_contents($path, base64_decode(
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO5W2fQAAAAASUVORK5CYII='
+            ));
             return $path;
         }
 
