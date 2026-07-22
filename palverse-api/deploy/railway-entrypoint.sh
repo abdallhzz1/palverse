@@ -5,50 +5,49 @@ cd /app
 
 echo "[railway] Boot starting (pwd=$(pwd), PORT=${PORT:-8000})"
 
-# Railway MySQL plugin often exposes MYSQL* — map into Laravel DB_* if missing.
+# Prefer live Railway env vars over any baked .env inside the image.
+if [ -f .env ]; then
+  echo "[railway] Removing image .env so Railway Variables take effect"
+  rm -f .env
+fi
+
+# Railway MySQL plugin often exposes MYSQL* — map into Laravel DB_*.
 export DB_CONNECTION="${DB_CONNECTION:-mysql}"
 export DB_HOST="${DB_HOST:-${MYSQLHOST:-${MYSQL_HOST:-}}}"
 export DB_PORT="${DB_PORT:-${MYSQLPORT:-${MYSQL_PORT:-3306}}}"
-export DB_DATABASE="${DB_DATABASE:-${MYSQLDATABASE:-${MYSQL_DATABASE:-}}}"
+export DB_DATABASE="${DB_DATABASE:-${MYSQLDATABASE:-${MYSQL_DATABASE:-railway}}}"
 export DB_USERNAME="${DB_USERNAME:-${MYSQLUSER:-${MYSQL_USER:-}}}"
 export DB_PASSWORD="${DB_PASSWORD:-${MYSQLPASSWORD:-${MYSQL_PASSWORD:-}}}"
 
-echo "[railway] DB_HOST=${DB_HOST:-<empty>} DB_PORT=${DB_PORT} DB_DATABASE=${DB_DATABASE:-<empty>} DB_USERNAME=${DB_USERNAME:-<empty>}"
+# Free-tier friendly defaults (avoid DB-backed cache before migrate).
+export CACHE_STORE="${CACHE_STORE:-file}"
+export SESSION_DRIVER="${SESSION_DRIVER:-file}"
+export QUEUE_CONNECTION="${QUEUE_CONNECTION:-sync}"
+export FILESYSTEM_DISK="${FILESYSTEM_DISK:-public}"
+export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
+
+if [ -n "${MYSQL_URL:-${DATABASE_URL:-}}" ]; then
+  export DB_URL="${DB_URL:-${MYSQL_URL:-${DATABASE_URL}}}"
+  echo "[railway] Using DB_URL from MYSQL_URL/DATABASE_URL"
+fi
+
+echo "[railway] DB_HOST=${DB_HOST:-<empty>} DB_PORT=${DB_PORT} DB_DATABASE=${DB_DATABASE:-<empty>} DB_USERNAME=${DB_USERNAME:-<empty>} CACHE_STORE=${CACHE_STORE}"
 
 if [ -z "${APP_KEY:-}" ]; then
   echo "[railway] APP_KEY missing — generating ephemeral key."
-  # key:generate needs a runnable app; create a temporary key without DB.
   export APP_KEY="base64:$(head -c 32 /dev/urandom | base64 | tr -d '\n')"
 fi
 
-# Start HTTP immediately so Railway can reach /up even while DB/migrate runs.
-PORT="${PORT:-8000}"
-echo "[railway] Starting API on 0.0.0.0:${PORT}"
-php artisan serve --host=0.0.0.0 --port="${PORT}" &
-SERVER_PID=$!
-
-cleanup() {
-  kill "${SERVER_PID}" 2>/dev/null || true
-}
-trap cleanup EXIT INT TERM
-
-sleep 2
-if ! kill -0 "${SERVER_PID}" 2>/dev/null; then
-  echo "[railway] ERROR: PHP server exited early. Likely APP_KEY/bootstrap failure."
-  php artisan about || true
-  wait "${SERVER_PID}" || true
-  exit 1
-fi
-echo "[railway] HTTP server is up (pid=${SERVER_PID})"
+php artisan config:clear || true
+php artisan cache:clear || true
+rm -f bootstrap/cache/config.php bootstrap/cache/routes-v7.php bootstrap/cache/routes.php 2>/dev/null || true
 
 if [ -z "${DB_HOST}" ] || [ -z "${DB_DATABASE}" ] || [ -z "${DB_USERNAME}" ]; then
-  echo "[railway] WARNING: DB vars missing — skipping migrate/seed. Link MySQL and set DB_* or MYSQL*."
-  wait "${SERVER_PID}"
-  exit 0
-fi
-
-echo "[railway] Waiting for database..."
-php -r '
+  echo "[railway] ERROR: DB vars still empty after mapping."
+  echo "[railway] In Railway Variables add DB_HOST as Reference to MySQL → MYSQLHOST (and DB_PORT/DB_DATABASE/DB_USERNAME/DB_PASSWORD)."
+else
+  echo "[railway] Waiting for database..."
+  if php -r '
 $host = getenv("DB_HOST");
 $port = getenv("DB_PORT") ?: "3306";
 $user = getenv("DB_USERNAME");
@@ -72,20 +71,20 @@ do {
 } while (time() < $deadline);
 fwrite(STDERR, "Database connection timed out: {$last}\n");
 exit(1);
-' || echo "[railway] WARNING: DB wait failed — API stays up without migrate."
+'; then
+    php artisan migrate --force --no-interaction || echo "[railway] WARNING: migrate failed"
+    php artisan storage:link || true
 
-php artisan config:clear || true
-php artisan migrate --force --no-interaction || echo "[railway] WARNING: migrate failed"
-php artisan storage:link || true
-
-if [ "${PALVERSE_SEED_DEMO_ON_BOOT:-false}" = "true" ]; then
-  echo "[railway] Seeding demo data..."
-  export PALVERSE_ALLOW_DEMO_SEEDING=true
-  php artisan palverse:seed-demo --force || echo "[railway] WARNING: demo seed failed"
+    if [ "${PALVERSE_SEED_DEMO_ON_BOOT:-false}" = "true" ]; then
+      echo "[railway] Seeding demo data..."
+      export PALVERSE_ALLOW_DEMO_SEEDING=true
+      php artisan palverse:seed-demo --force || echo "[railway] WARNING: demo seed failed"
+    fi
+  else
+    echo "[railway] WARNING: could not connect to MySQL — check DB_* References and that MySQL service is running."
+  fi
 fi
 
-php artisan config:cache || true
-php artisan route:cache || true
-
-echo "[railway] Boot finished — waiting on server"
-wait "${SERVER_PID}"
+PORT="${PORT:-8000}"
+echo "[railway] Starting API on 0.0.0.0:${PORT}"
+exec php artisan serve --host=0.0.0.0 --port="${PORT}"
