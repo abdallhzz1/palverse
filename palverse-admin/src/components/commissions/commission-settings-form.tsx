@@ -53,7 +53,7 @@ export function CommissionSettingsForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <h3 className="text-lg font-semibold text-foreground">إعدادات العمولة</h3>
-          <p className="text-sm text-muted-foreground">تحديد قيمة عمولة المندوب عند اعتماد كل متجر</p>
+          <p className="text-sm text-muted-foreground">تحديد قيمة عمولة المندوب عند اعتماد كل محل</p>
         </div>
 
         {apiError && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{apiError.message}</div>}
@@ -65,12 +65,12 @@ export function CommissionSettingsForm() {
             name="representative_commission_amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>قيمة عمولة المندوب عن كل متجر معتمد</FormLabel>
+                <FormLabel>قيمة عمولة المندوب عن كل محل معتمد</FormLabel>
                 <FormControl>
                   <Input {...field} type="number" step="0.01" dir="ltr" />
                 </FormControl>
                 <p className="text-xs text-muted-foreground mt-1">
-                  المبلغ الذي سيتم تسجيله كعمولة للمندوب عند اعتماد متجر قام بتسجيله.
+                  المبلغ الذي سيتم تسجيله كعمولة للمندوب عند اعتماد محل قام بتسجيله.
                 </p>
                 <FormMessage />
               </FormItem>

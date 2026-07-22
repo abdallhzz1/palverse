@@ -37,7 +37,7 @@ class StoreRegistrationRequestController extends Controller
     public function show(string $publicId): JsonResponse
     {
         $storeRequest = StoreRegistrationRequest::where('public_id', $publicId)
-            ->with(['representative', 'zone', 'city', 'category', 'statusHistory', 'resultingStore'])
+            ->with(['representative', 'zone', 'city', 'category', 'statusHistory', 'resultingStore', 'resultingMerchant'])
             ->firstOrFail();
 
         $this->authorize('view', $storeRequest);
@@ -66,7 +66,14 @@ class StoreRegistrationRequestController extends Controller
         }
 
         return response()->json([
-            'data' => new StoreRegistrationRequestResource($storeRequest->load(['representative', 'zone', 'city', 'category']))
+            'data' => new StoreRegistrationRequestResource($storeRequest->load([
+                'representative',
+                'zone',
+                'city',
+                'category',
+                'resultingStore',
+                'resultingMerchant',
+            ]))
         ]);
     }
 }

@@ -54,7 +54,7 @@ export default function CommissionsPage() {
             <thead className="text-xs text-muted-foreground bg-muted dark:bg-slate-800/50 uppercase border-b border-border dark:border-slate-800">
               <tr>
                 <th className="px-6 py-4 font-medium">المندوب</th>
-                <th className="px-6 py-4 font-medium">المتجر / العملية</th>
+                <th className="px-6 py-4 font-medium">المحل / العملية</th>
                 <th className="px-6 py-4 font-medium">قيمة العمولة</th>
                 <th className="px-6 py-4 font-medium">الحالة</th>
                 <th className="px-6 py-4 font-medium">تاريخ الاستحقاق</th>

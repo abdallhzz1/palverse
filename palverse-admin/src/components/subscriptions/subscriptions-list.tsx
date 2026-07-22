@@ -11,9 +11,12 @@ import { ar } from "date-fns/locale";
 import { SubscriptionStatusBadge, RemainingDaysBadge, getSubscriptionStatusLabel } from "./subscription-status";
 import { useState } from "react";
 import { CancelSubscriptionDialog } from "./cancel-subscription-dialog";
+import { StoreSelect } from "@/components/stores/store-select";
+import { useSubscriptionPlansList } from "@/hooks/use-subscription-plans";
 
 export function SubscriptionsList() {
   const { data, isLoading, error, params, setFilter, refresh, clearFilters } = useSubscriptionsList();
+  const { data: plansData } = useSubscriptionPlansList({ page: 1, per_page: 100 }, false);
   const [cancelDialogId, setCancelDialogId] = useState<string | null>(null);
 
   const formatPrice = (price: string | number | null, currency: string | null) => {
@@ -32,6 +35,33 @@ export function SubscriptionsList() {
     <div className="space-y-4">
       {/* Filters Toolbar */}
       <div className="flex flex-col sm:flex-row flex-wrap gap-4 p-4 bg-card rounded-lg border border-border">
+        <div className="w-full sm:w-56">
+          <label className="text-xs text-muted-foreground mb-1 block">المحل</label>
+          <StoreSelect
+            value={params.store_public_id || ""}
+            onValueChange={(val) => setFilter("store_public_id", val)}
+            allowClear
+            placeholder="جميع المحلات"
+            className="h-9"
+          />
+        </div>
+
+        <div className="w-full sm:w-48">
+          <label className="text-xs text-muted-foreground mb-1 block">الخطة</label>
+          <select
+            value={params.plan_public_id || ""}
+            onChange={(e) => setFilter("plan_public_id", e.target.value)}
+            className="flex h-9 w-full items-center justify-between rounded-md border border-border bg-card px-3 py-1 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-[#1E7D4E]"
+          >
+            <option value="">جميع الخطط</option>
+            {plansData?.data.map((plan) => (
+              <option key={plan.public_id} value={plan.public_id}>
+                {plan.name_ar}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="w-full sm:w-48">
           <label className="text-xs text-muted-foreground mb-1 block">الحالة</label>
           <select

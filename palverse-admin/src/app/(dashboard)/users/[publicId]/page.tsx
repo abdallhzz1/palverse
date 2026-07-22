@@ -2,18 +2,20 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { useUserDetail } from "@/hooks/use-user-detail";
+import { useUserDetail, useUserStores, useUserSubscriptions } from "@/hooks/use-user-detail";
 import { UserStatusBadge } from "@/components/users/user-status-badge";
 import { UserRoleBadge } from "@/components/users/user-role-badge";
 import { UserActions } from "@/components/users/user-actions";
 import { Button } from "@/components/ui/button";
-import { formatDateTime } from "@/lib/utils/formatters";
-import { ArrowRight, UserCircle, MapPin, Store, CreditCard, Mail, Phone, Clock, AlertTriangle, Edit } from "lucide-react";
+import { formatDate, formatDateTime } from "@/lib/utils/formatters";
+import { ArrowRight, UserCircle, Store, CreditCard, Mail, Phone, Clock, AlertTriangle, Edit, ChevronLeft } from "lucide-react";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
 
 export default function UserDetailPage({ params }: { params: Promise<{ publicId: string }> }) {
   const resolvedParams = use(params);
   const { user, isLoading, error, refresh } = useUserDetail(resolvedParams.publicId);
+  const { data: storesData, isLoading: storesLoading } = useUserStores(resolvedParams.publicId);
+  const { data: subscriptionsData, isLoading: subscriptionsLoading } = useUserSubscriptions(resolvedParams.publicId);
 
   if (isLoading && !user) {
     return (
@@ -47,8 +49,6 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
       </div>
     );
   }
-
-  const isMerchant = user.roles.includes("merchant");
 
   return (
     <div className="space-y-6 pb-8">
@@ -144,29 +144,89 @@ export default function UserDetailPage({ params }: { params: Promise<{ publicId:
 
         {/* Right Column: Merchant / Stats Overview */}
         <div className="space-y-6">
-          {isMerchant && (
-            <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-foreground dark:text-white mb-6 flex items-center gap-2">
-                <Store className="w-5 h-5 text-[#1E7D4E]" />
-                المحل المرتبط
-              </h3>
-              
-              <div className="space-y-4 text-center">
-                <div className="p-4 bg-muted dark:bg-slate-800/50 rounded-lg flex flex-col items-center justify-center gap-3">
-                  <Store className="w-10 h-10 text-emerald-600/50" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground dark:text-white">هذا الحساب مخصص لإدارة محل</p>
-                    <p className="text-xs text-muted-foreground mt-1">يُرجى التوجه إلى قسم المحلات للبحث وعرض تفاصيل المحل والاشتراكات المتعلقة بهذا المستخدم.</p>
-                  </div>
-                  <Link href={`/stores?query=${encodeURIComponent(user.email)}`}>
-                    <Button variant="outline" size="sm" className="mt-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900/50 dark:hover:bg-emerald-900/20">
-                      البحث في المحلات
-                    </Button>
-                  </Link>
-                </div>
+          {/* Linked Stores */}
+          <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-foreground dark:text-white mb-4 flex items-center gap-2">
+              <Store className="w-5 h-5 text-[#1E7D4E]" />
+              المحلات المرتبطة
+            </h3>
+
+            {storesLoading ? (
+              <div className="space-y-2">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="h-14 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+                ))}
               </div>
-            </div>
-          )}
+            ) : !storesData || storesData.data.length === 0 ? (
+              <div className="p-4 bg-muted dark:bg-slate-800/50 rounded-lg text-center text-sm text-muted-foreground">
+                لا توجد محلات مرتبطة بهذا المستخدم.
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {storesData.data.map((store) => (
+                  <li key={store.public_id}>
+                    <Link
+                      href={`/stores/${store.public_id}`}
+                      className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border dark:border-slate-800 hover:bg-muted dark:hover:bg-slate-800/50 transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground dark:text-white truncate">{store.name_ar}</p>
+                        {typeof store.name_en === "string" && store.name_en && (
+                          <p className="text-xs text-muted-foreground truncate" dir="ltr">{store.name_en}</p>
+                        )}
+                      </div>
+                      <ChevronLeft className="w-4 h-4 text-muted-foreground shrink-0" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Linked Subscriptions */}
+          <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-foreground dark:text-white mb-4 flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-[#1E7D4E]" />
+              الاشتراكات
+            </h3>
+
+            {subscriptionsLoading ? (
+              <div className="space-y-2">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="h-14 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : !subscriptionsData || subscriptionsData.data.length === 0 ? (
+              <div className="p-4 bg-muted dark:bg-slate-800/50 rounded-lg text-center text-sm text-muted-foreground">
+                لا توجد اشتراكات مرتبطة بهذا المستخدم.
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {subscriptionsData.data.map((sub) => {
+                  const startsAt = typeof sub.starts_at === "string" ? sub.starts_at : null;
+                  const endsAt = typeof sub.ends_at === "string" ? sub.ends_at : null;
+                  return (
+                    <li key={sub.public_id}>
+                      <Link
+                        href={`/subscriptions/${sub.public_id}`}
+                        className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border dark:border-slate-800 hover:bg-muted dark:hover:bg-slate-800/50 transition-colors"
+                      >
+                        <div className="min-w-0">
+                          <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-muted dark:bg-slate-800 text-muted-foreground mb-1">
+                            {String(sub.status)}
+                          </span>
+                          <p className="text-xs text-muted-foreground" dir="ltr">
+                            {startsAt ? formatDate(startsAt) : "-"} — {endsAt ? formatDate(endsAt) : "-"}
+                          </p>
+                        </div>
+                        <ChevronLeft className="w-4 h-4 text-muted-foreground shrink-0" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
 
           {/* System Info */}
           <div className="bg-card dark:bg-[#1F2522] rounded-xl border border-border dark:border-emerald-900/30 p-6 shadow-sm">

@@ -36,6 +36,7 @@ Project foundation and documentation.
 - [x] Email Verification and Session/Device Management
 - [x] Security Hardening, Exception Normalization, and Response Consistency
 - [x] End-to-End Test Suite & Demo Data Module
+- [x] Admin UX audit fixes: store edit + media moderation, settings UI, static pages CMS, entity deep-links, sidebar IA, admin role middleware, terminology consistency
 
 ## In Progress
 

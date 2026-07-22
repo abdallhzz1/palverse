@@ -8,6 +8,7 @@ use App\Exceptions\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\Store\AdminStoreIndexRequest;
 use App\Http\Requests\Api\V1\Admin\Store\RejectStoreRequest;
+use App\Http\Requests\Api\V1\Admin\Store\UpdateAdminStoreRequest;
 use App\Http\Resources\StoreResource;
 use App\Models\Category;
 use App\Models\City;
@@ -349,5 +350,62 @@ class StoreController extends Controller
             'data' => new StoreResource($store),
             'meta' => [],
         ], 200);
+    }
+
+    public function update(UpdateAdminStoreRequest $request, string $publicId): JsonResponse
+    {
+        $validated = $request->validated();
+        $store = Store::where('public_id', $publicId)->firstOrFail();
+
+        $this->authorize('update', $store);
+
+        DB::beginTransaction();
+        try {
+            $fillables = [
+                'name_ar', 'name_en', 'description_ar', 'description_en',
+                'phone', 'whatsapp', 'email', 'website',
+                'address_ar', 'address_en', 'latitude', 'longitude',
+            ];
+            $oldValues = $store->only(array_merge($fillables, ['category_id', 'city_id', 'zone_id']));
+
+            if (isset($validated['category_public_id'])) {
+                $store->category_id = Category::where('public_id', $validated['category_public_id'])->value('id');
+            }
+            if (isset($validated['city_public_id'])) {
+                $store->city_id = City::where('public_id', $validated['city_public_id'])->value('id');
+            }
+            if (isset($validated['zone_public_id'])) {
+                $store->zone_id = Zone::where('public_id', $validated['zone_public_id'])->value('id');
+            }
+
+            foreach ($fillables as $field) {
+                if (array_key_exists($field, $validated)) {
+                    $store->$field = $validated[$field];
+                }
+            }
+
+            $store->save();
+
+            $this->auditLogService->recordFromRequest(
+                action: AuditAction::StoreUpdated,
+                subject: $store,
+                oldValues: $oldValues,
+                newValues: $store->only(array_keys($oldValues))
+            );
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        $store->load(['category', 'city', 'zone', 'owner', 'logo', 'cover', 'gallery', 'currentSubscription']);
+
+        return response()->json([
+            'success' => true,
+            'message' => app()->getLocale() === 'en' ? 'Store updated successfully.' : 'تم تحديث بيانات المحل بنجاح.',
+            'data' => new StoreResource($store),
+            'meta' => [],
+        ]);
     }
 }

@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { formatDate } from "@/lib/utils/formatters";
 
 export default function AdminReceiptsPage() {
   const [receipts, setReceipts] = useState<Receipt[]>([]);
@@ -57,7 +58,7 @@ export default function AdminReceiptsPage() {
 
   const getPaymentPurposeLabel = (purpose: string) => {
     switch(purpose) {
-      case 'subscription': return 'اشتراك متجر';
+      case 'subscription': return 'اشتراك محل';
       case 'registration_fee': return 'رسوم تسجيل';
       case 'other': return 'أخرى';
       default: return purpose;
@@ -72,7 +73,7 @@ export default function AdminReceiptsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>سندات القبض المحصلة من المتاجر</CardTitle>
+          <CardTitle>سندات القبض المحصلة من المحلات</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -80,7 +81,7 @@ export default function AdminReceiptsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-right">رقم السند</TableHead>
-                  <TableHead className="text-right">المتجر / الطلب</TableHead>
+                  <TableHead className="text-right">المحل / الطلب</TableHead>
                   <TableHead className="text-right">غرض الدفع</TableHead>
                   <TableHead className="text-right">المبلغ</TableHead>
                   <TableHead className="text-right">تاريخ التحصيل</TableHead>
@@ -115,7 +116,7 @@ export default function AdminReceiptsPage() {
                         {receipt.amount} {receipt.currency}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {new Date(receipt.collected_at).toLocaleDateString('ar-SA')}
+                        {formatDate(receipt.collected_at)}
                       </TableCell>
                       <TableCell className="text-right">
                         {getStatusBadge(receipt.status)}

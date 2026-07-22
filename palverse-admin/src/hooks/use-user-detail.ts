@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { usersService } from "@/services/users.service";
-import { ManagedUser, UpdateUserRolesRequest, ResetUserPasswordRequest, UpdateUserRequest, DeactivateUserRequest, SuspendUserRequest } from "@/types/user";
+import { ManagedUser, UpdateUserRolesRequest, ResetUserPasswordRequest, UpdateUserRequest, DeactivateUserRequest, SuspendUserRequest, UserStoresResponse, UserSubscriptionsResponse } from "@/types/user";
 import { normalizeApiError, NormalizedApiError } from "@/lib/api/error";
 import { toast } from "sonner";
 
@@ -55,6 +55,72 @@ export function useUserDetail(publicId: string) {
     error,
     refresh: () => fetchUser(true),
   };
+}
+
+export function useUserStores(publicId: string, enabled = true) {
+  const [data, setData] = useState<UserStoresResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<NormalizedApiError | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!publicId || !enabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsLoading(false);
+      return;
+    }
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await usersService.listStores(publicId);
+        if (isMounted) setData(res);
+      } catch (err) {
+        if (isMounted) setError(normalizeApiError(err));
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [publicId, enabled]);
+
+  return { data, isLoading, error };
+}
+
+export function useUserSubscriptions(publicId: string, enabled = true) {
+  const [data, setData] = useState<UserSubscriptionsResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<NormalizedApiError | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!publicId || !enabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsLoading(false);
+      return;
+    }
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await usersService.listSubscriptions(publicId);
+        if (isMounted) setData(res);
+      } catch (err) {
+        if (isMounted) setError(normalizeApiError(err));
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [publicId, enabled]);
+
+  return { data, isLoading, error };
 }
 
 export function useUserActions(publicId: string, onSuccess?: () => void) {

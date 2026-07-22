@@ -124,3 +124,21 @@ export interface StoreLinksResponse {
   web_url: string;
   deep_link: string;
 }
+
+export interface UpdateAdminStoreRequest {
+  name_ar?: string;
+  name_en?: string | null;
+  description_ar?: string;
+  description_en?: string | null;
+  phone?: string;
+  whatsapp?: string | null;
+  email?: string | null;
+  website?: string | null;
+  address_ar?: string;
+  address_en?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  category_public_id?: string;
+  city_public_id?: string;
+  zone_public_id?: string;
+}

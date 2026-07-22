@@ -16,7 +16,7 @@ export default function SubscriptionPlansPage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">خطط الاشتراك</h2>
           <p className="text-muted-foreground dark:text-muted-foreground mt-1">
-            إدارة كافة خطط الاشتراك المتاحة للمتاجر
+            إدارة كافة خطط الاشتراك المتاحة للمحلات
           </p>
         </div>
         <Button asChild className="bg-[#1E7D4E] hover:bg-[#0F3D2E] text-white">

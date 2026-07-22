@@ -190,7 +190,7 @@ export default function ReviewDetailPage() {
         <div className="space-y-6">
           <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg p-6 shadow-sm space-y-6">
             <div>
-              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">تفاصيل المتجر</h4>
+              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">تفاصيل المحل</h4>
               <Link href={`/stores/${review.store.public_id}`} className="flex items-start gap-3 group">
                 <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-md text-emerald-600 group-hover:bg-emerald-100 transition-colors">
                   <Store className="w-5 h-5" />

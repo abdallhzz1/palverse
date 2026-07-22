@@ -17,6 +17,12 @@ apiClient.interceptors.request.use(
   (config) => {
     config.headers["X-Request-ID"] =
       `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    // Let the browser set multipart boundary for FormData uploads.
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
   (error) => Promise.reject(error)

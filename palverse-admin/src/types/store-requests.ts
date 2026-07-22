@@ -36,6 +36,16 @@ export interface StoreRegistrationRequest {
   category?: { public_id: string; name_ar: string; name_en: string };
   city?: { public_id: string; name_ar: string; name_en: string };
   zone?: { public_id: string; name_ar: string; name_en: string };
+
+  resulting_store?: {
+    public_id: string;
+    name_ar: string;
+    slug?: string | null;
+  } | null;
+  resulting_merchant?: {
+    public_id: string;
+    name: string;
+  } | null;
 }
 
 export interface StoreRequestListParams {

@@ -69,6 +69,8 @@ This matrix maps all endpoints, actors, roles, entity scopes, audit logging, and
 | **ADM-08** | PATCH | `/api/v1/admin/stores/{uuid}/reject` | Admin | Admin | Sanctum | Store | MVP | Yes | No | Active |
 | **ADM-09** | PATCH | `/api/v1/admin/stores/{uuid}/activate` | Admin | Admin | Sanctum | Store | MVP | Yes | No | Active |
 | **ADM-10** | PATCH | `/api/v1/admin/stores/{uuid}/deactivate` | Admin | Admin | Sanctum | Store | MVP | Yes | No | Active |
+| **ADM-10b**| PUT | `/api/v1/admin/stores/{uuid}` | Admin | Admin | Sanctum | Store | MVP | Yes | No | Active |
+| **ADM-10c**| POST/DELETE | `/api/v1/admin/stores/{uuid}/logo\|cover\|gallery` | Admin | Admin | Sanctum | Store Media | MVP | Yes | No | Active |
 | **ADM-11** | GET | `/api/v1/admin/stores/{uuid}/status-history` | Admin | Admin | Sanctum | History | MVP | No | Yes | Active |
 | **ADM-12** | GET | `/api/v1/admin/categories` | Admin | Admin | Sanctum | Category | MVP | No | Yes | Active |
 | **ADM-13** | POST | `/api/v1/admin/categories` | Admin | Admin | Sanctum | Category | MVP | Yes | No | Active |

@@ -14,7 +14,7 @@ export default function StoreRequestsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">طلبات تسجيل المتاجر (عبر المناديب)</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground dark:text-white">طلبات تسجيل المحلات (عبر المناديب)</h2>
           <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">مراجعة طلبات التسجيل المرفوعة من قبل مندوبي المبيعات الميدانيين</p>
         </div>
       </div>

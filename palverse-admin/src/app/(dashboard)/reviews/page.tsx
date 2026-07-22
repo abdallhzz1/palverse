@@ -56,7 +56,7 @@ export default function ReviewsPage() {
             <div className="relative flex-1">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="ابحث عن متجر أو تعليق..."
+                placeholder="ابحث عن محل أو تعليق..."
                 className="pr-9 w-full"
                 value={params.search || ""}
                 onChange={(e) => setFilter("search", e.target.value)}
@@ -83,7 +83,7 @@ export default function ReviewsPage() {
             <thead className="text-xs text-muted-foreground bg-muted dark:bg-slate-800/50 uppercase border-b border-border dark:border-slate-800">
               <tr>
                 <th className="px-6 py-4 font-medium">التقييم</th>
-                <th className="px-6 py-4 font-medium">المتجر</th>
+                <th className="px-6 py-4 font-medium">المحل</th>
                 <th className="px-6 py-4 font-medium">المستخدم</th>
                 <th className="px-6 py-4 font-medium">التاريخ</th>
                 <th className="px-6 py-4 font-medium">الحالة</th>

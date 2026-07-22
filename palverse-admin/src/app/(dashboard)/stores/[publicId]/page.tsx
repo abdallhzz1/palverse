@@ -10,7 +10,7 @@ import { StoreActions } from "@/components/stores/store-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Phone, Mail, Link as LinkIcon, QrCode, Globe, Download, Copy, AlertCircle, ArrowRight, Clock, Info, User as UserIcon } from "lucide-react";
+import { MapPin, Phone, Mail, Link as LinkIcon, QrCode, Globe, Download, Copy, AlertCircle, ArrowRight, Clock, Info, User as UserIcon, Edit, Navigation } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { use } from "react";
@@ -77,6 +77,12 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
           <ArrowRight className="w-4 h-4 ml-1" />
           العودة إلى المحلات
         </Link>
+        <Button asChild variant="outline" className="gap-2">
+          <Link href={`/stores/${store.public_id}/edit`}>
+            <Edit className="w-4 h-4" />
+            تعديل المحل
+          </Link>
+        </Button>
       </div>
 
       {/* Header Card */}
@@ -187,6 +193,30 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                     {store.address_ar || <span className="text-muted-foreground">غير متوفر</span>}
                   </dd>
                 </div>
+                <div className="md:col-span-2">
+                  <dt className="text-muted-foreground dark:text-muted-foreground mb-1">الإحداثيات (الموقع الجغرافي)</dt>
+                  <dd className="text-foreground dark:text-white flex items-center gap-2">
+                    <Navigation className="w-4 h-4 text-muted-foreground" />
+                    {store.latitude != null && store.longitude != null ? (
+                      <span className="flex flex-wrap items-center gap-3">
+                        <span dir="ltr">
+                          {store.latitude}, {store.longitude}
+                        </span>
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${store.latitude},${store.longitude}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-medium text-[#1E7D4E] hover:underline inline-flex items-center gap-1"
+                        >
+                          <MapPin className="w-3.5 h-3.5" />
+                          عرض على الخريطة
+                        </a>
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground text-xs">غير محدد</span>
+                    )}
+                  </dd>
+                </div>
               </dl>
             </div>
           </div>
@@ -196,7 +226,13 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
               <h3 className="font-semibold text-foreground dark:text-white">الوسائط</h3>
             </div>
             <div className="p-6">
-              <StoreMediaGallery logo={store.logo} cover={store.cover} gallery={store.gallery} />
+              <StoreMediaGallery
+                logo={store.logo}
+                cover={store.cover}
+                gallery={store.gallery}
+                storePublicId={store.public_id}
+                onRefresh={refresh}
+              />
             </div>
           </div>
 

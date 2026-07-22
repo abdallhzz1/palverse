@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useJoinRequestsList } from "@/hooks/use-join-requests";
+import { useSubscriptionPlansList } from "@/hooks/use-subscription-plans";
 import { Pagination } from "@/components/ui/pagination";
-import { AlertCircle, UserPlus, PhoneCall, Check, X, CheckCircle2, Lock, CreditCard } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AlertCircle, UserPlus, PhoneCall, Check, X, CheckCircle2, Lock, CreditCard, Eye, EyeOff } from "lucide-react";
 import { joinRequestsService } from "@/services/join-requests.service";
-import { apiClient } from "@/lib/api/client";
+import { normalizeApiError } from "@/lib/api/error";
+import { formatDate } from "@/lib/utils/formatters";
+import { toast } from "sonner";
 
 interface JoinRequest {
   public_id: string;
@@ -13,47 +17,74 @@ interface JoinRequest {
   store_name: string;
   phone: string;
   email: string | null;
-  status: 'new' | 'contacted' | 'approved' | 'rejected';
+  status: string;
   status_label?: string;
-  city: { id: number; name_ar: string } | null;
+  city: { public_id?: string; id?: number; name_ar: string } | null;
   created_at: string;
   notes?: string;
 }
 
 export default function JoinRequestsPage() {
   const { data, isLoading, error, params, setFilter, refresh } = useJoinRequestsList();
-  
-  const [plans, setPlans] = useState<any[]>([]);
+  const { data: plansData } = useSubscriptionPlansList({ page: 1, per_page: 100 }, false);
+  const plans = plansData?.data ?? [];
+
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
   const [isApproving, setIsApproving] = useState(false);
   const [approveError, setApproveError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [approveForm, setApproveForm] = useState({
     password: "",
     subscription_plan_id: "",
   });
 
-  useEffect(() => {
-    apiClient.get(`/admin/subscription-plans`).then((res) => {
-      setPlans(res.data || []);
-    }).catch(console.error);
-  }, []);
+  const [statusChange, setStatusChange] = useState<{ publicId: string; newStatus: string } | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
-  const updateStatus = async (publicId: string, newStatus: string) => {
-    if (!confirm("هل أنت متأكد من تغيير حالة الطلب؟")) return;
+  const confirmStatusChange = async () => {
+    if (!statusChange) return;
+    setIsUpdatingStatus(true);
     try {
-      await joinRequestsService.updateStatus(publicId, { status: newStatus });
+      await joinRequestsService.updateStatus(statusChange.publicId, { status: statusChange.newStatus });
+      toast.success("تم تحديث حالة الطلب بنجاح");
+      setStatusChange(null);
       refresh();
-    } catch (error) {
-      console.error(error);
-      alert("حدث خطأ أثناء تحديث الحالة");
+    } catch (err) {
+      console.error(err);
+      toast.error("حدث خطأ أثناء تحديث الحالة");
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
-  const handleOpenApproveModal = (req: any) => {
-    setSelectedRequest(req);
+  const handleOpenApproveModal = (req: {
+    public_id: string;
+    merchant_name: string;
+    store_name: string;
+    phone: string;
+    email?: string | null;
+    status: string;
+    status_label?: string;
+    city: JoinRequest["city"];
+    created_at: string;
+    notes?: string;
+  }) => {
+    setSelectedRequest({
+      public_id: req.public_id,
+      merchant_name: req.merchant_name,
+      store_name: req.store_name,
+      phone: req.phone,
+      email: req.email ?? null,
+      status: req.status,
+      status_label: req.status_label,
+      city: req.city,
+      created_at: req.created_at,
+      notes: req.notes,
+    });
     setApproveForm({ password: "", subscription_plan_id: "" });
     setApproveError(null);
+    setShowPassword(false);
     setIsApproveModalOpen(true);
   };
 
@@ -72,13 +103,12 @@ export default function JoinRequestsPage() {
       });
       setIsApproveModalOpen(false);
       refresh();
-    } catch (err: any) {
-      if (err.data?.errors) {
-        const firstErrorKey = Object.keys(err.data.errors)[0];
-        setApproveError(err.data.errors[firstErrorKey][0]);
-      } else {
-        setApproveError(err.message || "حدث خطأ غير متوقع.");
-      }
+    } catch (err) {
+      const normalized = normalizeApiError(err);
+      const firstFieldError = normalized.details
+        ? Object.values(normalized.details)[0]?.[0]
+        : undefined;
+      setApproveError(firstFieldError || normalized.message || "حدث خطأ غير متوقع.");
     } finally {
       setIsApproving(false);
     }
@@ -178,13 +208,13 @@ export default function JoinRequestsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span dir="ltr" className="text-muted-foreground text-xs">{new Date(req.created_at).toLocaleDateString('en-GB')}</span>
+                      <span dir="ltr" className="text-muted-foreground text-xs">{formatDate(req.created_at)}</span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         {req.status === 'new' && (
                           <button 
-                            onClick={() => updateStatus(req.public_id, 'contacted')}
+                            onClick={() => setStatusChange({ publicId: req.public_id, newStatus: 'contacted' })}
                             className="p-1.5 text-amber-600 bg-amber-50 dark:bg-amber-500/10 rounded hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors tooltip"
                             title="تغيير الحالة إلى تم التواصل"
                           >
@@ -201,7 +231,7 @@ export default function JoinRequestsPage() {
                               <Check className="w-4 h-4" />
                             </button>
                             <button 
-                              onClick={() => updateStatus(req.public_id, 'rejected')}
+                              onClick={() => setStatusChange({ publicId: req.public_id, newStatus: 'rejected' })}
                               className="p-1.5 text-red-600 bg-red-50 dark:bg-red-500/10 rounded hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors tooltip"
                               title="رفض الطلب"
                             >
@@ -244,7 +274,7 @@ export default function JoinRequestsPage() {
             
             <form onSubmit={handleApproveSubmit} className="p-6 space-y-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-3 rounded-lg text-sm mb-4">
-                الموافقة على طلب التاجر <strong>{selectedRequest.merchant_name}</strong> ستؤدي إلى إنشاء حساب تاجر، ومتجر باسم <strong>{selectedRequest.store_name}</strong> واشتراك جديد بشكل آلي.
+                الموافقة على طلب التاجر <strong>{selectedRequest.merchant_name}</strong> ستؤدي إلى إنشاء حساب تاجر، ومحل باسم <strong>{selectedRequest.store_name}</strong> واشتراك جديد بشكل آلي.
               </div>
 
               {approveError && (
@@ -260,14 +290,22 @@ export default function JoinRequestsPage() {
                     <Lock className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <input
-                    type="text"
+                    type={showPassword ? "text" : "password"}
                     required
                     minLength={8}
                     value={approveForm.password}
                     onChange={(e) => setApproveForm({ ...approveForm, password: e.target.value })}
-                    className="block w-full pr-10 pl-3 py-2.5 border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary dir-ltr text-right"
+                    className="block w-full pr-10 pl-10 py-2.5 border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary dir-ltr text-right"
                     placeholder="أدخل كلمة مرور أولية للتاجر"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute inset-y-0 left-0 pl-3 flex items-center text-muted-foreground hover:text-emerald-600 focus:outline-none"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
               </div>
 
@@ -286,7 +324,7 @@ export default function JoinRequestsPage() {
                     <option value="">اختر الباقة المتفق عليها</option>
                     {plans.map((plan) => (
                       <option key={plan.public_id} value={plan.public_id}>
-                        {plan.name_ar} - {plan.price > 0 ? `${plan.price} شيقل / ${plan.duration_days} يوم` : 'مجانية'}
+                        {plan.name_ar} - {Number(plan.price) > 0 ? `${plan.price} شيقل / ${plan.duration_days} يوم` : 'مجانية'}
                       </option>
                     ))}
                   </select>
@@ -318,6 +356,21 @@ export default function JoinRequestsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={statusChange !== null}
+        onClose={() => setStatusChange(null)}
+        onConfirm={confirmStatusChange}
+        title={statusChange?.newStatus === "rejected" ? "رفض الطلب" : "تغيير حالة الطلب"}
+        description={
+          statusChange?.newStatus === "rejected"
+            ? "هل أنت متأكد من رفض هذا الطلب؟"
+            : "هل أنت متأكد من تغيير حالة الطلب إلى \"تم التواصل\"؟"
+        }
+        variant={statusChange?.newStatus === "rejected" ? "danger" : "primary"}
+        confirmText="تأكيد"
+        isLoading={isUpdatingStatus}
+      />
     </div>
   );
 }

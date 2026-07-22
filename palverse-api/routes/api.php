@@ -318,10 +318,20 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/{publicId}/links', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'links']);
                 Route::get('/{publicId}/qr', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'qr']);
                 Route::get('/{publicId}', [AdminStoreController::class, 'show']);
+                Route::put('/{publicId}', [AdminStoreController::class, 'update']);
                 Route::patch('/{publicId}/approve', [AdminStoreController::class, 'approve']);
                 Route::patch('/{publicId}/reject', [AdminStoreController::class, 'reject']);
                 Route::patch('/{publicId}/activate', [AdminStoreController::class, 'activate']);
                 Route::patch('/{publicId}/deactivate', [AdminStoreController::class, 'deactivate']);
+
+                // Media moderation (reuses merchant media controller; StorePolicy::update allows admin)
+                Route::post('/{publicId}/logo', [StoreMediaController::class, 'storeLogo']);
+                Route::delete('/{publicId}/logo', [StoreMediaController::class, 'destroyLogo']);
+                Route::post('/{publicId}/cover', [StoreMediaController::class, 'storeCover']);
+                Route::delete('/{publicId}/cover', [StoreMediaController::class, 'destroyCover']);
+                Route::post('/{publicId}/gallery', [StoreMediaController::class, 'storeGallery']);
+                Route::delete('/{publicId}/gallery/{mediaPublicId}', [StoreMediaController::class, 'destroyGallery']);
+                Route::patch('/{publicId}/gallery/reorder', [StoreMediaController::class, 'reorderGallery']);
             });
 
             // Offers

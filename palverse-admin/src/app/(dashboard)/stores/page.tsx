@@ -64,6 +64,7 @@ export default function StoresPage() {
                 <th className="px-6 py-4 font-medium">المحل</th>
                 <th className="px-6 py-4 font-medium">المالك</th>
                 <th className="px-6 py-4 font-medium">المدينة والتصنيف</th>
+                <th className="px-6 py-4 font-medium">حالة المراجعة</th>
                 <th className="px-6 py-4 font-medium">الظهور العام</th>
                 <th className="px-6 py-4 font-medium">الإجراءات</th>
               </tr>
@@ -94,13 +95,16 @@ export default function StoresPage() {
                       <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
                     </td>
                     <td className="px-6 py-4">
+                      <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                    </td>
+                    <td className="px-6 py-4">
                       <div className="h-8 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
                     </td>
                   </tr>
                 ))
               ) : error ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
                     <p>حدث خطأ أثناء جلب البيانات</p>
                     <button onClick={refresh} className="mt-2 text-emerald-600 hover:underline">
@@ -110,7 +114,7 @@ export default function StoresPage() {
                 </tr>
               ) : data?.data.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     <StoreIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>لا توجد محلات مطابقة للبحث</p>
                   </td>
@@ -133,7 +137,6 @@ export default function StoresPage() {
                           </div>
                           <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
                             <span dir="ltr">#{store.public_id.substring(0, 8)}</span>
-                            <StoreStatusBadge status={store.status} showIcon={false} />
                           </div>
                         </div>
                       </div>
@@ -151,6 +154,9 @@ export default function StoresPage() {
                     <td className="px-6 py-4">
                       <div className="font-medium">{store.city ? store.city.name_ar : <span className="text-muted-foreground text-xs">غير محدد</span>}</div>
                       <div className="text-xs text-muted-foreground mt-1">{store.category ? store.category.name_ar : <span className="text-muted-foreground text-xs">غير محدد</span>}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <StoreStatusBadge status={store.status} />
                     </td>
                     <td className="px-6 py-4">
                       <StoreVisibilityBadge store={store} showAssignAction />

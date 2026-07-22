@@ -240,6 +240,36 @@ export default function StoreRequestDetailsPage() {
               </div>
             )}
 
+            {(request.resulting_store || request.resulting_merchant) && (
+              <div className="mt-4 space-y-2 border-t border-border pt-4">
+                <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">النتائج بعد الاعتماد</p>
+                {request.resulting_store && (
+                  <Link
+                    href={`/stores/${request.resulting_store.public_id}`}
+                    className="flex items-center justify-between gap-2 p-3 rounded-md border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-900/10 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 transition-colors"
+                  >
+                    <span className="text-sm">
+                      <span className="text-muted-foreground">المحل: </span>
+                      <span className="font-medium text-foreground dark:text-white">{request.resulting_store.name_ar}</span>
+                    </span>
+                    <ArrowRight className="w-4 h-4 text-emerald-600 rotate-180" />
+                  </Link>
+                )}
+                {request.resulting_merchant && (
+                  <Link
+                    href={`/users/${request.resulting_merchant.public_id}`}
+                    className="flex items-center justify-between gap-2 p-3 rounded-md border border-border dark:border-slate-800 hover:bg-muted dark:hover:bg-slate-800/50 transition-colors"
+                  >
+                    <span className="text-sm">
+                      <span className="text-muted-foreground">التاجر: </span>
+                      <span className="font-medium text-foreground dark:text-white">{request.resulting_merchant.name}</span>
+                    </span>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground rotate-180" />
+                  </Link>
+                )}
+              </div>
+            )}
+
             {(request.status === "approved" || request.status === "rejected") && (
               <div className="p-4 bg-muted/50 rounded-md text-center">
                 <p className="text-sm text-muted-foreground">تم اتخاذ قرار بشأن هذا الطلب مسبقاً.</p>

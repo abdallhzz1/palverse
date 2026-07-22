@@ -3,9 +3,11 @@ import {
   AdminStore,
   RejectStoreRequest,
   StoreLinksResponse,
+  StoreMediaSummary,
   StoresListParams,
   StoresListResponse,
   StoreSubscriptionsListResponse,
+  UpdateAdminStoreRequest,
 } from "@/types/store";
 import { ApiSuccessResponse } from "@/types/api";
 
@@ -63,5 +65,47 @@ export const storesService = {
     // Route::get('stores/{storePublicId}/subscriptions', ...)
     const response = await apiClient.get<unknown, StoreSubscriptionsListResponse>(`/admin/stores/${publicId}/subscriptions`);
     return response;
+  },
+
+  update: async (publicId: string, payload: UpdateAdminStoreRequest): Promise<AdminStore> => {
+    const response = await apiClient.put<unknown, ApiSuccessResponse<AdminStore>>(`${BASE_PATH}/${publicId}`, payload);
+    return response.data;
+  },
+
+  uploadLogo: async (publicId: string, file: File): Promise<StoreMediaSummary> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await apiClient.post<unknown, ApiSuccessResponse<StoreMediaSummary>>(`${BASE_PATH}/${publicId}/logo`, formData);
+    return response.data;
+  },
+
+  deleteLogo: async (publicId: string): Promise<void> => {
+    await apiClient.delete(`${BASE_PATH}/${publicId}/logo`);
+  },
+
+  uploadCover: async (publicId: string, file: File): Promise<StoreMediaSummary> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await apiClient.post<unknown, ApiSuccessResponse<StoreMediaSummary>>(`${BASE_PATH}/${publicId}/cover`, formData);
+    return response.data;
+  },
+
+  deleteCover: async (publicId: string): Promise<void> => {
+    await apiClient.delete(`${BASE_PATH}/${publicId}/cover`);
+  },
+
+  uploadGallery: async (publicId: string, file: File): Promise<StoreMediaSummary> => {
+    const formData = new FormData();
+    formData.append("files[]", file);
+    const response = await apiClient.post<unknown, ApiSuccessResponse<StoreMediaSummary[] | StoreMediaSummary>>(
+      `${BASE_PATH}/${publicId}/gallery`,
+      formData
+    );
+    const data = response.data;
+    return Array.isArray(data) ? data[0] : data;
+  },
+
+  deleteGallery: async (publicId: string, mediaId: string): Promise<void> => {
+    await apiClient.delete(`${BASE_PATH}/${publicId}/gallery/${mediaId}`);
   },
 };

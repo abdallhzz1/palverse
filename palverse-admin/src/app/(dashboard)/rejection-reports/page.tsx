@@ -5,6 +5,7 @@ import { FileX } from "lucide-react";
 import { rejectionReportsService, RejectionReport } from "@/services/rejection-reports.service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatDate } from "@/lib/utils/formatters";
 
 export default function AdminRejectionReportsPage() {
   const [reports, setReports] = useState<RejectionReport[]>([]);
@@ -32,7 +33,7 @@ export default function AdminRejectionReportsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>تقارير رفض المتاجر المسجلة بواسطة المناديب</CardTitle>
+          <CardTitle>تقارير رفض المحلات المسجلة بواسطة المناديب</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -94,7 +95,7 @@ export default function AdminRejectionReportsPage() {
                         )}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {new Date(report.contacted_at).toLocaleDateString('ar-SA')}
+                        {formatDate(report.contacted_at)}
                       </TableCell>
                     </TableRow>
                   ))

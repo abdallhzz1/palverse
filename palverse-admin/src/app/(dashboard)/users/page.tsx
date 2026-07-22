@@ -37,6 +37,12 @@ export default function UsersPage() {
         </div>
         
         <div className="flex items-center gap-3">
+          <Button asChild className="bg-[#1E7D4E] hover:bg-[#0F3D2E] text-white gap-2">
+            <Link href="/users/new">
+              <Plus className="w-4 h-4" />
+              إضافة مستخدم
+            </Link>
+          </Button>
           <Button 
             onClick={refresh} 
             variant="outline" 

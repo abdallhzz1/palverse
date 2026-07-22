@@ -14,7 +14,7 @@ import { OfferPrice } from "./offer-price";
 import { OfferPeriod } from "./offer-period";
 import { StoreSelect } from "@/components/stores/store-select";
 import { Modal } from "@/components/ui/modal";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,7 @@ export function OffersList() {
   const { data, isLoading, error, params, setFilter, refresh } = useOffersList();
   const { activate, deactivate, isSubmitting } = useOfferActions(refresh);
   const [selectedOffer, setSelectedOffer] = useState<{ id: string, action: "activate" | "deactivate" } | null>(null);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleAction = async () => {
     if (!selectedOffer) return;
@@ -46,7 +47,8 @@ export function OffersList() {
             defaultValue={params.query}
             onChange={(e) => {
               const val = e.target.value;
-              setTimeout(() => setFilter("query", val), 500);
+              if (searchTimer.current) clearTimeout(searchTimer.current);
+              searchTimer.current = setTimeout(() => setFilter("query", val), 500);
             }}
           />
         </div>

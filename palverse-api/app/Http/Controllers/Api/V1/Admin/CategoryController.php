@@ -20,6 +20,24 @@ class CategoryController extends Controller
         $perPage = (int) $request->query('per_page', 25);
 
         $categories = Category::query()
+            ->when($request->filled('query'), function ($query) use ($request) {
+                $q = $request->input('query');
+                $query->where(function ($builder) use ($q) {
+                    $builder->where('name_ar', 'like', "%{$q}%")
+                        ->orWhere('name_en', 'like', "%{$q}%")
+                        ->orWhere('slug', 'like', "%{$q}%")
+                        ->orWhere('public_id', $q);
+                });
+            })
+            ->when($request->filled('search'), function ($query) use ($request) {
+                // Back-compat with admin UI that historically sent `search`
+                $q = $request->input('search');
+                $query->where(function ($builder) use ($q) {
+                    $builder->where('name_ar', 'like', "%{$q}%")
+                        ->orWhere('name_en', 'like', "%{$q}%")
+                        ->orWhere('slug', 'like', "%{$q}%");
+                });
+            })
             ->orderBy('name_ar')
             ->paginate($perPage);
 
