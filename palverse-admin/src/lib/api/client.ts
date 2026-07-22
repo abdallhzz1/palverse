@@ -20,7 +20,7 @@ apiClient.interceptors.request.use(
 
     // Let the browser set multipart boundary for FormData uploads.
     if (typeof FormData !== "undefined" && config.data instanceof FormData) {
-      delete config.headers["Content-Type"];
+      config.headers["Content-Type"] = undefined;
     }
 
     return config;

@@ -845,6 +845,24 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **Actor**: Administrator
 *   **Success Response (HTTP 200)**: store deactivated.
 
+### ADM-10b: Update Store Details
+*   **Endpoint ID**: ADM-10b
+*   **HTTP Method**: `PUT`
+*   **URL**: `/api/v1/admin/stores/{uuid}`
+*   **Purpose**: Edit store profile fields and coordinates from admin.
+*   **Actor**: Administrator
+*   **Request Body**: same editable fields as MER-05 (`name_*`, `description_*`, contact fields, `address_*`, `latitude`, `longitude`, `category_public_id`, `city_public_id`, `zone_public_id`).
+*   **Success Response (HTTP 200)**: store updated.
+*   **Notes**: Does not change approval status. Does not alter slug.
+
+### ADM-10c: Admin Store Media
+*   **Endpoint ID**: ADM-10c
+*   **HTTP Methods**: `POST` / `DELETE` (and gallery `PATCH` reorder)
+*   **URL**: `/api/v1/admin/stores/{uuid}/logo|cover|gallery`
+*   **Purpose**: Upload or delete store logo, cover, and gallery media as admin.
+*   **Actor**: Administrator
+*   **Notes**: Mirrors merchant media endpoints; authorization via `StorePolicy::update`.
+
 ### ADM-11: Get Store Status History
 *   **Endpoint ID**: ADM-11
 *   **HTTP Method**: `GET`
