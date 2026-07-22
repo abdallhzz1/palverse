@@ -15,9 +15,8 @@ Commit and push `master` (includes Railway/Vercel configs and category approval 
 1. Create account at [railway.app](https://railway.app) and **New Project**.
 2. **Add MySQL** service (Add → Database → MySQL).
 3. **Add service from GitHub** → select `abdallhzz1/palverse`.
-4. In the API service settings:
-   - **Root Directory**: `palverse-api`
-   - Builder uses `Dockerfile` / `railway.toml` automatically.
+4. Leave **Root Directory** empty (repo root). The root `Dockerfile` + `railway.toml` build only `palverse-api`.
+   - If you prefer a subdirectory service instead: set Root Directory to `palverse-api` (uses `palverse-api/Dockerfile`).
 5. Open **Variables** and add (use Railway **Variable Reference** for MySQL):
 
 | Variable | Value |
