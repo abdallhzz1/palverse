@@ -17,7 +17,9 @@ Commit and push `master` (includes Railway/Vercel configs and category approval 
 3. **Add service from GitHub** → select `abdallhzz1/palverse`.
 4. Leave **Root Directory** empty (repo root). The root `Dockerfile` + `railway.toml` build only `palverse-api`.
    - If you prefer a subdirectory service instead: set Root Directory to `palverse-api` (uses `palverse-api/Dockerfile`).
-5. Open **Variables** and add (use Railway **Variable Reference** for MySQL):
+5. Open **Variables** and add (use Railway **Variable Reference** for MySQL).
+
+Important: either set Laravel `DB_*` vars, **or** just link MySQL — the entrypoint also reads `MYSQLHOST` / `MYSQLDATABASE` / `MYSQLUSER` / `MYSQLPASSWORD`.
 
 | Variable | Value |
 |----------|--------|
@@ -26,7 +28,7 @@ Commit and push `master` (includes Railway/Vercel configs and category approval 
 | `APP_ENV` | `production` |
 | `APP_DEBUG` | `false` |
 | `DB_CONNECTION` | `mysql` |
-| `DB_HOST` | reference `MySQL.MYSQLHOST` |
+| `DB_HOST` | reference `MySQL.MYSQLHOST` (or leave unset if using MYSQLHOST auto-map) |
 | `DB_PORT` | reference `MySQL.MYSQLPORT` |
 | `DB_DATABASE` | reference `MySQL.MYSQLDATABASE` |
 | `DB_USERNAME` | reference `MySQL.MYSQLUSER` |
