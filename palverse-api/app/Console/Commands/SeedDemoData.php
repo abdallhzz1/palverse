@@ -27,9 +27,13 @@ class SeedDemoData extends Command
      */
     public function handle()
     {
-        if (App::environment('production') && ! $this->option('force') && ! env('PALVERSE_ALLOW_DEMO_SEEDING', false)) {
+        if (App::environment('production') && ! $this->option('force') && ! config('palverse.demo.allow_seeding', false)) {
             $this->error('Demo data seeding is blocked in production. Use --force or set PALVERSE_ALLOW_DEMO_SEEDING=true.');
             return Command::FAILURE;
+        }
+
+        if ($this->option('force')) {
+            config(['palverse.demo.allow_seeding' => true]);
         }
 
         if (! $this->option('force') && ! $this->confirm('This will seed the database with demo data (Hebron localized). Unrelated existing data will be preserved. Do you wish to continue?')) {

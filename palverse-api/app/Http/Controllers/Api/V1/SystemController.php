@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -60,6 +62,46 @@ class SystemController extends Controller
                 'checks' => $checks,
                 'timestamp' => now()->toIso8601String(),
                 'version' => env('PALVERSE_API_VERSION', '1.0.0'),
+            ],
+            'meta' => [],
+        ]);
+    }
+
+    /**
+     * One-shot demo seed for Railway/Vercel bootstrapping.
+     * Requires BOOTSTRAP_SEED_TOKEN and PALVERSE_ALLOW_DEMO_SEEDING=true.
+     * Remove BOOTSTRAP_SEED_TOKEN from env after a successful run.
+     */
+    public function seedDemo(Request $request): JsonResponse
+    {
+        $expected = (string) config('palverse.demo.bootstrap_token', env('BOOTSTRAP_SEED_TOKEN', ''));
+        $provided = (string) ($request->header('X-Bootstrap-Token') ?? $request->query('token', ''));
+
+        if ($expected === '' || ! hash_equals($expected, $provided)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Forbidden.',
+                'error' => ['code' => 'FORBIDDEN', 'details' => []],
+            ], 403);
+        }
+
+        if (! config('palverse.demo.allow_seeding', false) && ! filter_var(env('PALVERSE_ALLOW_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN)) {
+            // Allow when token is present: force-enable for this request only.
+            config(['palverse.demo.allow_seeding' => true]);
+        }
+
+        config(['palverse.demo.allow_seeding' => true]);
+
+        Artisan::call('palverse:seed-demo', ['--force' => true]);
+        $output = trim(Artisan::output());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Demo seed completed.',
+            'data' => [
+                'output' => $output,
+                'admin_email' => 'admin@palverse.demo',
+                'hint' => 'Login with DemoAdmin123! then delete BOOTSTRAP_SEED_TOKEN from Railway Variables.',
             ],
             'meta' => [],
         ]);

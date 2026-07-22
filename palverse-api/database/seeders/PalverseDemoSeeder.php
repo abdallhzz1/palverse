@@ -12,9 +12,9 @@ class PalverseDemoSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Environment Protection
-        if (App::environment('production') && ! env('PALVERSE_ALLOW_DEMO_SEEDING', false)) {
-            $this->command->error('Demo data seeding is blocked in production. Set PALVERSE_ALLOW_DEMO_SEEDING=true if you must run this.');
+        // 1. Environment Protection — use config() so this works after config:cache
+        if (App::environment('production') && ! config('palverse.demo.allow_seeding', false)) {
+            $this->command?->error('Demo data seeding is blocked in production. Set PALVERSE_ALLOW_DEMO_SEEDING=true if you must run this.');
             return;
         }
 

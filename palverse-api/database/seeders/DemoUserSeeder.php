@@ -14,8 +14,8 @@ class DemoUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminPassword = Hash::make(env('PALVERSE_DEMO_ADMIN_PASSWORD', 'DemoAdmin123!'));
-        $merchantPassword = Hash::make(env('PALVERSE_DEMO_MERCHANT_PASSWORD', 'DemoMerchant123!'));
+        $adminPassword = Hash::make(config('palverse.demo.admin_password', 'DemoAdmin123!'));
+        $merchantPassword = Hash::make(config('palverse.demo.merchant_password', 'DemoMerchant123!'));
 
         // 1. Admin
         $admin = User::updateOrCreate(

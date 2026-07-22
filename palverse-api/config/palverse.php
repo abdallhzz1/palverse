@@ -182,6 +182,16 @@ return [
     */
     'demo' => [
         'seed_enabled' => env('PALVERSE_SEED_DEMO_DATA', false),
+        'allow_seeding' => (bool) env('PALVERSE_ALLOW_DEMO_SEEDING', false),
+        'bootstrap_token' => env('BOOTSTRAP_SEED_TOKEN'),
         'password' => env('PALVERSE_DEMO_PASSWORD', 'Password1234'),
+        'admin_password' => env('PALVERSE_DEMO_ADMIN_PASSWORD', 'DemoAdmin123!'),
+        'merchant_password' => env('PALVERSE_DEMO_MERCHANT_PASSWORD', 'DemoMerchant123!'),
+        'customer_password' => env('PALVERSE_DEMO_CUSTOMER_PASSWORD', 'DemoCustomer123!'),
+        'representative_password' => env('PALVERSE_DEMO_REPRESENTATIVE_PASSWORD', 'DemoRepresentative123!'),
+        'follow_up_password' => env(
+            'PALVERSE_DEMO_FOLLOW_UP_PASSWORD',
+            env('PALVERSE_DEMO_FOLLOWUP_PASSWORD', 'DemoFollowUp123!')
+        ),
     ],
 ];

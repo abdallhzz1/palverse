@@ -43,6 +43,9 @@ Route::prefix('v1')->group(function (): void {
         ->withoutMiddleware(['throttle:api']);
     Route::get('/ready', [SystemController::class, 'ready'])
         ->withoutMiddleware(['throttle:api']);
+    Route::post('/bootstrap/seed-demo', [SystemController::class, 'seedDemo'])
+        ->middleware('throttle:5,1')
+        ->withoutMiddleware(['throttle:api']);
 
     // ─── Authentication ────────────────────────────────────────────────────────
     Route::prefix('auth')->group(function (): void {

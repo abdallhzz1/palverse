@@ -24,7 +24,7 @@ class DemoRepresentativeSeeder extends Seeder
             [
                 'public_id' => (string) Str::ulid(),
                 'name' => 'Demo Representative',
-                'password' => Hash::make(env('PALVERSE_DEMO_REPRESENTATIVE_PASSWORD', 'DemoRepresentative123!')),
+                'password' => Hash::make(config('palverse.demo.representative_password', 'DemoRepresentative123!')),
                 'email_verified_at' => now(),
                 'phone' => '0599000003',
                 'preferred_locale' => 'ar',

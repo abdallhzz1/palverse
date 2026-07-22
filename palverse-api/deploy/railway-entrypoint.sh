@@ -25,6 +25,10 @@ export SESSION_DRIVER="${SESSION_DRIVER:-file}"
 export QUEUE_CONNECTION="${QUEUE_CONNECTION:-sync}"
 export FILESYSTEM_DISK="${FILESYSTEM_DISK:-public}"
 export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
+# Ensure demo seed is allowed when boot seeding is requested.
+if [ "${PALVERSE_SEED_DEMO_ON_BOOT:-false}" = "true" ]; then
+  export PALVERSE_ALLOW_DEMO_SEEDING=true
+fi
 
 if [ -n "${MYSQL_URL:-${DATABASE_URL:-}}" ]; then
   export DB_URL="${DB_URL:-${MYSQL_URL:-${DATABASE_URL}}}"

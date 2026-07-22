@@ -11,7 +11,7 @@ class DemoFollowUpSeeder extends Seeder
 {
     public function run(): void
     {
-        $password = Hash::make(env('PALVERSE_DEMO_FOLLOW_UP_PASSWORD', 'DemoFollowUp123!'));
+        $password = Hash::make(config('palverse.demo.follow_up_password', 'DemoFollowUp123!'));
 
         $followUp1 = User::firstOrCreate(
             ['email' => 'followup1@palverse.demo'],
