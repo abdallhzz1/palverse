@@ -33,7 +33,8 @@ stateDiagram-v2
 ## 2. Subscription Management (MVP)
 
 *   **Manual Assignment**: MVP does not integrate electronic payment gateways. Subscriptions (e.g., Free, Basic, Premium) must be assigned, modified, or terminated manually by an Admin.
-*   **Visibility Thresholds**: Access to premium options (such as advanced offers or custom gallery sizes) depends on the manual subscription status assigned to the store by the admin.
+*   **Cancel is not reversible on the same row**: After cancellation, restore visibility by assigning a **new** active subscription to the store (`/subscriptions/new`). Admin UI links this action from cancelled subscription details and from stores hidden due to missing subscription.
+*   **Visibility Thresholds**: Access to premium options (such as advanced offers or custom gallery sizes) depends on the manual subscription status assigned to the store by the admin. A store is publicly visible only when approved, active, and within a currently valid active subscription window (`starts_at <= now <= ends_at`).
 *   **Automatic Renewal**: Excluded in MVP (Phase 2). Subscriptions must have an explicit expiration date monitored by the system.
 
 ---

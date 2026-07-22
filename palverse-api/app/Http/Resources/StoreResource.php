@@ -35,6 +35,10 @@ class StoreResource extends JsonResource
             'longitude' => $this->longitude,
             'status' => $this->status,
             'is_active' => $this->is_active,
+            'has_active_subscription' => $this->relationLoaded('currentSubscription')
+                ? $this->currentSubscription !== null
+                : $this->currentSubscription()->exists(),
+            'is_publicly_visible' => $this->isPubliclyVisible(),
             'approved_at' => $this->approved_at,
             'rejected_at' => $this->rejected_at,
             'rejection_reason' => $this->when($this->canSeeRejectionReason($request), $this->rejection_reason),

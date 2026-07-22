@@ -40,7 +40,9 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            // On some cPanel hosts, symlinks outside public_html are blocked.
+            // Set FILESYSTEM_PUBLIC_PATH to the web-visible storage folder when needed.
+            'root' => env('FILESYSTEM_PUBLIC_PATH') ?: storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,

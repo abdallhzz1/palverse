@@ -58,6 +58,16 @@ export default function SubscriptionDetailsPage({ params }: { params: Promise<{ 
         </div>
         
         <div className="flex gap-2">
+          {(subscription.status === "cancelled" || subscription.status === "expired") &&
+            subscription.store?.public_id && (
+            <Button className="bg-[#1E7D4E] hover:bg-[#0F3D2E] text-white" asChild>
+              <Link
+                href={`/subscriptions/new?store_public_id=${encodeURIComponent(subscription.store.public_id)}`}
+              >
+                تعيين اشتراك جديد لهذا المحل
+              </Link>
+            </Button>
+          )}
           {(subscription.status === "active" || subscription.status === "pending") && (
             <Button 
               variant="outline" 

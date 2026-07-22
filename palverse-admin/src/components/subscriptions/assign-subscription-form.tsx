@@ -26,7 +26,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function AssignSubscriptionForm() {
+export function AssignSubscriptionForm({
+  initialStorePublicId = "",
+}: {
+  initialStorePublicId?: string;
+}) {
   const router = useRouter();
   const { assign, isSubmitting } = useSubscriptionActions(() => {
     router.push("/subscriptions");
@@ -40,7 +44,7 @@ export function AssignSubscriptionForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      store_public_id: "",
+      store_public_id: initialStorePublicId,
       subscription_plan_public_id: "",
       starts_at: "",
       ends_at: "",

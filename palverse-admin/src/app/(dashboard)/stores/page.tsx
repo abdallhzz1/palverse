@@ -153,15 +153,25 @@ export default function StoresPage() {
                       <div className="text-xs text-muted-foreground mt-1">{store.category ? store.category.name_ar : <span className="text-muted-foreground text-xs">غير محدد</span>}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <StoreVisibilityBadge store={store} />
+                      <StoreVisibilityBadge store={store} showAssignAction />
                     </td>
                     <td className="px-6 py-4">
-                      <Link 
-                        href={`/stores/${store.public_id}`}
-                        className="inline-flex items-center justify-center h-8 px-3 rounded-md text-xs font-medium bg-card dark:bg-slate-800 border border-border dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-muted dark:hover:bg-slate-700 transition-colors"
-                      >
-                        عرض التفاصيل
-                      </Link>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Link 
+                          href={`/stores/${store.public_id}`}
+                          className="inline-flex items-center justify-center h-8 px-3 rounded-md text-xs font-medium bg-card dark:bg-slate-800 border border-border dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-muted dark:hover:bg-slate-700 transition-colors"
+                        >
+                          عرض التفاصيل
+                        </Link>
+                        {store.status === "approved" && store.is_active && store.has_active_subscription === false && (
+                          <Link
+                            href={`/subscriptions/new?store_public_id=${encodeURIComponent(store.public_id)}`}
+                            className="inline-flex items-center justify-center h-8 px-3 rounded-md text-xs font-medium bg-[#EAF3EC] text-[#0F3D2E] border border-[#1E7D4E]/20 hover:bg-[#dcefe1] transition-colors"
+                          >
+                            تعيين اشتراك
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

@@ -18,6 +18,15 @@ export function StoreSelector({ value, onSelect, disabled }: StoreSelectorProps)
   const { data, isLoading, setFilter } = useStoresList({ per_page: 50 }, false);
 
   useEffect(() => {
+    // Prefill search with selected store id so the option is present in the list.
+    if (value) {
+      setSearch(value);
+      setFilter("query", value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on first selected value
+  }, [value]);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setFilter("query", search);
     }, 500);
@@ -29,6 +38,8 @@ export function StoreSelector({ value, onSelect, disabled }: StoreSelectorProps)
     const store = data?.data.find((s) => s.public_id === selectedId);
     onSelect(selectedId, store);
   };
+
+  const selectedInList = data?.data.some((store) => store.public_id === value);
 
   return (
     <div className="space-y-2">
@@ -48,6 +59,9 @@ export function StoreSelector({ value, onSelect, disabled }: StoreSelectorProps)
           className="flex h-10 w-full appearance-none rounded-md border border-border bg-card px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E7D4E] disabled:opacity-50"
         >
           <option value="" disabled>اختر المحل...</option>
+          {value && !selectedInList && (
+            <option value={value}>{value}</option>
+          )}
           {data?.data.map((store) => (
             <option key={store.public_id} value={store.public_id}>
               {store.name_ar} {store.owner ? `(${store.owner.name})` : ""}

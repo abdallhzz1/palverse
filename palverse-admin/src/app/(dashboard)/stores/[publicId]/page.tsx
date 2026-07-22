@@ -65,6 +65,10 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
   }
 
   const activeSubscription = subscriptions?.data.find(s => s.status === "active" && s.is_currently_valid);
+  const needsSubscription =
+    store.status === "approved" &&
+    store.is_active &&
+    !(activeSubscription || store.has_active_subscription);
 
   return (
     <div className="space-y-6">
@@ -95,7 +99,11 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                   {store.name_ar}
                 </h2>
                 <StoreStatusBadge status={store.status} />
-                <StoreVisibilityBadge store={store} activeSubscription={activeSubscription} />
+                <StoreVisibilityBadge
+                  store={store}
+                  activeSubscription={activeSubscription}
+                  showAssignAction
+                />
               </div>
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground dark:text-muted-foreground">
                 {store.slug && (
@@ -309,11 +317,18 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-4">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted dark:bg-slate-800 text-muted-foreground mb-3">
+                <div className="text-center py-4 space-y-3">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted dark:bg-slate-800 text-muted-foreground mb-1">
                     <AlertCircle className="w-6 h-6" />
                   </div>
                   <p className="text-sm text-muted-foreground dark:text-muted-foreground">لا يوجد اشتراك نشط حالياً</p>
+                  {needsSubscription && (
+                    <Button asChild className="bg-[#1E7D4E] hover:bg-[#0F3D2E] text-white">
+                      <Link href={`/subscriptions/new?store_public_id=${encodeURIComponent(store.public_id)}`}>
+                        تعيين اشتراك جديد
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               )}
             </div>

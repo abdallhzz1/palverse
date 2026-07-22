@@ -39,7 +39,7 @@ class StoreController extends Controller
 
     public function index(AdminStoreIndexRequest $request): JsonResponse
     {
-        $query = Store::with(['category', 'city', 'zone', 'owner', 'logo', 'cover']);
+        $query = Store::with(['category', 'city', 'zone', 'owner', 'logo', 'cover', 'currentSubscription']);
 
         if ($request->filled('query')) {
             $q = $request->input('query');
@@ -102,7 +102,7 @@ class StoreController extends Controller
 
     public function show(string $publicId, Request $request): JsonResponse
     {
-        $store = Store::with(['category', 'city', 'zone', 'owner', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks'])
+        $store = Store::with(['category', 'city', 'zone', 'owner', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks', 'currentSubscription'])
             ->where('public_id', $publicId)
             ->firstOrFail();
 

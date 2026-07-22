@@ -54,6 +54,8 @@ export interface AdminStore {
   longitude: number | null;
   status: StoreStatus;
   is_active: boolean;
+  has_active_subscription?: boolean;
+  is_publicly_visible?: boolean;
   approved_at: string | null;
   rejected_at: string | null;
   rejection_reason?: string | null;

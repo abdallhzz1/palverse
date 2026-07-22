@@ -117,8 +117,13 @@ class StoreSubscription extends Model
 
     public function isCurrentlyValid(): bool
     {
+        // Match currentSubscription() SQL: starts_at <= now() AND ends_at >= now().
+        // Do not use isPast()/isFuture() — those exclude the current second and
+        // make freshly assigned subscriptions look inactive in admin UI.
         return $this->status === SubscriptionStatus::ACTIVE
-            && $this->starts_at->isPast()
-            && $this->ends_at->isFuture();
+            && $this->starts_at !== null
+            && $this->ends_at !== null
+            && $this->starts_at->lte(now())
+            && $this->ends_at->gte(now());
     }
 }

@@ -9,7 +9,14 @@ export const metadata: Metadata = {
   description: "تعيين اشتراك جديد لمحل في منصة بال فيرس",
 };
 
-export default function NewSubscriptionPage() {
+export default async function NewSubscriptionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ store_public_id?: string }>;
+}) {
+  const params = await searchParams;
+  const initialStorePublicId = params.store_public_id?.trim() || "";
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-4">
@@ -25,7 +32,7 @@ export default function NewSubscriptionPage() {
         </div>
       </div>
 
-      <AssignSubscriptionForm />
+      <AssignSubscriptionForm initialStorePublicId={initialStorePublicId} />
     </div>
   );
 }
