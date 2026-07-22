@@ -74,20 +74,26 @@ class SystemController extends Controller
      */
     public function seedDemo(Request $request): JsonResponse
     {
-        $expected = (string) config('palverse.demo.bootstrap_token', env('BOOTSTRAP_SEED_TOKEN', ''));
+        $expected = (string) (
+            config('palverse.demo.bootstrap_token')
+            ?: env('BOOTSTRAP_SEED_TOKEN')
+            ?: getenv('BOOTSTRAP_SEED_TOKEN')
+            ?: ''
+        );
         $provided = (string) ($request->header('X-Bootstrap-Token') ?? $request->query('token', ''));
 
         if ($expected === '' || ! hash_equals($expected, $provided)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Forbidden.',
-                'error' => ['code' => 'FORBIDDEN', 'details' => []],
+                'error' => [
+                    'code' => 'FORBIDDEN',
+                    'details' => [
+                        'hint' => 'Set BOOTSTRAP_SEED_TOKEN in Railway Variables to the same value as ?token= then Redeploy.',
+                        'token_configured' => $expected !== '',
+                    ],
+                ],
             ], 403);
-        }
-
-        if (! config('palverse.demo.allow_seeding', false) && ! filter_var(env('PALVERSE_ALLOW_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN)) {
-            // Allow when token is present: force-enable for this request only.
-            config(['palverse.demo.allow_seeding' => true]);
         }
 
         config(['palverse.demo.allow_seeding' => true]);

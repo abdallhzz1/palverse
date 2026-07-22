@@ -46,6 +46,8 @@ php artisan config:clear || true
 php artisan cache:clear || true
 rm -f bootstrap/cache/config.php bootstrap/cache/routes-v7.php bootstrap/cache/routes.php 2>/dev/null || true
 
+# Do NOT config:cache before bootstrap token / demo seed — env() must remain readable.
+
 if [ -z "${DB_HOST}" ] || [ -z "${DB_DATABASE}" ] || [ -z "${DB_USERNAME}" ]; then
   echo "[railway] ERROR: DB vars still empty after mapping."
   echo "[railway] In Railway Variables add DB_HOST as Reference to MySQL → MYSQLHOST (and DB_PORT/DB_DATABASE/DB_USERNAME/DB_PASSWORD)."
