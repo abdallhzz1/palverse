@@ -39,8 +39,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function (): void {
 
     // ─── Health & Readiness checks ────────────────────────────────────────────
-    Route::get('/health', [SystemController::class, 'health']);
-    Route::get('/ready', [SystemController::class, 'ready']);
+    Route::get('/health', [SystemController::class, 'health'])
+        ->withoutMiddleware(['throttle:api']);
+    Route::get('/ready', [SystemController::class, 'ready'])
+        ->withoutMiddleware(['throttle:api']);
 
     // ─── Authentication ────────────────────────────────────────────────────────
     Route::prefix('auth')->group(function (): void {
