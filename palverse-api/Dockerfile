@@ -23,4 +23,4 @@ ENV LOG_CHANNEL=stderr
 
 EXPOSE 8000
 
-CMD ["bash", "deploy/railway-entrypoint.sh"]
+CMD ["/bin/bash", "/app/deploy/railway-entrypoint.sh"]
