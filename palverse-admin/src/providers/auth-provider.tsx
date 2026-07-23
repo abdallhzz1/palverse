@@ -6,6 +6,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import { AuthUser } from "@/types/api";
 import { authService } from "@/services/auth.service";
@@ -25,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const bootstrapped = useRef(false);
 
   const fetchUser = useCallback(async () => {
     if (typeof window !== "undefined") {
@@ -35,8 +37,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const currentUser = await authService.me();
       setUser(currentUser);
     } catch {
-      setUser(null);
+      // Keep prior user on transient failures after first successful load.
+      setUser((prev) => (bootstrapped.current ? prev : null));
     } finally {
+      bootstrapped.current = true;
       setIsLoading(false);
     }
   }, []);
@@ -47,6 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = (newUser: AuthUser) => {
     setUser(newUser);
+    bootstrapped.current = true;
   };
 
   const logout = async () => {

@@ -1,5 +1,8 @@
 export const AUTH_COOKIE_NAME = "palverse_admin_auth";
 
+/** Lightweight role hint set at login — avoids calling /auth/me on every navigation. */
+export const AUTH_ROLE_COOKIE_NAME = "palverse_admin_role";
+
 export const AUTH_COOKIE_MAX_AGE_SECONDS = Number(
   process.env.AUTH_COOKIE_MAX_AGE_SECONDS ?? 60 * 60 * 24 * 7
 );

@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { AUTH_COOKIE_NAME } from "@/lib/bff/constants";
+import {
+  AUTH_COOKIE_NAME,
+  AUTH_ROLE_COOKIE_NAME,
+} from "@/lib/bff/constants";
+import { clearAuthCookies } from "@/lib/bff/cookie";
 
 const PUBLIC_PATHS = new Set(["/login", "/unauthorized"]);
 
-export async function middleware(request: NextRequest) {
+/**
+ * Auth gate only — do NOT call /api/auth/me here.
+ *
+ * Calling the API on every navigation was logging admins out: any transient
+ * upstream failure deleted the session cookie. Role checks use a lightweight
+ * cookie set at login; the dashboard layout still verifies via /auth/me once.
+ */
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (
@@ -15,44 +26,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const hasAuthCookie = request.cookies.has(AUTH_COOKIE_NAME);
+  const role = request.cookies.get(AUTH_ROLE_COOKIE_NAME)?.value;
+
   if (PUBLIC_PATHS.has(pathname)) {
-    if (pathname === "/login" && request.cookies.has(AUTH_COOKIE_NAME)) {
+    if (pathname === "/login" && hasAuthCookie && role === "admin") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
     return NextResponse.next();
   }
 
-  if (!request.cookies.has(AUTH_COOKIE_NAME)) {
+  if (!hasAuthCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Verify the session and enforce the admin role via the same-origin BFF.
-  try {
-    const meResponse = await fetch(new URL("/api/auth/me", request.url), {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        cookie: request.headers.get("cookie") ?? "",
-      },
-      cache: "no-store",
-    });
-
-    if (!meResponse.ok) {
-      // Invalid or expired session → back to login and drop the stale cookie.
-      const redirect = NextResponse.redirect(new URL("/login", request.url));
-      redirect.cookies.delete(AUTH_COOKIE_NAME);
-      return redirect;
-    }
-
-    const payload = await meResponse.json();
-    const roles: string[] = payload?.data?.user?.roles ?? [];
-
-    if (!roles.includes("admin")) {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    }
-  } catch {
-    // If the identity check itself fails (network/BFF error), fail safe to login.
-    return NextResponse.redirect(new URL("/login", request.url));
+  // Prefer the login-time role hint. If it's missing (older sessions), allow
+  // through and let the client layout confirm via /auth/me once — do not wipe
+  // the session cookie on uncertain middleware failures.
+  if (role && role !== "admin") {
+    const redirect = NextResponse.redirect(new URL("/unauthorized", request.url));
+    clearAuthCookies(redirect);
+    return redirect;
   }
 
   return NextResponse.next();

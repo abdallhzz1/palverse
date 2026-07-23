@@ -10,8 +10,10 @@ export const apiClient = axios.create({
     "Content-Type": "application/json",
     "Accept-Language": "ar",
   },
-  timeout: 10000,
+  timeout: 30000,
 });
+
+let isRedirectingToLogin = false;
 
 apiClient.interceptors.request.use(
   (config) => {
@@ -33,10 +35,17 @@ apiClient.interceptors.response.use(
   (error) => {
     const normalizedError = normalizeApiError(error);
 
-    if (normalizedError.status === 401 && typeof window !== "undefined") {
-      if (!window.location.pathname.includes("/login")) {
-        window.location.href = "/login";
-      }
+    // Only hard-redirect on true unauthenticated responses — never on
+    // timeouts/network blips (those are status 0 / 408).
+    if (
+      normalizedError.status === 401 &&
+      normalizedError.code === "UNAUTHENTICATED" &&
+      typeof window !== "undefined" &&
+      !window.location.pathname.includes("/login") &&
+      !isRedirectingToLogin
+    ) {
+      isRedirectingToLogin = true;
+      window.location.href = "/login";
     }
 
     return Promise.reject(normalizedError);
