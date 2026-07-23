@@ -1,5 +1,20 @@
 import type { NextConfig } from "next";
+import fs from "fs";
 import path from "path";
+
+const appRoot = path.join(__dirname);
+const repoRoot = path.join(__dirname, "..");
+// Full monorepo clone (typical on Vercel with Root Directory = this app).
+const isMonorepoCheckout =
+  fs.existsSync(path.join(repoRoot, "palverse-web")) &&
+  fs.existsSync(path.join(repoRoot, "palverse-admin"));
+
+/**
+ * Next 16 requires `outputFileTracingRoot` and `turbopack.root` to match.
+ * Locally pin to this app; on Vercel monorepo checkouts match the repo tracing root.
+ */
+const projectRoot =
+  process.env.VERCEL && isMonorepoCheckout ? repoRoot : appRoot;
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -10,8 +25,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: projectRoot,
   turbopack: {
-    root: path.join(__dirname),
+    root: projectRoot,
   },
   images: {
     remotePatterns: [

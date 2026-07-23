@@ -12,3 +12,6 @@ Desktop.ini
 .env
 .env.local
 .env.*.local
+
+# Accidental root npm lockfile (apps own their lockfiles; no root package.json)
+/package-lock.json

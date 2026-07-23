@@ -16,23 +16,7 @@ export type CmsContactMeta = {
   map_lng?: string | null;
 };
 
-const DEFAULTS: Required<
-  Pick<
-    CmsContactMeta,
-    | "info_card_title_ar"
-    | "phone"
-    | "phone_label_ar"
-    | "phone_hint_ar"
-    | "email"
-    | "email_label_ar"
-    | "email_hint_ar"
-    | "address_ar"
-    | "address_line2_ar"
-    | "address_label_ar"
-    | "map_lat"
-    | "map_lng"
-  >
-> = {
+const DEFAULTS = {
   info_card_title_ar: "معلومات الاتصال",
   phone: "+972 59-388-3932",
   phone_label_ar: "رقم الهاتف",
@@ -45,7 +29,7 @@ const DEFAULTS: Required<
   address_label_ar: "العنوان",
   map_lat: "31.557111",
   map_lng: "35.096111",
-};
+} as const;
 
 function pick(value: string | null | undefined, fallback: string): string {
   return value && value.trim() !== "" ? value : fallback;
