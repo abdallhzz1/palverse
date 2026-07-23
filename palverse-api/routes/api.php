@@ -433,12 +433,6 @@ Route::prefix('v1')->group(function (): void {
                 Route::patch('/{publicId}/{action}', [\App\Http\Controllers\Api\V1\Admin\ReviewController::class, 'moderate']);
             });
 
-            // System Settings
-            Route::prefix('settings')->group(function (): void {
-                Route::get('/', [\App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'index']);
-                Route::put('/', [\App\Http\Controllers\Api\V1\Admin\SystemSettingController::class, 'update']);
-            });
-
             // Receipts
             Route::get('/receipts', [\App\Http\Controllers\Api\V1\Admin\ReceiptController::class, 'index']);
             Route::post('/receipts/{publicId}/settle', [\App\Http\Controllers\Api\V1\Admin\ReceiptController::class, 'settle']);

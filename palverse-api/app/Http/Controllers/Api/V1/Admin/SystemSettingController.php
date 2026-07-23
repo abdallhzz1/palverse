@@ -48,14 +48,16 @@ class SystemSettingController extends Controller
      */
     public function show(string $group): JsonResponse
     {
-        $settings = SystemSetting::group($group)->get();
-        if ($settings->isEmpty()) {
+        if (! $this->settingsService->isValidGroup($group)) {
             return response()->json([
                 'success' => false,
                 'message' => 'المجموعة غير موجودة.',
             ], 404);
         }
 
+        $this->settingsService->ensureGroupDefaults($group);
+
+        $settings = SystemSetting::group($group)->get();
         $list = [];
         foreach ($settings as $setting) {
             $list[$setting->key] = [

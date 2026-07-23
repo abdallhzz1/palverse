@@ -170,6 +170,22 @@ return [
                 'representative_commission_amount',
             ],
         ],
+
+        /*
+         * Default rows created when a whitelisted key is missing (e.g. after partial seeds).
+         * Keys without a definition here are still whitelisted for update only if they already exist.
+         */
+        'defaults' => [
+            'financial' => [
+                'representative_commission_amount' => [
+                    'value' => '100.00',
+                    'type' => 'decimal',
+                    'is_public' => false,
+                    'description_ar' => 'قيمة عمولة المندوب عن كل متجر معتمد',
+                    'description_en' => 'Commission amount per approved store',
+                ],
+            ],
+        ],
     ],
 
     /*

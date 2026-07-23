@@ -29,8 +29,10 @@ export function CommissionSettingsForm() {
 
   useEffect(() => {
     if (data) {
+      const raw = data.representative_commission_amount?.value;
       form.reset({
-        representative_commission_amount: data.representative_commission_amount?.value || "100.00",
+        representative_commission_amount:
+          raw === null || raw === undefined || raw === "" ? "100.00" : String(raw),
       });
     }
   }, [data, form]);

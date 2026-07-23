@@ -140,6 +140,47 @@ class SystemSettingsAndFaqTest extends TestCase
             ->assertStatus(422);
     }
 
+    public function test_admin_financial_settings_group_is_created_when_missing(): void
+    {
+        SystemSetting::query()
+            ->where('group', 'financial')
+            ->where('key', 'representative_commission_amount')
+            ->delete();
+
+        $this->assertDatabaseMissing('system_settings', [
+            'group' => 'financial',
+            'key' => 'representative_commission_amount',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->getJson('/api/v1/admin/settings/financial')
+            ->assertOk();
+
+        $this->assertEquals(100.0, (float) $response->json('data.representative_commission_amount.value'));
+
+        $this->assertDatabaseHas('system_settings', [
+            'group' => 'financial',
+            'key' => 'representative_commission_amount',
+        ]);
+
+        $this->actingAs($this->admin)
+            ->putJson('/api/v1/admin/settings/financial', [
+                'settings' => [
+                    'representative_commission_amount' => '150.50',
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertEquals(150.5, app(SystemSettingService::class)->get('financial', 'representative_commission_amount'));
+    }
+
+    public function test_admin_settings_unknown_group_returns_not_found(): void
+    {
+        $this->actingAs($this->admin)
+            ->getJson('/api/v1/admin/settings/unknown-group')
+            ->assertNotFound();
+    }
+
     /**
      * Test public static pages access.
      */

@@ -22,6 +22,44 @@ class SystemSettingService
     }
 
     /**
+     * Whether the settings group is configured in the whitelist.
+     */
+    public function isValidGroup(string $group): bool
+    {
+        $whitelist = config('palverse.settings.whitelisted_keys', []);
+
+        return isset($whitelist[$group]);
+    }
+
+    /**
+     * Create missing default rows for a group (idempotent).
+     */
+    public function ensureGroupDefaults(string $group): void
+    {
+        $defaults = config("palverse.settings.defaults.{$group}", []);
+        if (! is_array($defaults) || $defaults === []) {
+            return;
+        }
+
+        foreach ($defaults as $key => $definition) {
+            if (! is_array($definition)) {
+                continue;
+            }
+
+            SystemSetting::firstOrCreate(
+                ['group' => $group, 'key' => $key],
+                [
+                    'value' => $definition['value'] ?? null,
+                    'type' => $definition['type'] ?? 'string',
+                    'is_public' => (bool) ($definition['is_public'] ?? false),
+                    'description_ar' => $definition['description_ar'] ?? null,
+                    'description_en' => $definition['description_en'] ?? null,
+                ]
+            );
+        }
+    }
+
+    /**
      * Get public settings grouped by group with caching.
      */
     public function getPublicSettings(): array
@@ -56,28 +94,43 @@ class SystemSettingService
                 }
 
                 foreach ($keys as $key => $value) {
-                    if (! in_array($key, $whitelist[$group])) {
+                    if (! in_array($key, $whitelist[$group], true)) {
                         throw new \InvalidArgumentException("المفتاح غير صالح: {$key} في المجموعة: {$group}");
                     }
 
                     $setting = SystemSetting::where('group', $group)->where('key', $key)->first();
-                    if ($setting) {
-                        $this->validateSettingValue($value, $setting->type);
-
-                        $oldVal = $setting->castValue();
-                        $setting->setTypedValue($value);
-                        $newVal = $setting->castValue();
-
-                        if ($oldVal !== $newVal) {
-                            $setting->save();
-
-                            $changes[] = [
-                                'group' => $group,
-                                'key' => $key,
-                                'old' => $oldVal,
-                                'new' => $newVal,
-                            ];
+                    if (! $setting) {
+                        $definition = config("palverse.settings.defaults.{$group}.{$key}");
+                        if (! is_array($definition)) {
+                            throw new \InvalidArgumentException("الإعداد غير موجود: {$group}.{$key}");
                         }
+
+                        $setting = new SystemSetting([
+                            'group' => $group,
+                            'key' => $key,
+                            'type' => $definition['type'] ?? 'string',
+                            'is_public' => (bool) ($definition['is_public'] ?? false),
+                            'description_ar' => $definition['description_ar'] ?? null,
+                            'description_en' => $definition['description_en'] ?? null,
+                            'value' => $definition['value'] ?? null,
+                        ]);
+                    }
+
+                    $this->validateSettingValue($value, $setting->type);
+
+                    $oldVal = $setting->exists ? $setting->castValue() : null;
+                    $setting->setTypedValue($value);
+                    $newVal = $setting->castValue();
+
+                    if (! $setting->exists || $oldVal !== $newVal) {
+                        $setting->save();
+
+                        $changes[] = [
+                            'group' => $group,
+                            'key' => $key,
+                            'old' => $oldVal,
+                            'new' => $newVal,
+                        ];
                     }
                 }
             }
