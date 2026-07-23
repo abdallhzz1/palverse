@@ -5,7 +5,7 @@ import { useJoinRequestsList } from "@/hooks/use-join-requests";
 import { useSubscriptionPlansList } from "@/hooks/use-subscription-plans";
 import { Pagination } from "@/components/ui/pagination";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { AlertCircle, UserPlus, PhoneCall, Check, X, CheckCircle2, Lock, CreditCard, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, UserPlus, PhoneCall, Check, X, CheckCircle2, Lock, CreditCard, Eye, EyeOff, Mail } from "lucide-react";
 import { joinRequestsService } from "@/services/join-requests.service";
 import { normalizeApiError } from "@/lib/api/error";
 import { formatDate } from "@/lib/utils/formatters";
@@ -35,6 +35,7 @@ export default function JoinRequestsPage() {
   const [approveError, setApproveError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [approveForm, setApproveForm] = useState({
+    email: "",
     password: "",
     subscription_plan_id: "",
   });
@@ -82,7 +83,11 @@ export default function JoinRequestsPage() {
       created_at: req.created_at,
       notes: req.notes,
     });
-    setApproveForm({ password: "", subscription_plan_id: "" });
+    setApproveForm({
+      email: req.email ?? "",
+      password: "",
+      subscription_plan_id: "",
+    });
     setApproveError(null);
     setShowPassword(false);
     setIsApproveModalOpen(true);
@@ -91,6 +96,11 @@ export default function JoinRequestsPage() {
   const handleApproveSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRequest) return;
+
+    if (!selectedRequest.email && !approveForm.email.trim()) {
+      setApproveError("البريد الإلكتروني مطلوب لإنشاء حساب التاجر.");
+      return;
+    }
     
     setIsApproving(true);
     setApproveError(null);
@@ -98,6 +108,7 @@ export default function JoinRequestsPage() {
     try {
       await joinRequestsService.updateStatus(selectedRequest.public_id, {
         status: 'approved',
+        email: approveForm.email.trim() || undefined,
         password: approveForm.password,
         subscription_plan_id: approveForm.subscription_plan_id,
       });
@@ -282,6 +293,30 @@ export default function JoinRequestsPage() {
                   {approveError}
                 </div>
               )}
+
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-2">
+                  البريد الإلكتروني للتاجر {!selectedRequest.email ? "*" : "(اختياري للتعديل)"}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="email"
+                    required={!selectedRequest.email}
+                    value={approveForm.email}
+                    onChange={(e) => setApproveForm({ ...approveForm, email: e.target.value })}
+                    className="block w-full pr-10 pl-3 py-2.5 border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary dir-ltr text-right"
+                    placeholder={selectedRequest.email ? "يمكن تركه كما هو أو تعديله" : "مطلوب لأن الطلب بلا بريد"}
+                  />
+                </div>
+                {!selectedRequest.email && (
+                  <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+                    الطلب بلا بريد — أدخل بريداً لتسجيل دخول التاجر.
+                  </p>
+                )}
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-2">كلمة المرور للتاجر *</label>

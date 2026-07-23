@@ -47,4 +47,19 @@ class MerchantOnboardingFlowTest extends EndToEndTestCase
         Notification::assertSentTo($admin, NewJoinRequestNotification::class);
         Notification::assertSentTo($followUp, NewJoinRequestNotification::class);
     }
+
+    public function test_join_request_requires_email(): void
+    {
+        $city = City::factory()->create();
+
+        $response = $this->postJson('/api/v1/merchant-join-requests', [
+            'merchant_name' => 'تاجر بدون بريد',
+            'phone' => '0599000222',
+            'store_name' => 'محل بدون بريد',
+            'city_id' => $city->public_id,
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['email']);
+    }
 }

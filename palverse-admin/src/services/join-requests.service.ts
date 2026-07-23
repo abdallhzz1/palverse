@@ -22,7 +22,7 @@ export const joinRequestsService = {
     return response;
   },
 
-  async updateStatus(id: string, payload: { status: string; password?: string; subscription_plan_id?: string }): Promise<void> {
+  async updateStatus(id: string, payload: { status: string; password?: string; subscription_plan_id?: string; email?: string }): Promise<void> {
     await apiClient.put(`/admin/join-requests/${id}/status`, payload);
   },
 

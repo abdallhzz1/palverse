@@ -24,7 +24,7 @@ class MerchantJoinRequestController extends Controller
         $validated = $request->validate([
             'merchant_name' => 'required|string|max:255',
             'phone' => 'required|string|max:30',
-            'email' => 'nullable|email|max:255',
+            'email' => 'required|email|max:255',
             'store_name' => 'required|string|max:255',
             'city_id' => 'required|exists:cities,public_id',
             'notes' => 'nullable|string',

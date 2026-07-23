@@ -37,6 +37,7 @@ export default function FollowUpJoinRequestsPage() {
   const [isApproving, setIsApproving] = useState(false);
   const [approveError, setApproveError] = useState<string | null>(null);
   const [approveForm, setApproveForm] = useState({
+    email: "",
     password: "",
     subscription_plan_id: "",
   });
@@ -80,7 +81,11 @@ export default function FollowUpJoinRequestsPage() {
 
   const handleOpenApproveModal = (req: JoinRequest) => {
     setSelectedRequest(req);
-    setApproveForm({ password: "", subscription_plan_id: "" });
+    setApproveForm({
+      email: req.email ?? "",
+      password: "",
+      subscription_plan_id: "",
+    });
     setApproveError(null);
     setIsApproveModalOpen(true);
   };
@@ -88,6 +93,11 @@ export default function FollowUpJoinRequestsPage() {
   const handleApproveSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRequest) return;
+
+    if (!selectedRequest.email && !approveForm.email.trim()) {
+      setApproveError("البريد الإلكتروني مطلوب لإنشاء حساب التاجر.");
+      return;
+    }
     
     setIsApproving(true);
     setApproveError(null);
@@ -95,6 +105,7 @@ export default function FollowUpJoinRequestsPage() {
     try {
       await apiClient.put(`/follow-up/merchant-join-requests/${selectedRequest.public_id}/status`, {
         status: 'approved',
+        email: approveForm.email.trim() || undefined,
         password: approveForm.password,
         subscription_plan_id: approveForm.subscription_plan_id,
       });
@@ -268,6 +279,30 @@ export default function FollowUpJoinRequestsPage() {
                   {approveError}
                 </div>
               )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  البريد الإلكتروني للتاجر {!selectedRequest.email ? "*" : "(اختياري للتعديل)"}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <Mail className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    required={!selectedRequest.email}
+                    value={approveForm.email}
+                    onChange={(e) => setApproveForm({ ...approveForm, email: e.target.value })}
+                    className="block w-full pr-10 pl-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1E7D4E] dir-ltr text-right"
+                    placeholder={selectedRequest.email ? "يمكن تركه كما هو أو تعديله" : "مطلوب لأن الطلب بلا بريد"}
+                  />
+                </div>
+                {!selectedRequest.email && (
+                  <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+                    الطلب بلا بريد — أدخل بريداً لتسجيل دخول التاجر.
+                  </p>
+                )}
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">كلمة المرور للتاجر *</label>

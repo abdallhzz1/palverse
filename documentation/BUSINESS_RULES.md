@@ -11,6 +11,8 @@ New merchants/stores are **not** created by merchant self-registration.
 Inbound creation paths only:
 1. **Representative store-registration request** (submitted → admin/follow-up review → approve creates merchant + store).
 2. **Public merchant join request** (submitted → admin/follow-up review → approve creates merchant + store + pending subscription).
+   - Public form email is **required** (used later as the merchant login email).
+   - On approval, follow-up/admin set password + plan; email comes from the join request (override still allowed if needed).
 
 Store listing statuses for an existing store:
 1.  **Draft / Pending**: When a store awaits moderation it is not visible to the public.
