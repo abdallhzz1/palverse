@@ -1,17 +1,33 @@
 import { serverFetch } from "@/lib/api/server";
 import { IslamicPatternBackground } from "@/components/brand/IslamicPatternBackground";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { 
-  Grid, ShoppingBag, Coffee, HeartPulse, Building2, Car, Dumbbell, 
+  Grid, ShoppingBag, Coffee, HeartPulse, Car, 
   BookOpen, Utensils, Smartphone, Home, Wrench, Apple, Gift, Scissors, ArrowLeft 
 } from "lucide-react";
 
 function getCategoryIcon(slug: string, iconName?: string) {
-  if (iconName && iconName !== "grid") {
-    // If we want to map iconName directly in the future
+  const byIcon: Record<string, ReactNode> = {
+    restaurant: <Utensils className="w-7 h-7 text-[#1E7D4E]" />,
+    cafe: <Coffee className="w-7 h-7 text-[#1E7D4E]" />,
+    shopping: <ShoppingBag className="w-7 h-7 text-[#1E7D4E]" />,
+    tech: <Smartphone className="w-7 h-7 text-[#1E7D4E]" />,
+    home: <Home className="w-7 h-7 text-[#1E7D4E]" />,
+    services: <Wrench className="w-7 h-7 text-[#1E7D4E]" />,
+    health: <HeartPulse className="w-7 h-7 text-[#1E7D4E]" />,
+    education: <BookOpen className="w-7 h-7 text-[#1E7D4E]" />,
+    automotive: <Car className="w-7 h-7 text-[#1E7D4E]" />,
+    groceries: <Apple className="w-7 h-7 text-[#1E7D4E]" />,
+    gifts: <Gift className="w-7 h-7 text-[#1E7D4E]" />,
+    crafts: <Scissors className="w-7 h-7 text-[#1E7D4E]" />,
+  };
+
+  if (iconName && byIcon[iconName.toLowerCase()]) {
+    return byIcon[iconName.toLowerCase()];
   }
 
-  switch(slug.toLowerCase()) {
+  switch (slug.toLowerCase()) {
     case "restaurants": return <Utensils className="w-7 h-7 text-[#1E7D4E]" />;
     case "cafes-sweets": return <Coffee className="w-7 h-7 text-[#1E7D4E]" />;
     case "fashion-clothing": return <ShoppingBag className="w-7 h-7 text-[#1E7D4E]" />;

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Modal } from "@/components/ui/modal";
+import { getCategoryIconOption } from "@/components/taxonomy/category-icon-picker";
 
 export default function CategoryDetailsPage({ params }: { params: Promise<{ publicId: string }> }) {
   const resolvedParams = React.use(params);
@@ -90,6 +91,20 @@ export default function CategoryDetailsPage({ params }: { params: Promise<{ publ
             <div className="space-y-1">
               <p className="text-sm font-medium text-muted-foreground">الاسم بالإنجليزية</p>
               <p className="text-lg font-semibold">{category.name_en || "-"}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">الأيقونة</p>
+              {(() => {
+                const { Icon, label } = getCategoryIconOption(category.icon);
+                return (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EAF3EC] text-[#0F3D2E]">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-lg font-semibold">{label}</p>
+                  </div>
+                );
+              })()}
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-muted-foreground">الرابط المختصر</p>

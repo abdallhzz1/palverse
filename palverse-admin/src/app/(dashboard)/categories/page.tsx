@@ -18,6 +18,7 @@ import { Plus, Search, Edit, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { format } from "date-fns";
+import { getCategoryIconOption } from "@/components/taxonomy/category-icon-picker";
 import { Modal } from "@/components/ui/modal";
 
 export default function CategoriesPage() {
@@ -120,9 +121,18 @@ export default function CategoriesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                data?.data.map((category) => (
+                data?.data.map((category) => {
+                  const { Icon } = getCategoryIconOption(category.icon);
+                  return (
                   <TableRow key={category.public_id}>
-                    <TableCell className="font-medium">{category.name_ar}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EAF3EC] text-[#0F3D2E]">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <span>{category.name_ar}</span>
+                      </div>
+                    </TableCell>
                     <TableCell>{category.name_en || "-"}</TableCell>
                     <TableCell dir="ltr" className="text-right text-muted-foreground">{category.slug}</TableCell>
                     <TableCell>{format(new Date(category.created_at), "yyyy/MM/dd")}</TableCell>
@@ -152,7 +162,8 @@ export default function CategoriesPage() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))
+                  );
+                })
               )}
             </TableBody>
           </Table>

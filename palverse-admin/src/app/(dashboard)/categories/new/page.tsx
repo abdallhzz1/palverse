@@ -11,10 +11,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Save } from "lucide-react";
 import Link from "next/link";
 import { LocalizedNameFields } from "@/components/taxonomy/localized-name-fields";
+import { CategoryIconPicker } from "@/components/taxonomy/category-icon-picker";
 
 const categorySchema = z.object({
   name_ar: z.string().min(2, "الاسم بالعربية مطلوب ويجب أن يكون حرفين على الأقل").max(191, "الاسم طويل جداً"),
   name_en: z.string().max(191, "الاسم طويل جداً").optional().or(z.literal("")),
+  icon: z.string().nullable().optional(),
 });
 
 type FormValues = z.infer<typeof categorySchema>;
@@ -28,19 +30,25 @@ export default function CreateCategoryPage() {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name_ar: "",
       name_en: "",
+      icon: null,
     },
   });
+
+  const icon = watch("icon");
 
   const onSubmit = async (data: FormValues) => {
     const payload: CreateCategoryRequest = {
       name_ar: data.name_ar,
       name_en: data.name_en || null,
+      icon: data.icon || null,
     };
     await create(payload);
   };
@@ -64,6 +72,12 @@ export default function CreateCategoryPage() {
           <LocalizedNameFields
             register={register}
             errors={errors}
+            disabled={isSubmitting}
+          />
+
+          <CategoryIconPicker
+            value={icon}
+            onChange={(value) => setValue("icon", value, { shouldDirty: true })}
             disabled={isSubmitting}
           />
 

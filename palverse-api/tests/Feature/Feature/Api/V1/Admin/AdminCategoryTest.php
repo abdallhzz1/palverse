@@ -93,6 +93,36 @@ class AdminCategoryTest extends TestCase
         $this->assertNotEmpty($category->slug);
     }
 
+    public function test_admin_can_create_category_with_optional_icon(): void
+    {
+        $response = $this->actingAsAdmin()
+            ->postJson('/api/v1/admin/categories', [
+                'name_ar' => 'صحة',
+                'name_en' => 'Health',
+                'icon' => 'health',
+            ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('data.icon', 'health');
+
+        $this->assertDatabaseHas('categories', [
+            'name_ar' => 'صحة',
+            'icon' => 'health',
+        ]);
+    }
+
+    public function test_create_category_rejects_unknown_icon(): void
+    {
+        $this->actingAsAdmin()
+            ->postJson('/api/v1/admin/categories', [
+                'name_ar' => 'تصنيف',
+                'icon' => 'unknown-icon',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['icon']);
+    }
+
     public function test_create_category_requires_name_ar(): void
     {
         $this->actingAsAdmin()

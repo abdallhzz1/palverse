@@ -7,6 +7,7 @@ export interface Category {
   name_ar: string;
   name_en: string | null;
   slug: string;
+  icon: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -22,11 +23,13 @@ export interface CreateCategoryRequest {
   name_ar: string;
   name_en?: string | null;
   slug?: string | null;
+  icon?: string | null;
 }
 
 export interface UpdateCategoryRequest {
   name_ar?: string;
   name_en?: string | null;
+  icon?: string | null;
 }
 
 

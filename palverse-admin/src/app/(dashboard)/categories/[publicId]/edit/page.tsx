@@ -11,12 +11,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Save, Info } from "lucide-react";
 import Link from "next/link";
 import { LocalizedNameFields } from "@/components/taxonomy/localized-name-fields";
+import { CategoryIconPicker } from "@/components/taxonomy/category-icon-picker";
 import React, { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const categorySchema = z.object({
   name_ar: z.string().min(2, "الاسم بالعربية مطلوب ويجب أن يكون حرفين على الأقل").max(191, "الاسم طويل جداً"),
   name_en: z.string().max(191, "الاسم طويل جداً").optional().or(z.literal("")),
+  icon: z.string().nullable().optional(),
 });
 
 type FormValues = z.infer<typeof categorySchema>;
@@ -24,7 +26,7 @@ type FormValues = z.infer<typeof categorySchema>;
 export default function EditCategoryPage({ params }: { params: Promise<{ publicId: string }> }) {
   const resolvedParams = React.use(params);
   const router = useRouter();
-  
+
   const { category, isLoading, error } = useCategoryDetails(resolvedParams.publicId);
   const { update, isSubmitting } = useCategoryActions(() => {
     router.push(`/categories/${resolvedParams.publicId}`);
@@ -34,20 +36,26 @@ export default function EditCategoryPage({ params }: { params: Promise<{ publicI
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name_ar: "",
       name_en: "",
+      icon: null,
     },
   });
+
+  const icon = watch("icon");
 
   useEffect(() => {
     if (category) {
       reset({
         name_ar: category.name_ar,
         name_en: category.name_en || "",
+        icon: category.icon || null,
       });
     }
   }, [category, reset]);
@@ -56,6 +64,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ publicI
     const payload: UpdateCategoryRequest = {
       name_ar: data.name_ar,
       name_en: data.name_en || null,
+      icon: data.icon || null,
     };
     await update(resolvedParams.publicId, payload);
   };
@@ -103,6 +112,12 @@ export default function EditCategoryPage({ params }: { params: Promise<{ publicI
             <LocalizedNameFields
               register={register}
               errors={errors}
+              disabled={isSubmitting}
+            />
+
+            <CategoryIconPicker
+              value={icon}
+              onChange={(value) => setValue("icon", value, { shouldDirty: true })}
               disabled={isSubmitting}
             />
 

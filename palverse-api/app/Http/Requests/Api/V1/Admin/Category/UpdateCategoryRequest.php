@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1\Admin\Category;
 
+use App\Enums\CategoryIcon;
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -40,6 +41,7 @@ class UpdateCategoryRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:100',
+                Rule::in(CategoryIcon::values()),
             ],
         ];
     }

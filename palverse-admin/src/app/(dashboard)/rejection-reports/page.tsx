@@ -82,16 +82,20 @@ export default function AdminRejectionReportsPage() {
                         {report.representative?.full_name || '-'}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div>
+                        <div className="space-y-1">
                           <span className="font-medium">{report.refusal_reason_label_ar}</span>
-                          {report.refusal_reason_text && <div className="text-xs text-muted-foreground">{report.refusal_reason_text}</div>}
+                          {report.refusal_reason_text && (
+                            <div className="text-xs text-muted-foreground">{report.refusal_reason_text}</div>
+                          )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right max-w-xs">
-                        {report.notes ? (
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report.notes}</p>
+                      <TableCell className="text-right min-w-[180px] max-w-sm">
+                        {report.notes?.trim() ? (
+                          <div className="rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground whitespace-pre-wrap">
+                            {report.notes}
+                          </div>
                         ) : (
-                          <span className="text-muted-foreground text-sm">—</span>
+                          <span className="text-muted-foreground text-sm">لا توجد ملاحظات</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">

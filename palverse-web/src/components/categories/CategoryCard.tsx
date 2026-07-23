@@ -1,5 +1,20 @@
 import Link from "next/link";
-import { Coffee, ShoppingBag, Utensils, Wrench, HeartPulse, Laptop, GraduationCap, Plane } from "lucide-react";
+import {
+  Apple,
+  BookOpen,
+  Car,
+  Coffee,
+  Gift,
+  Grid,
+  HeartPulse,
+  Home,
+  Scissors,
+  ShoppingBag,
+  Smartphone,
+  Utensils,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CategoryCardProps {
@@ -8,24 +23,27 @@ interface CategoryCardProps {
   iconName: string;
 }
 
+const ICON_BY_NAME: Record<string, LucideIcon> = {
+  grid: Grid,
+  restaurant: Utensils,
+  cafe: Coffee,
+  shopping: ShoppingBag,
+  tech: Smartphone,
+  home: Home,
+  services: Wrench,
+  health: HeartPulse,
+  education: BookOpen,
+  automotive: Car,
+  groceries: Apple,
+  gifts: Gift,
+  crafts: Scissors,
+};
+
 export function CategoryCard({ name, slug, iconName }: CategoryCardProps) {
-  // Simple icon mapper since we don't have images from backend yet
-  const Icon = (() => {
-    switch (iconName.toLowerCase()) {
-      case "restaurant": return Utensils;
-      case "cafe": return Coffee;
-      case "shopping": return ShoppingBag;
-      case "services": return Wrench;
-      case "health": return HeartPulse;
-      case "tech": return Laptop;
-      case "education": return GraduationCap;
-      case "travel": return Plane;
-      default: return Grid;
-    }
-  })();
+  const Icon = ICON_BY_NAME[iconName?.toLowerCase()] || Grid;
 
   return (
-    <Link 
+    <Link
       href={`/categories/${slug}`}
       className={cn(
         "flex flex-col items-center justify-center p-4 aspect-square",
@@ -43,6 +61,3 @@ export function CategoryCard({ name, slug, iconName }: CategoryCardProps) {
     </Link>
   );
 }
-
-// Fallback icon
-import { Grid } from "lucide-react";
