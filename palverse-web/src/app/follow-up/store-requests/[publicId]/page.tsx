@@ -32,7 +32,7 @@ export default function FollowUpStoreRequestDetail({ params }: { params: Promise
     const fetchRequest = async () => {
       try {
         const res = await followUpService.getStoreRequest(unwrappedParams.publicId);
-        setRequestData(res.data);
+        setRequestData(res?.data ?? res);
       } catch (error) {
         console.error("Failed to load request details:", error);
         toast.error("فشل تحميل تفاصيل الطلب");
@@ -47,7 +47,7 @@ export default function FollowUpStoreRequestDetail({ params }: { params: Promise
     try {
       setIsSubmitting(true);
       const res = await followUpService.reviewStoreRequest(unwrappedParams.publicId, 'start_review');
-      setRequestData(res.data);
+      setRequestData(res?.data ?? res);
       toast.success("تم بدء المراجعة بنجاح");
     } catch (error) {
       console.error(error);
@@ -67,7 +67,7 @@ export default function FollowUpStoreRequestDetail({ params }: { params: Promise
     try {
       setIsSubmitting(true);
       const res = await followUpService.reviewStoreRequest(unwrappedParams.publicId, reviewAction, reviewReason);
-      setRequestData(res.data);
+      setRequestData(res?.data ?? res);
       toast.success("تم تقديم المراجعة بنجاح");
       router.push("/follow-up/store-requests");
     } catch (error) {
@@ -332,14 +332,18 @@ export default function FollowUpStoreRequestDetail({ params }: { params: Promise
             </h2>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-[#EAF3EC] dark:bg-[#0F3D2E] rounded-full flex items-center justify-center text-[#1E7D4E] dark:text-[#EAF3EC] font-bold text-lg">
-                {requestData.representative?.first_name?.charAt(0)}
+                {(requestData.representative?.name || requestData.representative?.first_name || "?").charAt(0)}
               </div>
               <div>
                 <p className="font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">
-                  {requestData.representative?.first_name} {requestData.representative?.last_name}
+                  {requestData.representative?.name ||
+                    [requestData.representative?.first_name, requestData.representative?.last_name]
+                      .filter(Boolean)
+                      .join(" ") ||
+                    "غير متوفر"}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400" dir="ltr">
-                  {requestData.representative?.phone}
+                  {requestData.representative?.phone || "—"}
                 </p>
               </div>
             </div>

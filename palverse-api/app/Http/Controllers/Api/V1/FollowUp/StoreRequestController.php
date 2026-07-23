@@ -21,9 +21,18 @@ class StoreRequestController extends Controller
         // Policy should allow follow_up role to view Any if permitted.
         $this->authorize('viewAny', StoreRegistrationRequest::class);
 
-        $requests = StoreRegistrationRequest::with(['representative', 'zone', 'city', 'category'])
-            ->latest()
-            ->paginate();
+        $query = StoreRegistrationRequest::with(['representative', 'zone', 'city', 'category'])
+            ->latest();
+
+        $status = $request->query('status');
+        if (is_string($status) && $status !== '' && $status !== 'all') {
+            $query->where('status', $status);
+        } else {
+            // Shared review queue: hide drafts by default.
+            $query->where('status', '!=', 'draft');
+        }
+
+        $requests = $query->paginate();
 
         $paginated = StoreRegistrationRequestResource::collection($requests)->response()->getData(true);
 

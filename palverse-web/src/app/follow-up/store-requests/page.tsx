@@ -23,8 +23,10 @@ export default function FollowUpStoreRequestsPage() {
     const fetchRequests = async () => {
       setIsLoading(true);
       try {
-        const res = await followUpService.getStoreRequests(1, { status: statusFilter === 'all' ? undefined : statusFilter });
-        setRequests(res.data.data || res.data || []);
+        const res = await followUpService.getStoreRequests(1, {
+          status: statusFilter === "all" ? undefined : statusFilter,
+        });
+        setRequests(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
         console.error("Failed to load requests:", error);
       } finally {
@@ -113,7 +115,11 @@ export default function FollowUpStoreRequestsPage() {
                     <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{req.proposed_merchant_name}</td>
                     <td className="px-4 py-3 text-gray-600 dark:text-gray-400" dir="ltr">{req.phone}</td>
                     <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
-                      {req.representative?.first_name} {req.representative?.last_name}
+                      {req.representative?.name ||
+                        [req.representative?.first_name, req.representative?.last_name]
+                          .filter(Boolean)
+                          .join(" ") ||
+                        "—"}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(req.status)}`}>

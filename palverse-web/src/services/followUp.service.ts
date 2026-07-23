@@ -6,19 +6,27 @@ export const followUpService = {
     return response.data;
   },
 
-  getStoreRequests: async (page = 1, filters = {}) => {
-    const params = new URLSearchParams({ page: page.toString(), ...filters });
-    const response = await apiClient.get<{ data: any[], meta: any }>(`/follow-up/store-requests?${params.toString()}`);
-    // Handle nested data from response
+  getStoreRequests: async (page = 1, filters: Record<string, string | undefined> = {}) => {
+    const params = new URLSearchParams({ page: page.toString() });
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "" && value !== "all") {
+        params.set(key, value);
+      }
+    });
+    const response = await apiClient.get<{ data: any[]; meta: any; success?: boolean }>(
+      `/follow-up/store-requests?${params.toString()}`
+    );
+    // apiClient already unwraps Axios → JSON body { data, meta }
     return {
-      data: response.data || [],
-      meta: (response as any).meta || null,
+      data: Array.isArray(response?.data) ? response.data : [],
+      meta: response?.meta ?? null,
     };
   },
 
   getStoreRequest: async (publicId: string) => {
     const response = await apiClient.get<{ data: any }>(`/follow-up/store-requests/${publicId}`);
-    return response.data;
+    // Return the request entity (inner data), not the envelope.
+    return response?.data ?? response;
   },
 
   reviewStoreRequest: async (publicId: string, action: string, reason?: string) => {
@@ -26,7 +34,7 @@ export const followUpService = {
       action,
       reason,
     });
-    return response.data;
+    return response?.data ?? response;
   },
 
   getRenewals: async (page = 1, filters = {}) => {
