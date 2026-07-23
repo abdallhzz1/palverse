@@ -37,6 +37,9 @@ export function Header() {
           <Link href="/blog" className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:text-[#1E7D4E] transition-colors">
             المدونة
           </Link>
+          <Link href="/pages/about-us" className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:text-[#1E7D4E] transition-colors">
+            من نحن
+          </Link>
           <Link href="/contact" className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:text-[#1E7D4E] transition-colors">
             تواصل معنا
           </Link>

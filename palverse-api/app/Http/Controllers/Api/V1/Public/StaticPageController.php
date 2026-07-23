@@ -37,7 +37,7 @@ class StaticPageController extends Controller
      */
     public function show(string $slug): JsonResponse
     {
-        $data = $this->cacheService->remember('pages', ['slug' => $slug], function () use ($slug) {
+        $data = $this->cacheService->rememberPresent('pages', ['slug' => $slug], function () use ($slug) {
             $page = StaticPage::published()->where('slug', $slug)->first();
             if (! $page) {
                 return null;

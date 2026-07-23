@@ -23,7 +23,7 @@ async function fetchPage(slug: string): Promise<StaticPageData | null> {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
   try {
     const res = await fetch(`${apiBaseUrl}/pages/${slug}`, {
-      next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
+      next: { revalidate: 30 },
     });
     if (!res.ok) return null;
     const json = await res.json();

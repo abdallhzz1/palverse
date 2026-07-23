@@ -31,14 +31,34 @@ class PublicReferenceCacheService
         return $this->getReferenceTtl() > 0;
     }
 
+    protected function versionKey(string $domain): string
+    {
+        return "palverse:v1:{$domain}:__version";
+    }
+
+    protected function getDomainVersion(string $domain): int
+    {
+        try {
+            return max(1, (int) Cache::get($this->versionKey($domain), 1));
+        } catch (\Exception $e) {
+            return 1;
+        }
+    }
+
     /**
      * Generates a deterministic cache key.
+     * Domain versions bump on invalidateDomain so parameterized keys (e.g. slug) are invalidated too.
      */
     protected function buildKey(string $domain, array $params = []): string
     {
+        if ($domain === 'bootstrap') {
+            return 'palverse:v1:bootstrap';
+        }
+
+        $version = $this->getDomainVersion($domain);
         $hash = empty($params) ? '' : md5(json_encode($params));
 
-        return "palverse:v1:{$domain}".($hash ? ":{$hash}" : '');
+        return "palverse:v1:{$domain}:v{$version}".($hash ? ":{$hash}" : '');
     }
 
     /**
@@ -64,18 +84,48 @@ class PublicReferenceCacheService
     }
 
     /**
-     * Invalidate all cached data for a specific domain.
-     * Note: In MVP without cache tags, we may need to flush specific known keys or rely on TTL.
-     * If tags are available (Redis/Memcached), we can use them, but we must support simple database cache too.
-     * Since tags aren't supported on file/database drivers, we must rely on explicit key clearing or versioning.
-     * For now, we clear the known base keys, but paginated endpoints will rely on TTL.
+     * Like remember(), but never caches a null result (avoids sticky 404s for pages/categories).
+     */
+    public function rememberPresent(string $domain, array $params, callable $callback, ?int $customTtl = null)
+    {
+        if (! $this->isCacheEnabled()) {
+            return $callback();
+        }
+
+        $ttl = $customTtl ?? $this->getReferenceTtl();
+        $key = $this->buildKey($domain, $params);
+
+        try {
+            if (Cache::has($key)) {
+                return Cache::get($key);
+            }
+
+            $value = $callback();
+            if ($value !== null) {
+                Cache::put($key, $value, $ttl);
+            }
+
+            return $value;
+        } catch (\Exception $e) {
+            \Log::warning("Cache failed for {$key}", ['error' => $e->getMessage()]);
+
+            return $callback();
+        }
+    }
+
+    /**
+     * Invalidate all cached data for a specific domain (including parameterized keys).
      */
     public function invalidateDomain(string $domain): void
     {
-        // For endpoints that don't have parameters (like 'categories', 'cities', 'zones', 'plans', 'faqs')
-        // We can just clear the base key.
         try {
-            Cache::forget($this->buildKey($domain));
+            $versionKey = $this->versionKey($domain);
+            if (Cache::get($versionKey) === null) {
+                Cache::forever($versionKey, 2);
+            } else {
+                Cache::increment($versionKey);
+            }
+
             Cache::forget($this->buildKey('bootstrap'));
         } catch (\Exception $e) {
             \Log::warning("Cache invalidation failed for {$domain}", ['error' => $e->getMessage()]);

@@ -219,6 +219,48 @@ class SystemSettingsAndFaqTest extends TestCase
         $this->getJson('/api/v1/pages/draft-page')->assertStatus(404);
     }
 
+    public function test_public_static_page_reflects_admin_updates_immediately(): void
+    {
+        $page = StaticPage::create([
+            'slug' => 'about-us',
+            'title_ar' => 'من نحن',
+            'content_ar' => 'المحتوى القديم',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $this->getJson('/api/v1/pages/about-us')
+            ->assertOk()
+            ->assertJsonPath('data.content_ar', 'المحتوى القديم');
+
+        $this->actingAs($this->admin)
+            ->putJson("/api/v1/admin/pages/{$page->public_id}", [
+                'content_ar' => 'المحتوى بعد التعديل من الأدمن',
+            ])
+            ->assertOk();
+
+        $this->getJson('/api/v1/pages/about-us')
+            ->assertOk()
+            ->assertJsonPath('data.content_ar', 'المحتوى بعد التعديل من الأدمن');
+    }
+
+    public function test_missing_public_static_page_is_not_cached_as_not_found(): void
+    {
+        $this->getJson('/api/v1/pages/soon-page')->assertNotFound();
+
+        StaticPage::create([
+            'slug' => 'soon-page',
+            'title_ar' => 'صفحة جديدة',
+            'content_ar' => 'ظهرت الآن',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $this->getJson('/api/v1/pages/soon-page')
+            ->assertOk()
+            ->assertJsonPath('data.content_ar', 'ظهرت الآن');
+    }
+
     /**
      * Test admin static pages management and sanitation.
      */
