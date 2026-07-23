@@ -32,7 +32,7 @@ export function RepresentativeSidebar() {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-[#1E7D4E] rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0 overflow-hidden">
             {avatarSrc ? (
-              <img src={avatarSrc} alt={user.name} className="w-full h-full object-cover" />
+              <img src={avatarSrc} alt={user?.name || "avatar"} className="w-full h-full object-cover" />
             ) : (
               user?.name?.charAt(0) || "م"
             )}
