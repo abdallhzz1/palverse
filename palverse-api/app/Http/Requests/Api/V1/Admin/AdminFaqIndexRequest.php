@@ -2,15 +2,23 @@
 
 namespace App\Http\Requests\Api\V1\Admin;
 
+use App\Http\Requests\Concerns\NormalizesBooleanQueryParams;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class AdminFaqIndexRequest extends FormRequest
 {
+    use NormalizesBooleanQueryParams;
+
     public function authorize(): bool
     {
         return $this->user()->can('settings.view');
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->normalizeBooleanQueryParams(['is_active']);
     }
 
     public function rules(): array

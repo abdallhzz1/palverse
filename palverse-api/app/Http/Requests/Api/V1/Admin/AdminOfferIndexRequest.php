@@ -2,13 +2,21 @@
 
 namespace App\Http\Requests\Api\V1\Admin;
 
+use App\Http\Requests\Concerns\NormalizesBooleanQueryParams;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AdminOfferIndexRequest extends FormRequest
 {
+    use NormalizesBooleanQueryParams;
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->normalizeBooleanQueryParams(['is_active', 'valid_now']);
     }
 
     public function rules(): array

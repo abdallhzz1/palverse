@@ -2,13 +2,21 @@
 
 namespace App\Http\Requests\Api\V1\Admin\Store;
 
+use App\Http\Requests\Concerns\NormalizesBooleanQueryParams;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AdminStoreIndexRequest extends FormRequest
 {
+    use NormalizesBooleanQueryParams;
+
     public function authorize(): bool
     {
         return $this->user()?->can('stores.view') ?? false;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->normalizeBooleanQueryParams(['is_active']);
     }
 
     public function rules(): array

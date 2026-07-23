@@ -17,7 +17,15 @@ export const storesService = {
   list: async (params: StoresListParams): Promise<StoresListResponse> => {
     // Remove empty parameters to keep the URL clean and avoid confusing the backend
     const cleanParams = Object.fromEntries(
-      Object.entries(params).filter(([, v]) => v !== "" && v !== undefined && v !== null)
+      Object.entries(params)
+        .filter(([, v]) => v !== "" && v !== undefined && v !== null)
+        .map(([key, value]) => {
+          // Laravel boolean query validation accepts 0/1 more reliably than "true"/"false".
+          if (key === "is_active" && typeof value === "boolean") {
+            return [key, value ? 1 : 0];
+          }
+          return [key, value];
+        })
     );
     const response = await apiClient.get<unknown, StoresListResponse>(BASE_PATH, { params: cleanParams });
     return response;
