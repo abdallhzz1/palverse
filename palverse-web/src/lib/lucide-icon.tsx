@@ -46,6 +46,7 @@ export function getLucideIconComponent(icon?: string | null): LucideIcon {
 /**
  * Safe for Server Components: only uses static Lucide icons.
  * Never passes functions into client components (DynamicIcon fallbacks break RSC).
+ * Deploy trigger: homepage category icons must stay SSR-safe.
  */
 export function LucideIconByName({
   name,
