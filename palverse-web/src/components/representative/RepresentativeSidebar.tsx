@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, MapPin, Store, CreditCard, Banknote, FileX, LogOut, ArrowRight, UserCircle } from "lucide-react";
 import Image from "next/image";
 import { usePublicAuth } from "@/contexts/AuthContext";
+import { resolveStorageUrl } from "@/lib/media/resolve-storage-url";
 
 const navItems = [
   { name: "نظرة عامة", href: "/representative", icon: LayoutDashboard },
@@ -19,6 +20,7 @@ const navItems = [
 export function RepresentativeSidebar() {
   const pathname = usePathname();
   const { user, logout } = usePublicAuth();
+  const avatarSrc = resolveStorageUrl(user?.avatar_url);
 
   return (
     <div className="hidden lg:flex flex-col w-64 bg-[#0F3D2E] min-h-screen text-[#EAF3EC] sticky top-0">
@@ -29,8 +31,8 @@ export function RepresentativeSidebar() {
         </Link>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-[#1E7D4E] rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0 overflow-hidden">
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+            {avatarSrc ? (
+              <img src={avatarSrc} alt={user.name} className="w-full h-full object-cover" />
             ) : (
               user?.name?.charAt(0) || "م"
             )}

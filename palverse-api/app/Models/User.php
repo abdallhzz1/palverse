@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Str;
+use App\Support\PublicStorageUrl;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -228,5 +230,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification(#[\SensitiveParameter] $token): void
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    /**
+     * Always expose a current absolute URL; DB may store a relative path or legacy full URL.
+     */
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value): ?string => PublicStorageUrl::resolve($value),
+        );
+    }
+
+    public function avatarStoragePath(): ?string
+    {
+        return PublicStorageUrl::toPath($this->getRawOriginal('avatar_url'));
     }
 }

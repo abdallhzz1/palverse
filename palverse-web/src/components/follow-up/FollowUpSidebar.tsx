@@ -20,10 +20,12 @@ import {
 } from "lucide-react";
 import { usePublicAuth } from "@/contexts/AuthContext";
 import Image from "next/image";
+import { resolveStorageUrl } from "@/lib/media/resolve-storage-url";
 
 export function FollowUpSidebar() {
   const pathname = usePathname();
   const { user, logout } = usePublicAuth();
+  const avatarSrc = resolveStorageUrl(user?.avatar_url);
 
   const menuItems = [
     { href: "/follow-up", label: "نظرة عامة", icon: LayoutDashboard },
@@ -62,8 +64,8 @@ export function FollowUpSidebar() {
       <div className="p-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-[#EAF3EC] dark:bg-[#0F3D2E] rounded-full flex items-center justify-center text-[#1E7D4E] dark:text-[#EAF3EC] font-bold text-lg shrink-0 overflow-hidden">
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+            {avatarSrc ? (
+              <img src={avatarSrc} alt={user.name} className="w-full h-full object-cover" />
             ) : (
               user?.name?.charAt(0) || "م"
             )}

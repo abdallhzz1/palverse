@@ -84,6 +84,9 @@ php artisan cache:clear
    FILESYSTEM_PUBLIC_PATH=/home/alfajrhe/public_html/api/storage
    APP_URL=https://api.alfajrhealth.com
    ```
+   بعد رفع صورة بروفايل، افتح مباشرة:
+   `https://api.alfajrhealth.com/storage/avatars/...`
+   إذا ظهر 404، انسخ/زامن ملفات `storage/app/public` إلى `public_html/api/storage` أو تأكد أن `FILESYSTEM_PUBLIC_PATH` صحيح ثم `php artisan config:clear`.
 2. إذا `public_html/api` فيه ملفات `public` منسوخة قديماً (مثل `index.php` / `.htaccess`) وتغيّرت بالكود، انسخها من جديد:
    ```bash
    cp ~/repositories/palverse/palverse-api/public/index.php ~/public_html/api/index.php

@@ -6,9 +6,10 @@ import { toast } from "sonner";
 import { Camera, Save, Lock, User, Phone, Mail } from "lucide-react";
 import { authService } from "@/services/auth.service";
 import { usePublicAuth } from "@/contexts/AuthContext";
+import { resolveStorageUrl } from "@/lib/media/resolve-storage-url";
 
 export function ProfileSettings() {
-  const { user, login } = usePublicAuth(); // To update user state, we might need a method from context or reload
+  const { user, refreshUser } = usePublicAuth();
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -25,11 +26,11 @@ export function ProfileSettings() {
   const onProfileSubmit = async (data: any) => {
     setIsUpdatingProfile(true);
     try {
-      const res = await authService.updateProfile(data);
+      await authService.updateProfile(data);
       toast.success("تم تحديث البيانات بنجاح");
-      window.location.reload(); // Refresh to update context
+      await refreshUser();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "حدث خطأ أثناء التحديث");
+      toast.error(error?.data?.message || error.message || "حدث خطأ أثناء التحديث");
     } finally {
       setIsUpdatingProfile(false);
     }
@@ -52,7 +53,7 @@ export function ProfileSettings() {
       toast.success("تم تغيير كلمة المرور بنجاح");
       resetPasswordForm();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "حدث خطأ أثناء تغيير كلمة المرور");
+      toast.error(error?.data?.message || error.message || "حدث خطأ أثناء تغيير كلمة المرور");
     } finally {
       setIsUpdatingPassword(false);
     }
@@ -65,16 +66,20 @@ export function ProfileSettings() {
     setIsUploadingAvatar(true);
     try {
       await authService.updateAvatar(file);
+      await refreshUser();
       toast.success("تم تحديث الصورة الشخصية بنجاح");
-      window.location.reload(); // Refresh to update context and UI
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "حدث خطأ أثناء رفع الصورة");
+      const fieldError = error?.data?.errors?.avatar?.[0];
+      toast.error(fieldError || error?.data?.message || error.message || "حدث خطأ أثناء رفع الصورة");
     } finally {
       setIsUploadingAvatar(false);
+      e.target.value = "";
     }
   };
 
   if (!user) return null;
+
+  const avatarSrc = resolveStorageUrl(user.avatar_url);
 
   return (
     <div className="max-w-4xl space-y-8 pb-10">
@@ -96,8 +101,8 @@ export function ProfileSettings() {
           <div className="bg-white dark:bg-[#1A1A1A] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col items-center text-center">
             <div className="relative mb-4 group">
               <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 border-4 border-white dark:border-[#1a2520] shadow-lg flex items-center justify-center">
-                {user.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-4xl font-bold text-[#1E7D4E]">{user.name.charAt(0)}</span>
                 )}

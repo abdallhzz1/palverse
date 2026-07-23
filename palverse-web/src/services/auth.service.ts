@@ -80,13 +80,15 @@ export const authService = {
   ): Promise<{ avatar_url: string; user: PublicUser }> {
     const formData = new FormData();
     formData.append("avatar", file);
+    // Do not set Content-Type manually — browser must include multipart boundary.
     const res = await apiClient.post<
       never,
-      BaseResponse<{ avatar_url: string; user: PublicUser }>
-    >("/auth/profile/avatar", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return res.data;
+      { message: string; avatar_url: string; user: PublicUser }
+    >("/auth/profile/avatar", formData);
+    return {
+      avatar_url: res.avatar_url,
+      user: res.user,
+    };
   },
 
   async forgotPassword(email: string): Promise<void> {
