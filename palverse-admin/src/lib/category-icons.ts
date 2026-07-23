@@ -104,7 +104,6 @@ export const CATEGORY_ICON_CATALOG: CategoryIconOption[] = [
 
   // Home & services
   { name: "house", labelAr: "منزل", keywords: ["بيت", "عقارات", "home"], group: "home" },
-  { name: "home", labelAr: "بيت", keywords: ["منزل", "سكن"], group: "home" },
   { name: "sofa", labelAr: "أثاث", keywords: ["كنب", "مفروشات", "furniture"], group: "home" },
   { name: "bed", labelAr: "غرف نوم", keywords: ["سرير", "مفروشات"], group: "home" },
   { name: "lamp", labelAr: "إضاءة", keywords: ["لمبة", "ديكور"], group: "home" },
@@ -168,7 +167,7 @@ export const CATEGORY_ICON_CATALOG: CategoryIconOption[] = [
   { name: "balloon", labelAr: "بالونات", keywords: ["حفلات", "زينة"], group: "gifts" },
   { name: "heart-handshake", labelAr: "تكريم", keywords: ["شكر", "هدايا"], group: "gifts" },
   { name: "palette", labelAr: "فنون", keywords: ["رسم", "إبداع", "حرف"], group: "gifts" },
-  { name: "paintbrush-2", labelAr: "حرف يدوية", keywords: ["صناعات محلية", "crafts"], group: "gifts" },
+  { name: "paintbrush", labelAr: "حرف يدوية", keywords: ["صناعات محلية", "crafts", "رسم"], group: "gifts" },
   { name: "anvil", labelAr: "حدادة", keywords: ["صناعة", "حرف"], group: "gifts" },
   { name: "amphora", labelAr: "فخار", keywords: ["تراث", "حرف محلية"], group: "gifts" },
 

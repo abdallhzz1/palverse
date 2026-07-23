@@ -1,8 +1,7 @@
 import { icons, LayoutGrid, type LucideIcon } from "lucide-react";
-import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { CATEGORY_ICON_NAMES } from "@/lib/category-icons";
 
-/** Legacy short names stored before the full Lucide library picker. */
+/** Legacy short names stored before the Lucide picker. */
 export const LEGACY_CATEGORY_ICON_ALIASES: Record<string, string> = {
   grid: "layout-grid",
   restaurant: "utensils",
@@ -17,6 +16,8 @@ export const LEGACY_CATEGORY_ICON_ALIASES: Record<string, string> = {
   groceries: "apple",
   gifts: "gift",
   crafts: "scissors",
+  /** Lucide kebab names that don't resolve via the `icons` map. */
+  "paintbrush-2": "paintbrush",
 };
 
 export const DEFAULT_CATEGORY_ICON = "layout-grid";
@@ -43,6 +44,10 @@ export function getLucideIconComponent(icon?: string | null): LucideIcon {
   return (component as LucideIcon | undefined) || LayoutGrid;
 }
 
+/**
+ * Safe for Server Components: static Lucide icons only.
+ * Avoid DynamicIcon fallbacks — passing functions into client components breaks RSC.
+ */
 export function LucideIconByName({
   name,
   className,
@@ -58,19 +63,14 @@ export function LucideIconByName({
   color?: string;
   absoluteStrokeWidth?: boolean;
 }) {
-  const resolved = resolveLucideIconName(name);
-  const StaticIcon = getLucideIconComponent(resolved);
-  const props = { className, size, strokeWidth, color, absoluteStrokeWidth };
-
-  if (StaticIcon !== LayoutGrid || resolved === DEFAULT_CATEGORY_ICON) {
-    return <StaticIcon {...props} />;
-  }
-
+  const Icon = getLucideIconComponent(name);
   return (
-    <DynamicIcon
-      name={resolved as IconName}
-      fallback={() => <LayoutGrid {...props} />}
-      {...props}
+    <Icon
+      className={className}
+      size={size}
+      strokeWidth={strokeWidth}
+      color={color}
+      absoluteStrokeWidth={absoluteStrokeWidth}
     />
   );
 }
