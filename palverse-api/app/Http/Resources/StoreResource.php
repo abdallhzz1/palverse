@@ -24,6 +24,7 @@ class StoreResource extends JsonResource
             'slug' => $this->slug ?? $this->public_id,
             'web_url' => $this->when($this->slug !== null, fn () => $linkService->generateWebUrl($this->resource)),
             'deep_link' => $this->when($this->slug !== null, fn () => $linkService->generateDeepLink($this->resource)),
+            // Image endpoint for downloading the QR graphic — do NOT encode this URL into a QR.
             'qr_url' => $this->when($this->slug !== null && ! $isList, fn () => route('api.v1.public.stores.qr', ['slug' => $this->slug])),
             'phone' => $this->phone,
             'whatsapp' => $this->whatsapp,

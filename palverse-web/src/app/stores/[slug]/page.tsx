@@ -58,8 +58,11 @@ export default async function StoreDetailPage({
   const address_ar = (storeData.address_ar as string) || undefined;
   const email = (storeData.email as string) || undefined;
   const website = sanitizeExternalUrl((storeData.website as string) || undefined) || undefined;
-  const rawQrUrl = (storeData.qr_url as string) || undefined;
-  const qr_url = (typeof rawQrUrl === "string" && rawQrUrl.trim()) ? rawQrUrl.trim() : undefined;
+  const rawWebUrl = (storeData.web_url as string) || undefined;
+  const store_url =
+    typeof rawWebUrl === "string" && rawWebUrl.trim()
+      ? rawWebUrl.trim()
+      : undefined;
   
   const latitude = typeof storeData.latitude === 'number' ? storeData.latitude : (typeof storeData.latitude === 'string' ? parseFloat(storeData.latitude) : null);
   const longitude = typeof storeData.longitude === 'number' ? storeData.longitude : (typeof storeData.longitude === 'string' ? parseFloat(storeData.longitude) : null);
@@ -105,7 +108,7 @@ export default async function StoreDetailPage({
             name={name}
             phone={phone}
             whatsapp={whatsapp}
-            qrUrl={qr_url}
+            storeUrl={store_url}
           />
         </div>
 

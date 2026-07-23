@@ -135,6 +135,12 @@ export default function StoreQrPage() {
             <h2 className="text-xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">{store.name_ar}</h2>
 
             <div className="space-y-3 pt-4 border-t border-[#EAF3EC] dark:border-[#1F2522]">
+              {links?.web_url && (
+                <p className="text-sm text-gray-500 dark:text-gray-400 break-all" dir="ltr">
+                  عند المسح يفتح:{" "}
+                  <span className="font-mono text-[#0F3D2E] dark:text-[#EAF3EC]">{links.web_url}</span>
+                </p>
+              )}
               <button
                 onClick={handleDownload}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#1E7D4E] text-white rounded-xl font-bold hover:bg-[#0F3D2E] transition-colors"
