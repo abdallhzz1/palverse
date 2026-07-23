@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Api\V1\Admin\Category;
 
-use App\Enums\CategoryIcon;
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -40,9 +39,47 @@ class UpdateCategoryRequest extends FormRequest
             'icon' => [
                 'nullable',
                 'string',
-                'max:100',
-                Rule::in(CategoryIcon::values()),
+                'max:50',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
             ],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if (! $this->exists('icon')) {
+            return;
+        }
+
+        $this->merge([
+            'icon' => $this->normalizeIcon($this->input('icon')),
+        ]);
+    }
+
+    private function normalizeIcon(mixed $icon): ?string
+    {
+        if (! is_string($icon) || trim($icon) === '') {
+            return null;
+        }
+
+        $normalized = mb_strtolower(trim($icon));
+
+        $aliases = [
+            'grid' => 'layout-grid',
+            'restaurant' => 'utensils',
+            'cafe' => 'coffee',
+            'shopping' => 'shopping-bag',
+            'tech' => 'smartphone',
+            'home' => 'house',
+            'services' => 'wrench',
+            'health' => 'heart-pulse',
+            'education' => 'book-open',
+            'automotive' => 'car',
+            'groceries' => 'apple',
+            'gifts' => 'gift',
+            'crafts' => 'scissors',
+        ];
+
+        return $aliases[$normalized] ?? $normalized;
     }
 }

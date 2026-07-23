@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Api\V1\Admin\Category;
 
-use App\Enums\CategoryIcon;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreCategoryRequest extends FormRequest
 {
@@ -28,7 +26,8 @@ class StoreCategoryRequest extends FormRequest
                 'unique:categories,slug',
                 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
             ],
-            'icon' => ['nullable', 'string', 'max:100', Rule::in(CategoryIcon::values())],
+            // Lucide icon name in kebab-case (e.g. shopping-bag, heart-pulse)
+            'icon' => ['nullable', 'string', 'max:50', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
         ];
     }
 
@@ -40,8 +39,35 @@ class StoreCategoryRequest extends FormRequest
             $this->merge(['slug' => null]);
         }
 
-        if ($this->icon === '' || $this->icon === null) {
-            $this->merge(['icon' => null]);
+        $this->merge([
+            'icon' => $this->normalizeIcon($this->input('icon')),
+        ]);
+    }
+
+    private function normalizeIcon(mixed $icon): ?string
+    {
+        if (! is_string($icon) || trim($icon) === '') {
+            return null;
         }
+
+        $normalized = mb_strtolower(trim($icon));
+
+        $aliases = [
+            'grid' => 'layout-grid',
+            'restaurant' => 'utensils',
+            'cafe' => 'coffee',
+            'shopping' => 'shopping-bag',
+            'tech' => 'smartphone',
+            'home' => 'house',
+            'services' => 'wrench',
+            'health' => 'heart-pulse',
+            'education' => 'book-open',
+            'automotive' => 'car',
+            'groceries' => 'apple',
+            'gifts' => 'gift',
+            'crafts' => 'scissors',
+        ];
+
+        return $aliases[$normalized] ?? $normalized;
     }
 }

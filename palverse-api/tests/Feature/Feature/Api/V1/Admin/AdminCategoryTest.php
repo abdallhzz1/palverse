@@ -99,17 +99,28 @@ class AdminCategoryTest extends TestCase
             ->postJson('/api/v1/admin/categories', [
                 'name_ar' => 'صحة',
                 'name_en' => 'Health',
-                'icon' => 'health',
+                'icon' => 'heart-pulse',
             ]);
 
         $response
             ->assertCreated()
-            ->assertJsonPath('data.icon', 'health');
+            ->assertJsonPath('data.icon', 'heart-pulse');
 
         $this->assertDatabaseHas('categories', [
             'name_ar' => 'صحة',
-            'icon' => 'health',
+            'icon' => 'heart-pulse',
         ]);
+    }
+
+    public function test_create_category_normalizes_legacy_icon_alias(): void
+    {
+        $this->actingAsAdmin()
+            ->postJson('/api/v1/admin/categories', [
+                'name_ar' => 'مطاعم ٢',
+                'icon' => 'restaurant',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.icon', 'utensils');
     }
 
     public function test_create_category_rejects_unknown_icon(): void
@@ -117,7 +128,7 @@ class AdminCategoryTest extends TestCase
         $this->actingAsAdmin()
             ->postJson('/api/v1/admin/categories', [
                 'name_ar' => 'تصنيف',
-                'icon' => 'unknown-icon',
+                'icon' => 'Unknown Icon!!',
             ])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['icon']);

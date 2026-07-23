@@ -101,7 +101,7 @@ export default function CategoryDetailsPage({ params }: { params: Promise<{ publ
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EAF3EC] text-[#0F3D2E]">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <p className="text-lg font-semibold">{label}</p>
+                    <p dir="ltr" className="text-sm font-mono font-semibold">{label}</p>
                   </div>
                 );
               })()}
