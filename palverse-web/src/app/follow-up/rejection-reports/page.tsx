@@ -13,7 +13,7 @@ export default function RejectionReportsPage() {
     const fetchReports = async () => {
       try {
         const res = await followUpService.getRejectionReports();
-        setReports(res.data?.data || res.data || []);
+        setReports(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
         console.error("Failed to load rejection reports:", error);
       } finally {
@@ -48,6 +48,7 @@ export default function RejectionReportsPage() {
                   <th className="px-6 py-4 font-medium">المنطقة</th>
                   <th className="px-6 py-4 font-medium">المندوب</th>
                   <th className="px-6 py-4 font-medium">سبب الرفض</th>
+                  <th className="px-6 py-4 font-medium">ملاحظات عامة عن الزيارة</th>
                   <th className="px-6 py-4 font-medium">تاريخ الزيارة</th>
                 </tr>
               </thead>
@@ -79,6 +80,13 @@ export default function RejectionReportsPage() {
                           <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit mt-1">يُطلب متابعته</span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300 max-w-xs">
+                      {report.notes ? (
+                        <p className="text-sm whitespace-pre-wrap">{report.notes}</p>
+                      ) : (
+                        <span className="text-gray-400 text-sm">—</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-sm">
                       {new Date(report.contacted_at).toLocaleDateString('ar-SA')}

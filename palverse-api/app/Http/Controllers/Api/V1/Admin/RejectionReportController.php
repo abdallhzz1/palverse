@@ -16,8 +16,13 @@ class RejectionReportController extends Controller
             ->latest()
             ->paginate();
 
+        $paginated = RejectionReportResource::collection($reports)->response()->getData(true);
+
         return response()->json([
-            'data' => RejectionReportResource::collection($reports)->response()->getData(true)
+            'success' => true,
+            'data' => $paginated['data'],
+            'meta' => $paginated['meta'],
+            'links' => $paginated['links'] ?? null,
         ]);
     }
 }

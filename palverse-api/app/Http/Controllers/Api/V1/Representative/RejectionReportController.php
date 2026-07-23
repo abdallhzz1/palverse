@@ -19,8 +19,13 @@ class RejectionReportController extends Controller
             ->latest()
             ->paginate();
 
+        $paginated = RejectionReportResource::collection($reports)->response()->getData(true);
+
         return response()->json([
-            'data' => RejectionReportResource::collection($reports)->response()->getData(true)
+            'success' => true,
+            'data' => $paginated['data'],
+            'meta' => $paginated['meta'],
+            'links' => $paginated['links'] ?? null,
         ]);
     }
 
@@ -36,7 +41,10 @@ class RejectionReportController extends Controller
         ]));
 
         return response()->json([
-            'data' => new RejectionReportResource($report->load(['zone']))
+            'success' => true,
+            'message' => 'تم إنشاء تقرير الرفض بنجاح.',
+            'data' => new RejectionReportResource($report->load(['zone'])),
+            'meta' => [],
         ], 201);
     }
 }

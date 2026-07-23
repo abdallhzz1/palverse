@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileX, Search, Store } from "lucide-react";
+import { FileX } from "lucide-react";
 import Link from "next/link";
 import { RepresentativeService } from "@/services/representative.service";
 import type { RejectionReport } from "@/types/representative";
@@ -14,7 +14,7 @@ export default function RejectionReportsPage() {
     const fetchReports = async () => {
       try {
         const res = await RepresentativeService.getRejectionReports();
-        setReports(res.data || []);
+        setReports(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
         console.error("Failed to load rejection reports:", error);
       } finally {
@@ -57,6 +57,7 @@ export default function RejectionReportsPage() {
                   <th className="px-6 py-4 font-medium">اسم النشاط</th>
                   <th className="px-6 py-4 font-medium">المنطقة</th>
                   <th className="px-6 py-4 font-medium">سبب الرفض</th>
+                  <th className="px-6 py-4 font-medium">ملاحظات عامة عن الزيارة</th>
                   <th className="px-6 py-4 font-medium">مطلوب متابعة</th>
                   <th className="px-6 py-4 font-medium">تاريخ الزيارة</th>
                 </tr>
@@ -79,6 +80,13 @@ export default function RejectionReportsPage() {
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                       <span className="font-medium">{report.refusal_reason_label_ar}</span>
                       {report.refusal_reason_text && <p className="text-xs text-gray-500 mt-1">{report.refusal_reason_text}</p>}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300 max-w-xs">
+                      {report.notes ? (
+                        <p className="text-sm whitespace-pre-wrap">{report.notes}</p>
+                      ) : (
+                        <span className="text-gray-400 text-sm">—</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       {report.follow_up_required ? (

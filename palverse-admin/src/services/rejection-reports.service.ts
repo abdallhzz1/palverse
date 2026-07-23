@@ -25,10 +25,19 @@ export const rejectionReportsService = {
   getRejectionReports: async (page = 1) => {
     const params = new URLSearchParams({ page: page.toString() });
     
-    const response = await apiClient.get<{ data: RejectionReport[], meta: any }>(`/admin/rejection-reports?${params.toString()}`);
+    const response = await apiClient.get<{ data: RejectionReport[]; meta: unknown }>(
+      `/admin/rejection-reports?${params.toString()}`
+    );
+    const payload = response as { data?: RejectionReport[] | { data?: RejectionReport[] }; meta?: unknown };
+    const rows = Array.isArray(payload.data)
+      ? payload.data
+      : Array.isArray(payload.data?.data)
+        ? payload.data.data
+        : [];
+
     return {
-      data: response.data || [],
-      meta: (response as any).meta || null,
+      data: rows,
+      meta: payload.meta ?? null,
     };
   },
 };

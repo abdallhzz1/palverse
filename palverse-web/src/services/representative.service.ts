@@ -62,7 +62,20 @@ export const RepresentativeService = {
 
   // Rejection Reports
   getRejectionReports: async (page = 1): Promise<PaginatedResponse<RejectionReport>> => {
-    return apiClient.get(`/representative/rejection-reports?page=${page}`) as any;
+    const response = (await apiClient.get(
+      `/representative/rejection-reports?page=${page}`
+    )) as PaginatedResponse<RejectionReport> & { data?: RejectionReport[] | { data?: RejectionReport[] } };
+
+    const rows = Array.isArray(response.data)
+      ? response.data
+      : Array.isArray((response.data as { data?: RejectionReport[] } | undefined)?.data)
+        ? ((response.data as { data: RejectionReport[] }).data)
+        : [];
+
+    return {
+      ...response,
+      data: rows,
+    };
   },
 
   createRejectionReport: async (data: Partial<RejectionReport> & { zone_public_id: string }): Promise<{ data: RejectionReport }> => {

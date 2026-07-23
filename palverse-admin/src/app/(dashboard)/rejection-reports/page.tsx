@@ -15,7 +15,8 @@ export default function AdminRejectionReportsPage() {
     const fetchReports = async () => {
       try {
         const res = await rejectionReportsService.getRejectionReports();
-        setReports(res.data?.data || res.data || []);
+        const rows = Array.isArray(res.data) ? res.data : [];
+        setReports(rows);
       } catch (error) {
         console.error("Failed to load rejection reports:", error);
       } finally {
@@ -44,6 +45,7 @@ export default function AdminRejectionReportsPage() {
                   <TableHead className="text-right">المنطقة</TableHead>
                   <TableHead className="text-right">المندوب</TableHead>
                   <TableHead className="text-right">سبب الرفض</TableHead>
+                  <TableHead className="text-right">ملاحظات عامة عن الزيارة</TableHead>
                   <TableHead className="text-right">مطلوب متابعة</TableHead>
                   <TableHead className="text-right">تاريخ الزيارة</TableHead>
                 </TableRow>
@@ -51,13 +53,13 @@ export default function AdminRejectionReportsPage() {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={7} className="h-24 text-center">
                       جاري التحميل...
                     </TableCell>
                   </TableRow>
                 ) : reports.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={7} className="h-24 text-center">
                       لا توجد تقارير رفض مسجلة.
                     </TableCell>
                   </TableRow>
@@ -84,6 +86,13 @@ export default function AdminRejectionReportsPage() {
                           <span className="font-medium">{report.refusal_reason_label_ar}</span>
                           {report.refusal_reason_text && <div className="text-xs text-muted-foreground">{report.refusal_reason_text}</div>}
                         </div>
+                      </TableCell>
+                      <TableCell className="text-right max-w-xs">
+                        {report.notes ? (
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report.notes}</p>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">—</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         {report.follow_up_required ? (

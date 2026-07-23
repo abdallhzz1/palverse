@@ -117,10 +117,17 @@ export const followUpService = {
   // Rejection Reports
   getRejectionReports: async (page = 1) => {
     const params = new URLSearchParams({ page: page.toString() });
-    const response = await apiClient.get<{ data: any[], meta: any }>(`/follow-up/rejection-reports?${params.toString()}`);
+    const response = await apiClient.get<{ data: any[]; meta: any }>(`/follow-up/rejection-reports?${params.toString()}`);
+    const payload = response as { data?: any[] | { data?: any[] }; meta?: any };
+    const rows = Array.isArray(payload.data)
+      ? payload.data
+      : Array.isArray(payload.data?.data)
+        ? payload.data.data
+        : [];
+
     return {
-      data: response.data || [],
-      meta: (response as any).meta || null,
+      data: rows,
+      meta: payload.meta ?? null,
     };
   },
 };
