@@ -1,5 +1,6 @@
 import { icons, LayoutGrid, type LucideIcon } from "lucide-react";
-import { DynamicIcon, iconNames, type IconName } from "lucide-react/dynamic";
+import { DynamicIcon, type IconName } from "lucide-react/dynamic";
+import { CATEGORY_ICON_NAMES } from "@/lib/category-icons";
 
 /** Legacy short names stored before the full Lucide library picker. */
 export const LEGACY_CATEGORY_ICON_ALIASES: Record<string, string> = {
@@ -74,4 +75,5 @@ export function LucideIconByName({
   );
 }
 
-export const LUCIDE_ICON_NAMES: string[] = [...iconNames].sort((a, b) => a.localeCompare(b));
+/** Curated icon names shown in the category picker (not the full Lucide set). */
+export const LUCIDE_ICON_NAMES: string[] = [...CATEGORY_ICON_NAMES];
