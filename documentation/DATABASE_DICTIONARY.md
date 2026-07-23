@@ -360,6 +360,7 @@ This document details the database dictionary for all tables in the Palverse Min
 | `id` | `BIGINT UNSIGNED` | Required | *None* | PK, Auto Increment | Yes | Positive integer | `1` |
 | `public_id` | `CHAR(26)` | Required | *None* | Unique Constraint | Yes | ULID format | `01H4F...` |
 | `slug` | `VARCHAR(191)` | Required | *None* | Unique Constraint | Yes | URL slug format | `about-us` |
+| `page_type` | `VARCHAR(32)` | Required | `content` | *None* | No | `content` or `contact` | `contact` |
 | `title_ar` | `VARCHAR(191)` | Required | *None* | *None* | No | Arabic title | `من نحن` |
 | `title_en` | `VARCHAR(191)` | Nullable | `NULL` | *None* | No | English title | `About Us` |
 | `content_ar` | `LONGTEXT` | Required | *None* | *None* | No | Arabic content | `...` |
@@ -367,6 +368,7 @@ This document details the database dictionary for all tables in the Palverse Min
 | `is_published`| `TINYINT(1)` | Required | `0` | *None* | Yes | Published toggle | `1` |
 | `published_at`| `DATETIME` | Nullable | `NULL` | *None* | No | Publish timestamp| `2026-07-14 00:00` |
 | `sort_order` | `INT UNSIGNED` | Required | `0` | *None* | No | Ordering weight | `1` |
+| `meta` | `JSON` | Nullable | `NULL` | *None* | No | Structured fields (contact info, hero eyebrow, WhatsApp form labels) | `{"phone":"..."}` |
 
 ---
 

@@ -329,6 +329,79 @@ class SystemSettingsAndFaqTest extends TestCase
         $this->assertSoftDeleted('static_pages', ['public_id' => $publicId]);
     }
 
+    public function test_admin_can_create_contact_page_with_meta(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->postJson('/api/v1/admin/pages', [
+                'slug' => 'contact',
+                'page_type' => 'contact',
+                'title_ar' => 'تواصل معنا',
+                'content_ar' => '<p>تواصل معنا</p>',
+                'is_published' => true,
+                'meta' => [
+                    'phone' => '+972 59-000-0000',
+                    'email' => 'hello@palverse.ps',
+                    'whatsapp_number' => '972590000000',
+                    'form_title_ar' => 'أرسل رسالة',
+                ],
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.page_type', 'contact')
+            ->assertJsonPath('data.meta.phone', '+972 59-000-0000')
+            ->assertJsonPath('data.meta.email', 'hello@palverse.ps')
+            ->assertJsonPath('data.meta.whatsapp_number', '972590000000')
+            ->assertJsonPath('data.meta.info_card_title_ar', 'معلومات الاتصال');
+
+        $this->getJson('/api/v1/pages/contact')
+            ->assertOk()
+            ->assertJsonPath('data.page_type', 'contact')
+            ->assertJsonPath('data.meta.phone', '+972 59-000-0000');
+    }
+
+    public function test_admin_can_update_contact_page_meta(): void
+    {
+        $page = StaticPage::create([
+            'slug' => 'contact',
+            'page_type' => 'contact',
+            'title_ar' => 'تواصل معنا',
+            'content_ar' => '<p>تواصل</p>',
+            'is_published' => true,
+            'published_at' => now(),
+            'meta' => [
+                'phone' => 'old-phone',
+                'email' => 'old@example.com',
+            ],
+        ]);
+
+        $this->actingAs($this->admin)
+            ->putJson("/api/v1/admin/pages/{$page->public_id}", [
+                'meta' => [
+                    'phone' => 'new-phone',
+                    'form_title_ar' => 'نموذج جديد',
+                ],
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.meta.phone', 'new-phone')
+            ->assertJsonPath('data.meta.form_title_ar', 'نموذج جديد')
+            ->assertJsonPath('data.meta.email', 'old@example.com');
+    }
+
+    public function test_admin_rejects_unknown_static_page_meta_keys(): void
+    {
+        $this->actingAs($this->admin)
+            ->postJson('/api/v1/admin/pages', [
+                'slug' => 'about-extra',
+                'title_ar' => 'صفحة',
+                'content_ar' => '<p>محتوى</p>',
+                'meta' => [
+                    'secret_api_key' => 'should-fail',
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['meta']);
+    }
+
     /**
      * Test FAQs endpoints.
      */

@@ -93,6 +93,7 @@ export default function PagesPage() {
               <tr>
                 <th className="px-6 py-4 font-medium">العنوان</th>
                 <th className="px-6 py-4 font-medium">المعرّف</th>
+                <th className="px-6 py-4 font-medium">النوع</th>
                 <th className="px-6 py-4 font-medium">الحالة</th>
                 <th className="px-6 py-4 font-medium">الترتيب</th>
                 <th className="px-6 py-4 font-medium">تاريخ النشر</th>
@@ -106,6 +107,7 @@ export default function PagesPage() {
                     <td className="px-6 py-4"><div className="h-4 w-40 bg-slate-200 dark:bg-slate-700 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-full" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-8 bg-slate-200 dark:bg-slate-700 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-8 w-24 bg-slate-200 dark:bg-slate-700 rounded" /></td>
@@ -113,7 +115,7 @@ export default function PagesPage() {
                 ))
               ) : error ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
                     <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
                     <p>حدث خطأ أثناء جلب البيانات</p>
                     <button onClick={refresh} className="mt-2 text-emerald-600 hover:underline">إعادة المحاولة</button>
@@ -121,7 +123,7 @@ export default function PagesPage() {
                 </tr>
               ) : data?.data.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
                     <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>لا توجد صفحات</p>
                   </td>
@@ -135,6 +137,11 @@ export default function PagesPage() {
                     </td>
                     <td className="px-6 py-4 text-muted-foreground" dir="ltr">
                       <span className="font-mono text-xs">{p.slug}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        {p.page_type === "contact" ? "تواصل" : "محتوى"}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       {p.is_published ? (

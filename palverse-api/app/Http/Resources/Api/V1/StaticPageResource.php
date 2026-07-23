@@ -17,6 +17,7 @@ class StaticPageResource extends JsonResource
         return [
             'public_id' => $this->when($isAdmin, $this->public_id),
             'slug' => $this->slug,
+            'page_type' => $this->page_type ?? 'content',
             'title_ar' => $this->title_ar,
             'title_en' => $this->title_en,
             'content_ar' => $this->content_ar,
@@ -30,6 +31,7 @@ class StaticPageResource extends JsonResource
             'seo_title_en' => $this->seo_title_en,
             'seo_description_ar' => $this->seo_description_ar,
             'seo_description_en' => $this->seo_description_en,
+            'meta' => $this->meta ?? [],
             'created_at' => $this->when($isAdmin, $this->created_at?->toIso8601String()),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

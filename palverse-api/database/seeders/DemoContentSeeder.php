@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Enums\StaticPageType;
 use App\Models\Faq;
 use App\Models\StaticPage;
 use App\Models\SystemSetting;
+use App\Support\StaticPageMeta;
 use Illuminate\Database\Seeder;
 
 class DemoContentSeeder extends Seeder
@@ -45,31 +47,39 @@ class DemoContentSeeder extends Seeder
         $pages = [
             [
                 'slug' => 'about',
+                'page_type' => StaticPageType::Content->value,
                 'title_ar' => 'من نحن',
                 'title_en' => 'About Us',
                 'content_ar' => '<p>Palverse دليل رقمي يساعد المستخدمين على اكتشاف الأنشطة التجارية والخدمات المحلية في فلسطين بسهولة، ويوفر لأصحاب الأعمال مساحة موحدة لعرض معلوماتهم وعروضهم.</p>',
                 'content_en' => '<p>Palverse is a digital directory helping users discover local businesses and services in Palestine effortlessly.</p>',
+                'meta' => null,
             ],
             [
                 'slug' => 'privacy',
+                'page_type' => StaticPageType::Content->value,
                 'title_ar' => 'سياسة الخصوصية',
                 'title_en' => 'Privacy Policy',
                 'content_ar' => '<p>هذه سياسة الخصوصية التجريبية الخاصة بـ Palverse.</p>',
                 'content_en' => '<p>This is the demo privacy policy for Palverse.</p>',
+                'meta' => null,
             ],
             [
                 'slug' => 'terms',
+                'page_type' => StaticPageType::Content->value,
                 'title_ar' => 'الشروط والأحكام',
                 'title_en' => 'Terms & Conditions',
                 'content_ar' => '<p>هذه الشروط والأحكام التجريبية الخاصة بـ Palverse.</p>',
                 'content_en' => '<p>These are the demo terms and conditions for Palverse.</p>',
+                'meta' => null,
             ],
             [
                 'slug' => 'contact',
+                'page_type' => StaticPageType::Contact->value,
                 'title_ar' => 'تواصل معنا',
                 'title_en' => 'Contact Us',
                 'content_ar' => '<p>يمكنك التواصل معنا عبر البريد الإلكتروني أو الهاتف.</p>',
                 'content_en' => '<p>You can contact us via email or phone.</p>',
+                'meta' => StaticPageMeta::defaultContactMeta(),
             ],
         ];
 
@@ -77,10 +87,14 @@ class DemoContentSeeder extends Seeder
             StaticPage::updateOrCreate(
                 ['slug' => $page['slug']],
                 [
+                    'page_type' => $page['page_type'],
                     'title_ar' => $page['title_ar'],
                     'title_en' => $page['title_en'],
                     'content_ar' => $page['content_ar'],
                     'content_en' => $page['content_en'],
+                    'meta' => $page['meta'],
+                    'is_published' => true,
+                    'published_at' => now(),
                 ]
             );
         }

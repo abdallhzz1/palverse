@@ -1089,7 +1089,7 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **URL**: `/api/v1/pages`
 *   **Purpose**: Get published static page summaries.
 *   **Actor**: Public Visitor
-*   **Success Response (HTTP 200)**: returns list of slug, title, and excerpt.
+*   **Success Response (HTTP 200)**: returns list of slug, page_type, title, excerpt, and meta summary fields.
 
 ### PUB-23: Get Static Page Detail (Public)
 *   **Endpoint ID**: PUB-23
@@ -1097,7 +1097,7 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **URL**: `/api/v1/pages/{slug}`
 *   **Purpose**: Get detailed content of a published page.
 *   **Actor**: Public Visitor
-*   **Success Response (HTTP 200)**: returns full page details.
+*   **Success Response (HTTP 200)**: returns full page details including `page_type` and `meta` (contact fields when `page_type=contact`).
 
 ### PUB-24: Get FAQs (Public)
 *   **Endpoint ID**: PUB-24
@@ -1127,7 +1127,7 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **Endpoint ID**: ADM-51
 *   **HTTP Method**: `POST`
 *   **URL**: `/api/v1/admin/pages`
-*   **Purpose**: Create a new static page with sanitized content.
+*   **Purpose**: Create a new static page with sanitized content. Supports `page_type` (`content`|`contact`) and allowlisted `meta` keys for contact layout fields.
 *   **Actor**: Administrator
 *   **Success Response (HTTP 201)**: returns created page.
 
@@ -1143,7 +1143,7 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
 *   **Endpoint ID**: ADM-53
 *   **HTTP Method**: `PUT`
 *   **URL**: `/api/v1/admin/pages/{publicId}`
-*   **Purpose**: Update details of a static page.
+*   **Purpose**: Update details of a static page. Contact `meta` merges with existing values; unknown meta keys are rejected.
 *   **Actor**: Administrator
 *   **Success Response (HTTP 200)**: returns updated page.
 

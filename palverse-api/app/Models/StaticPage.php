@@ -21,6 +21,7 @@ class StaticPage extends Model
 
     protected $fillable = [
         'slug',
+        'page_type',
         'title_ar',
         'title_en',
         'content_ar',
@@ -34,12 +35,14 @@ class StaticPage extends Model
         'seo_title_en',
         'seo_description_ar',
         'seo_description_en',
+        'meta',
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
         'published_at' => 'datetime',
         'sort_order' => 'integer',
+        'meta' => 'array',
     ];
 
     protected $hidden = [

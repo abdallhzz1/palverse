@@ -3,15 +3,28 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
 
-export function ContactForm() {
+interface ContactFormProps {
+  whatsappNumber?: string | null;
+  formTitle?: string | null;
+  submitLabel?: string | null;
+}
+
+export function ContactForm({
+  whatsappNumber,
+  formTitle,
+  submitLabel,
+}: ContactFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
+  const phone = (whatsappNumber || "972593883932").replace(/[^\d]/g, "");
+  const title = formTitle || "أرسل لنا رسالة";
+  const buttonLabel = submitLabel || "إرسال عبر واتساب";
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const phone = "972593883932";
     const text = `الاسم: ${name}\nالبريد: ${email}\nالموضوع: ${subject}\n\nالرسالة:\n${message}`;
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
@@ -19,7 +32,7 @@ export function ContactForm() {
 
   return (
     <div className="bg-white dark:bg-[#1F2522] rounded-[2rem] shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 md:p-12">
-      <h3 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-6">أرسل لنا رسالة</h3>
+      <h3 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-6">{title}</h3>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -88,7 +101,7 @@ export function ContactForm() {
           type="submit"
           className="mt-2 bg-[#1E7D4E] hover:bg-[#0F3D2E] text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 self-start w-full sm:w-auto"
         >
-          إرسال عبر واتساب
+          {buttonLabel}
           <Send className="w-5 h-5 rotate-180" />
         </button>
       </form>

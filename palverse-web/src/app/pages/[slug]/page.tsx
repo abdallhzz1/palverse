@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { BrandSectionHeading } from "@/components/brand/BrandSectionHeading";
-import { sanitizeHtmlContent } from "@/lib/security/sanitize-html";
+import { CmsPageShell } from "@/components/cms/CmsPageShell";
+import { CmsContentBody } from "@/components/cms/CmsContentBody";
+import { CmsContactPanel } from "@/components/cms/CmsContactPanel";
+import { ContactForm } from "@/components/contact/ContactForm";
+import { serverFetch } from "@/lib/api/server";
 
 interface StaticPageData {
   slug: string;
+  page_type?: "content" | "contact";
   title_ar: string;
   title_en: string | null;
   content_ar: string;
@@ -17,16 +21,14 @@ interface StaticPageData {
   seo_description_en: string | null;
   published_at: string;
   updated_at: string;
+  meta?: Record<string, string | null> | null;
 }
 
 async function fetchPage(slug: string): Promise<StaticPageData | null> {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
   try {
-    const res = await fetch(`${apiBaseUrl}/pages/${slug}`, {
+    const json = await serverFetch<{ data: StaticPageData }>(`/pages/${slug}`, {
       next: { revalidate: 30 },
     });
-    if (!res.ok) return null;
-    const json = await res.json();
     return json?.data ?? null;
   } catch {
     return null;
@@ -69,34 +71,49 @@ export default async function StaticPageRoute({
     notFound();
   }
 
+  const isContact = page.page_type === "contact" || page.slug === "contact" || page.slug === "contact-us";
+
   return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <BrandSectionHeading title={page.title_ar} className="mb-8" />
-
-      <div className="bg-white dark:bg-[#1F2522] rounded-xl shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 min-h-[400px]">
-        {page.content_ar ? (
-          <div
-            className="text-[#1F2522] dark:text-[#EAF3EC] leading-relaxed text-base [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:text-[#0F3D2E] [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:text-[#0F3D2E] [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mb-2 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:mr-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:mr-6 [&_ol]:mb-4 [&_li]:mb-1 [&_a]:text-[#1E7D4E] [&_a]:underline [&_strong]:font-bold [&_strong]:text-[#0F3D2E] dark:[&_strong]:text-[#7FA789]"
-            dir="rtl"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(page.content_ar) }}
-          />
-        ) : (
-          <p className="text-[#7FA789] text-center mt-12">
-            لا يوجد محتوى لهذه الصفحة بعد.
-          </p>
-        )}
-      </div>
-
-      {page.updated_at && (
-        <p className="text-xs text-[#7FA789] mt-4 text-center">
-          آخر تحديث:{" "}
-          {new Date(page.updated_at).toLocaleDateString("ar-SA", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
+    <CmsPageShell
+      title={page.title_ar}
+      subtitle={page.excerpt_ar}
+      eyebrow={page.meta?.hero_eyebrow_ar}
+    >
+      {isContact ? (
+        <div className="max-w-6xl mx-auto space-y-8">
+          {page.content_ar ? (
+            <div className="bg-white dark:bg-[#1F2522] rounded-[2rem] shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 md:p-10">
+              <CmsContentBody html={page.content_ar} />
+            </div>
+          ) : null}
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+            <div className="w-full lg:w-1/3">
+              <CmsContactPanel meta={page.meta} />
+            </div>
+            <div className="w-full lg:w-2/3">
+              <ContactForm
+                whatsappNumber={page.meta?.whatsapp_number}
+                formTitle={page.meta?.form_title_ar}
+                submitLabel={page.meta?.submit_label_ar}
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="max-w-4xl mx-auto bg-white dark:bg-[#1F2522] rounded-[2rem] shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 md:p-12 min-h-[320px]">
+          <CmsContentBody html={page.content_ar} />
+          {page.updated_at ? (
+            <p className="text-xs text-[#7FA789] mt-10 text-center">
+              آخر تحديث:{" "}
+              {new Date(page.updated_at).toLocaleDateString("ar-SA", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          ) : null}
+        </div>
       )}
-    </div>
+    </CmsPageShell>
   );
 }

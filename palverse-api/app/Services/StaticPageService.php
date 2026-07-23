@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Enums\AuditAction;
+use App\Enums\StaticPageType;
 use App\Models\StaticPage;
+use App\Support\StaticPageMeta;
 use Illuminate\Support\Facades\DB;
 
 class StaticPageService
@@ -27,6 +29,21 @@ class StaticPageService
             }
             if (isset($data['content_en'])) {
                 $data['content_en'] = $this->sanitizeHtml($data['content_en']);
+            }
+
+            if (! isset($data['page_type'])) {
+                $data['page_type'] = in_array($data['slug'] ?? '', ['contact', 'contact-us'], true)
+                    ? StaticPageType::Contact->value
+                    : StaticPageType::Content->value;
+            }
+
+            if (($data['page_type'] ?? null) === StaticPageType::Contact->value) {
+                $data['meta'] = array_merge(
+                    StaticPageMeta::defaultContactMeta(),
+                    StaticPageMeta::sanitize($data['meta'] ?? null) ?? []
+                );
+            } elseif (array_key_exists('meta', $data)) {
+                $data['meta'] = StaticPageMeta::sanitize($data['meta']);
             }
 
             $page = StaticPage::create($data);
@@ -59,6 +76,20 @@ class StaticPageService
             }
             if (isset($data['content_en'])) {
                 $data['content_en'] = $this->sanitizeHtml($data['content_en']);
+            }
+
+            if (array_key_exists('meta', $data)) {
+                $incoming = StaticPageMeta::sanitize($data['meta']) ?? [];
+                $pageType = $data['page_type'] ?? $page->page_type;
+                if ($pageType === StaticPageType::Contact->value) {
+                    $data['meta'] = array_merge(
+                        StaticPageMeta::defaultContactMeta(),
+                        is_array($page->meta) ? $page->meta : [],
+                        $incoming
+                    );
+                } else {
+                    $data['meta'] = $incoming === [] ? null : $incoming;
+                }
             }
 
             $oldValues = $page->only(array_keys($data));

@@ -14,6 +14,7 @@ class StaticPageSummaryResource extends JsonResource
     {
         return [
             'slug' => $this->slug,
+            'page_type' => $this->page_type ?? 'content',
             'title_ar' => $this->title_ar,
             'title_en' => $this->title_en,
             'excerpt_ar' => $this->excerpt_ar,
