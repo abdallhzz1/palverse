@@ -12,7 +12,7 @@ interface ContactCmsPage {
 
 async function fetchContactCms(): Promise<ContactCmsPage | null> {
   try {
-    const data = await serverFetch<{ data: ContactCmsPage }>("/pages/contact-us", {
+    const data = await serverFetch<{ data: ContactCmsPage }>("/pages/contact", {
       next: { revalidate: 30 },
     });
     return data?.data ?? null;

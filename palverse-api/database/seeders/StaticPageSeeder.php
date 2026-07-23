@@ -14,7 +14,7 @@ class StaticPageSeeder extends Seeder
     {
         $pages = [
             [
-                'slug' => 'about-us',
+                'slug' => 'about',
                 'title_ar' => 'من نحن',
                 'title_en' => 'About Us',
                 'content_ar' => '# من نحن\\n\\nمرحباً بكم في بالفيرس، دليل الأعمال الفلسطيني الأول.',
@@ -26,7 +26,7 @@ class StaticPageSeeder extends Seeder
                 'sort_order' => 1,
             ],
             [
-                'slug' => 'privacy-policy',
+                'slug' => 'privacy',
                 'title_ar' => 'سياسة الخصوصية',
                 'title_en' => 'Privacy Policy',
                 'content_ar' => '# سياسة الخصوصية\\n\\n> [!IMPORTANT]\\n> سياسة الخصوصية هذه تتطلب مراجعة قانونية نهائية قبل الإنتاج.\\n\\nنحن نحترم خصوصيتك ونلتزم بحمايتها.',
@@ -38,7 +38,7 @@ class StaticPageSeeder extends Seeder
                 'sort_order' => 2,
             ],
             [
-                'slug' => 'terms-and-conditions',
+                'slug' => 'terms',
                 'title_ar' => 'الشروط والأحكام',
                 'title_en' => 'Terms and Conditions',
                 'content_ar' => '# الشروط والأحكام\\n\\n> [!IMPORTANT]\\n> الشروط والأحكام القانونية تتطلب مراجعة قانونية نهائية قبل الإنتاج.\\n\\nباستخدامك للمنصة، فإنك توافق على هذه الشروط.',
@@ -50,7 +50,7 @@ class StaticPageSeeder extends Seeder
                 'sort_order' => 3,
             ],
             [
-                'slug' => 'contact-us',
+                'slug' => 'contact',
                 'title_ar' => 'تواصل معنا',
                 'title_en' => 'Contact Us',
                 'content_ar' => '# تواصل معنا\\n\\nيسعدنا دائماً تواصلكم معنا للاستفسار أو الدعم.',

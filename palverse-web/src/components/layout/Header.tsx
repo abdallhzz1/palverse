@@ -4,6 +4,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 import { AuthNav } from "@/components/auth/AuthNav";
 import { Globe } from "lucide-react";
+import { CMS_PAGE_SLUGS } from "@/lib/cms-pages";
 export function Header() {
   const dict = getDictionary("ar");
 
@@ -37,7 +38,7 @@ export function Header() {
           <Link href="/blog" className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:text-[#1E7D4E] transition-colors">
             المدونة
           </Link>
-          <Link href="/pages/about-us" className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:text-[#1E7D4E] transition-colors">
+          <Link href={`/pages/${CMS_PAGE_SLUGS.about}`} className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:text-[#1E7D4E] transition-colors">
             من نحن
           </Link>
           <Link href="/contact" className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:text-[#1E7D4E] transition-colors">

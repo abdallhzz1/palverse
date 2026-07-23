@@ -38,7 +38,10 @@ class StaticPageController extends Controller
     public function show(string $slug): JsonResponse
     {
         $data = $this->cacheService->rememberPresent('pages', ['slug' => $slug], function () use ($slug) {
-            $page = StaticPage::published()->where('slug', $slug)->first();
+            $page = StaticPage::published()
+                ->whereIn('slug', $this->candidateSlugs($slug))
+                ->first();
+
             if (! $page) {
                 return null;
             }
@@ -59,5 +62,32 @@ class StaticPageController extends Controller
             'data' => $data,
             'meta' => [],
         ]);
+    }
+
+    /**
+     * Accept both short production slugs and longer legacy variants.
+     *
+     * @return list<string>
+     */
+    protected function candidateSlugs(string $slug): array
+    {
+        $aliases = [
+            'about' => 'about-us',
+            'about-us' => 'about',
+            'privacy' => 'privacy-policy',
+            'privacy-policy' => 'privacy',
+            'terms' => 'terms-and-conditions',
+            'terms-and-conditions' => 'terms',
+            'terms-of-service' => 'terms',
+            'contact' => 'contact-us',
+            'contact-us' => 'contact',
+        ];
+
+        $candidates = [$slug];
+        if (isset($aliases[$slug])) {
+            $candidates[] = $aliases[$slug];
+        }
+
+        return array_values(array_unique($candidates));
     }
 }

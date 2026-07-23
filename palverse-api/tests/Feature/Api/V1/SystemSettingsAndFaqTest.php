@@ -261,6 +261,38 @@ class SystemSettingsAndFaqTest extends TestCase
             ->assertJsonPath('data.content_ar', 'ظهرت الآن');
     }
 
+    public function test_public_static_page_slug_aliases_resolve(): void
+    {
+        StaticPage::create([
+            'slug' => 'about',
+            'title_ar' => 'من نحن',
+            'content_ar' => 'محتوى من نحن',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $this->getJson('/api/v1/pages/about-us')
+            ->assertOk()
+            ->assertJsonPath('data.slug', 'about')
+            ->assertJsonPath('data.content_ar', 'محتوى من نحن');
+
+        $this->getJson('/api/v1/pages/about')
+            ->assertOk()
+            ->assertJsonPath('data.slug', 'about');
+
+        StaticPage::create([
+            'slug' => 'privacy-policy',
+            'title_ar' => 'الخصوصية',
+            'content_ar' => 'محتوى الخصوصية',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $this->getJson('/api/v1/pages/privacy')
+            ->assertOk()
+            ->assertJsonPath('data.slug', 'privacy-policy');
+    }
+
     /**
      * Test admin static pages management and sanitation.
      */

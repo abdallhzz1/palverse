@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import Link from "next/link";
 import { usePublicAuth } from "@/contexts/AuthContext";
+import { CMS_PAGE_SLUGS, cmsPageHref } from "@/lib/cms-pages";
 
 interface MoreBottomSheetProps {
   isOpen: boolean;
@@ -36,16 +37,16 @@ export function MoreBottomSheet({ isOpen, onClose }: MoreBottomSheetProps) {
           </div>
 
           <div className="space-y-4">
-            <Link onClick={onClose} href="/pages/about-us" className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
+            <Link onClick={onClose} href={`/pages/${CMS_PAGE_SLUGS.about}`} className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
               من نحن
             </Link>
-            <Link onClick={onClose} href="/pages/privacy-policy" className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
+            <Link onClick={onClose} href={`/pages/${CMS_PAGE_SLUGS.privacy}`} className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
               سياسة الخصوصية
             </Link>
-            <Link onClick={onClose} href="/pages/terms-and-conditions" className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
+            <Link onClick={onClose} href={`/pages/${CMS_PAGE_SLUGS.terms}`} className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
               الشروط والأحكام
             </Link>
-            <Link onClick={onClose} href="/pages/contact-us" className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
+            <Link onClick={onClose} href={cmsPageHref(CMS_PAGE_SLUGS.contact)} className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
               اتصل بنا
             </Link>
             <Link onClick={onClose} href="/faqs" className="block p-4 bg-[#F9FBF9] dark:bg-[#171717] rounded-xl text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 transition-colors">
