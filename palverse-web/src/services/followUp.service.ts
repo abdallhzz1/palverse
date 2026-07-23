@@ -13,9 +13,9 @@ export const followUpService = {
         params.set(key, value);
       }
     });
-    const response = await apiClient.get<{ data: any[]; meta: any; success?: boolean }>(
+    const response = (await apiClient.get(
       `/follow-up/store-requests?${params.toString()}`
-    );
+    )) as { data?: any[]; meta?: any };
     // apiClient already unwraps Axios → JSON body { data, meta }
     return {
       data: Array.isArray(response?.data) ? response.data : [],
@@ -24,16 +24,18 @@ export const followUpService = {
   },
 
   getStoreRequest: async (publicId: string) => {
-    const response = await apiClient.get<{ data: any }>(`/follow-up/store-requests/${publicId}`);
+    const response = (await apiClient.get(`/follow-up/store-requests/${publicId}`)) as {
+      data?: any;
+    };
     // Return the request entity (inner data), not the envelope.
     return response?.data ?? response;
   },
 
   reviewStoreRequest: async (publicId: string, action: string, reason?: string) => {
-    const response = await apiClient.post<{ data: any }>(`/follow-up/store-requests/${publicId}/review`, {
+    const response = (await apiClient.post(`/follow-up/store-requests/${publicId}/review`, {
       action,
       reason,
-    });
+    })) as { data?: any };
     return response?.data ?? response;
   },
 
