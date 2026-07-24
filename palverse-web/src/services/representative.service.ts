@@ -36,7 +36,15 @@ export const RepresentativeService = {
 
   // Zones
   getZones: async (): Promise<{ data: RepresentativeZone[] }> => {
-    return apiClient.get('/representative/zones') as any;
+    const response = (await apiClient.get("/representative/zones")) as
+      | { data: RepresentativeZone[] }
+      | RepresentativeZone[];
+
+    if (Array.isArray(response)) {
+      return { data: response };
+    }
+
+    return { data: Array.isArray(response?.data) ? response.data : [] };
   },
 
   // Store Registration Requests

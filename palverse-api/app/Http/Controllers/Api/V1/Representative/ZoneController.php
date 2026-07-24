@@ -13,10 +13,12 @@ class ZoneController extends Controller
     {
         $assignments = $request->user()->activeZoneAssignments()
             ->with(['zone.city'])
-            ->get();
+            ->get()
+            ->sortBy(fn ($assignment) => $assignment->zone?->name_ar)
+            ->values();
 
         return response()->json([
-            'data' => RepresentativeZoneResource::collection($assignments)
+            'data' => RepresentativeZoneResource::collection($assignments),
         ]);
     }
 }

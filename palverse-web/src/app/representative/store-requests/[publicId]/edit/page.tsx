@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Store, Save, Send, AlertTriangle } from "lucide-react";
 import LocationPicker from "@/components/map/LocationPicker";
+import { RepresentativeZoneSelect } from "@/components/representative/RepresentativeZoneSelect";
 import { RepresentativeService } from "@/services/representative.service";
 import { publicService } from "@/services/public.service";
 import type { RepresentativeZone } from "@/types/representative";
@@ -80,13 +81,14 @@ export default function EditStoreRequestPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    if (name === "zone_public_id") {
-      const selectedZone = zones.find(z => z.zone.public_id === value);
-      if (selectedZone) {
-        setFormData((prev) => ({ ...prev, city_public_id: selectedZone.zone.city.public_id }));
-      }
-    }
+  const handleZoneChange = (zonePublicId: string, cityPublicId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      zone_public_id: zonePublicId,
+      city_public_id: cityPublicId,
+    }));
   };
 
   const handleSaveDraft = async () => {
@@ -146,7 +148,7 @@ export default function EditStoreRequestPage() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-[#171717] rounded-2xl border border-[#EAF3EC] dark:border-[#1F2522] overflow-hidden">
+      <div className="bg-white dark:bg-[#171717] rounded-2xl border border-[#EAF3EC] dark:border-[#1F2522] overflow-visible">
         <div className="p-6 space-y-8">
           
           {/* Section 1: Merchant Details */}
@@ -261,21 +263,13 @@ export default function EditStoreRequestPage() {
               
               <div className="space-y-1 md:col-span-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">المنطقة الجغرافية *</label>
-                <select
-                  name="zone_public_id"
+                <RepresentativeZoneSelect
+                  zones={zones}
                   value={formData.zone_public_id}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-[#252525] focus:ring-2 focus:ring-[#1E7D4E]"
-                  required
-                >
-                  <option value="">-- اختر المنطقة المخصصة --</option>
-                  {zones.map((z) => (
-                    <option key={z.zone.public_id} value={z.zone.public_id}>
-                      {z.zone.name_ar} ({z.zone.city.name_ar})
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-gray-500">تظهر هنا فقط المناطق المخصصة لك.</p>
+                  onChange={handleZoneChange}
+                  disabled={isLoading}
+                />
+                <p className="text-xs text-gray-500">تظهر هنا فقط المناطق المخصصة لك. استخدم البحث أو مرّر داخل القائمة لعرض الباقي.</p>
               </div>
 
               <div className="space-y-1 md:col-span-2">
