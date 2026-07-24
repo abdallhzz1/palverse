@@ -167,3 +167,67 @@ API_BASE_URL=https://api.alfajrhealth.com/api/v1
    ls -la ~/public_html/api/storage
    ```
    لازم يكون مجلد عادي فيه ملفات، مش symlink مكسور.
+
+---
+
+## ز) الإعلانات تظهر محلياً ولا تظهر على Vercel
+
+الواجهة على Vercel تقرأ من **قاعدة بيانات cPanel** عبر `NEXT_PUBLIC_API_BASE_URL` — مو من جهازك المحلي.
+
+افحص أولاً:
+
+```bash
+curl -s https://api.alfajrhealth.com/api/v1/advertisements/banners
+curl -s "https://api.alfajrhealth.com/api/v1/stores?is_featured=true"
+```
+
+إذا `data: []` فالمشكلة في بيانات/تواريخ الإعلان على السيرفر، مش في ستايل الموقع.
+
+### على cPanel Terminal
+
+```bash
+cd ~/repositories/palverse
+git pull origin master
+
+cd ~/repositories/palverse/palverse-api
+php artisan ads:diagnose
+```
+
+العمود `WhyHidden` يوضح السبب: `expired` / `inactive` / `store_not_public` / `missing_banner_image`.
+
+لتمديد كل الإعلانات المفعّلة 30 يوماً من اليوم:
+
+```bash
+php artisan ads:diagnose --extend=30
+php artisan ads:diagnose
+```
+
+ثم حدّث الصفحة على Vercel (Hard refresh). لا تحتاج Redeploy إذا التعديل بيانات فقط.
+
+### شروط ظهور الإعلان على الرئيسية
+
+1. `is_active = 1`
+2. تاريخ اليوم بين `start_date` و `end_date`
+3. المتجر: معتمد + نشط + لديه اشتراك ساري (`publicVisible`)
+4. نوع `banner`: لازم `image_path` وصورة متاحة تحت `/storage/...`
+5. Vercel env:
+   ```text
+   NEXT_PUBLIC_API_BASE_URL=https://api.alfajrhealth.com/api/v1
+   API_BASE_URL=https://api.alfajrhealth.com/api/v1
+   ```
+   ثم Redeploy إذا غيّرت الـ env.
+
+### SQL سريع (phpMyAdmin) بدون أمر Artisan
+
+```sql
+SELECT id, ad_type, is_active, start_date, end_date, image_path, store_id
+FROM store_advertisements
+ORDER BY id DESC;
+
+UPDATE store_advertisements
+SET is_active = 1,
+    start_date = CURDATE(),
+    end_date = DATE_ADD(CURDATE(), INTERVAL 30 DAY);
+```
+
+إذا بقي فارغاً بعد التحديث، غالباً المتجر بدون اشتراك ساري — راجع جدول الاشتراكات أو فعّل اشتراك المتجر من الأدمن.

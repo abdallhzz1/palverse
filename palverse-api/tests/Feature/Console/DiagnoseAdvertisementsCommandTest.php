@@ -1,0 +1,49 @@
+<?php
+
+namespace Tests\Feature\Console;
+
+use App\Models\Store;
+use App\Models\StoreAdvertisement;
+use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class DiagnoseAdvertisementsCommandTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_diagnose_reports_expired_ads_and_extend_refreshes_window(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $creator = User::factory()->create();
+        $store = Store::factory()->create([
+            'status' => 'approved',
+            'is_active' => true,
+        ]);
+
+        StoreAdvertisement::query()->create([
+            'store_id' => $store->id,
+            'ad_type' => 'banner',
+            'is_active' => true,
+            'start_date' => now()->subDays(10)->toDateString(),
+            'end_date' => now()->subDays(2)->toDateString(),
+            'amount_paid' => 50,
+            'notes' => 'expired banner',
+            'image_path' => 'advertisements/test.png',
+            'created_by' => $creator->id,
+        ]);
+
+        $this->artisan('ads:diagnose')
+            ->assertSuccessful();
+
+        $this->artisan('ads:diagnose', ['--extend' => 30])
+            ->assertSuccessful();
+
+        $ad = StoreAdvertisement::query()->first();
+        $this->assertTrue((bool) $ad->is_active);
+        $this->assertSame(now()->toDateString(), $ad->start_date->toDateString());
+        $this->assertSame(now()->addDays(30)->toDateString(), $ad->end_date->toDateString());
+    }
+}
