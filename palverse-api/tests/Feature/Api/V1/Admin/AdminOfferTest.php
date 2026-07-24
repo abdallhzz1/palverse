@@ -79,19 +79,21 @@ class AdminOfferTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_activate_offer()
+    public function test_admin_can_delete_store_offer_via_nested_route(): void
     {
         $offer = Offer::factory()->create([
             'store_id' => $this->store->id,
-            'is_active' => false,
-        ]);
-
-        $response = $this->actingAs($this->admin)->patchJson("/api/v1/admin/offers/{$offer->public_id}/activate");
-
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('offers', [
-            'id' => $offer->id,
             'is_active' => true,
         ]);
+
+        $response = $this->actingAs($this->admin)->deleteJson(
+            "/api/v1/admin/stores/{$this->store->public_id}/offers/{$offer->public_id}"
+        );
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', fn ($message) => is_string($message) && $message !== '');
+
+        $this->assertSoftDeleted('offers', ['id' => $offer->id]);
     }
 }

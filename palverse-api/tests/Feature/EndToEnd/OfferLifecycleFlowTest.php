@@ -93,7 +93,7 @@ class OfferLifecycleFlowTest extends EndToEndTestCase
 
         // 13. Merchant deletes offer.
         $deleteResponse = $this->withToken($merchantToken)->deleteJson("/api/v1/merchant/stores/{$store->public_id}/offers/{$offerId}");
-        $deleteResponse->assertStatus(204);
+        $deleteResponse->assertStatus(200)->assertJsonPath('success', true);
 
         // Verify it's gone
         $merchantListResponse3 = $this->withToken($merchantToken)->getJson("/api/v1/merchant/stores/{$store->public_id}/offers");

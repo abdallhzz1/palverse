@@ -37,9 +37,31 @@ const INITIAL_STATE: OfferFormState = {
   old_price: "",
   currency: "ILS",
   is_active: true,
-  starts_at: "",
-  ends_at: "",
+  starts_at: defaultOfferStart(),
+  ends_at: defaultOfferEnd(),
 };
+
+function defaultOfferStart(): string {
+  const d = new Date();
+  d.setMinutes(0, 0, 0);
+  return toDateTimeLocalValue(d);
+}
+
+function defaultOfferEnd(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  d.setHours(23, 59, 0, 0);
+  return toDateTimeLocalValue(d);
+}
+
+function toDateTimeLocalValue(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${d}T${hh}:${mm}`;
+}
 
 export default function NewOfferPage({ params }: { params: Promise<{ publicId: string }> }) {
   const { publicId } = use(params);

@@ -145,6 +145,12 @@ class OfferController extends Controller
 
         $this->offerService->deleteOffer($offer);
 
-        return response()->json(null, 204);
+        // Always return a JSON body. Empty 204 responses break some BFF/axios clients
+        // and surface as 500/"المورد غير موجود" even though the offer was deleted.
+        return response()->json([
+            'success' => true,
+            'message' => __('Offer deleted successfully.'),
+            'data' => null,
+        ]);
     }
 }

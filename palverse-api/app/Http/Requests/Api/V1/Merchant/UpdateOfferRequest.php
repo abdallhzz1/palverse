@@ -84,10 +84,62 @@ class UpdateOfferRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if ($this->has('currency')) {
-            $this->merge([
-                'currency' => strtoupper($this->currency),
-            ]);
+        $merge = [];
+
+        if ($this->has('currency') && $this->input('currency') !== null) {
+            $merge['currency'] = strtoupper((string) $this->input('currency'));
+        }
+
+        if ($this->has('is_active')) {
+            $raw = $this->input('is_active');
+            if (is_string($raw)) {
+                $merge['is_active'] = in_array(strtolower($raw), ['1', 'true', 'on', 'yes'], true);
+            }
+        }
+
+        foreach (['starts_at', 'ends_at'] as $field) {
+            if (! $this->filled($field)) {
+                continue;
+            }
+
+            $parsed = $this->parseBusinessDateTime((string) $this->input($field), $field === 'ends_at');
+            if ($parsed) {
+                $merge[$field] = $parsed;
+            }
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
+    }
+
+    private function parseBusinessDateTime(string $value, bool $endOfDayIfDateOnly = false): ?string
+    {
+        $value = trim(str_replace('T', ' ', $value));
+        if ($value === '') {
+            return null;
+        }
+
+        $tz = (string) config('palverse.business_timezone', 'Asia/Hebron');
+
+        try {
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+                $carbon = \Illuminate\Support\Carbon::parse($value, $tz);
+                if ($endOfDayIfDateOnly) {
+                    $carbon->endOfDay();
+                } else {
+                    $carbon->startOfDay();
+                }
+            } else {
+                $carbon = \Illuminate\Support\Carbon::parse($value, $tz);
+                if ($endOfDayIfDateOnly && str_ends_with($value, '00:00')) {
+                    $carbon->endOfDay();
+                }
+            }
+
+            return $carbon->utc()->toDateTimeString();
+        } catch (\Throwable) {
+            return null;
         }
     }
 }

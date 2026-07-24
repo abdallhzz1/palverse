@@ -21,7 +21,7 @@ class OfferResource extends JsonResource
         }
 
         $isCurrentlyValid = false;
-        $now = now();
+        $now = \App\Support\BusinessDate::now()->utc();
         if ((! $this->starts_at || $this->starts_at <= $now) && (! $this->ends_at || $this->ends_at >= $now)) {
             $isCurrentlyValid = true;
         }

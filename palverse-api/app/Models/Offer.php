@@ -76,12 +76,14 @@ class Offer extends Model
 
     public function scopeCurrentlyValid(Builder $query): Builder
     {
-        return $query->where(function ($query) {
+        $now = \App\Support\BusinessDate::now()->utc();
+
+        return $query->where(function ($query) use ($now) {
             $query->whereNull('starts_at')
-                ->orWhere('starts_at', '<=', now());
-        })->where(function ($query) {
+                ->orWhere('starts_at', '<=', $now);
+        })->where(function ($query) use ($now) {
             $query->whereNull('ends_at')
-                ->orWhere('ends_at', '>=', now());
+                ->orWhere('ends_at', '>=', $now);
         });
     }
 

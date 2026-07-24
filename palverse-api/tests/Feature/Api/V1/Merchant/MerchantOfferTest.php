@@ -178,7 +178,8 @@ class MerchantOfferTest extends TestCase
 
         $response = $this->actingAs($this->merchant)->deleteJson("/api/v1/merchant/stores/{$this->store->public_id}/offers/{$offer->public_id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
 
         $this->assertSoftDeleted('offers', ['id' => $offer->id]);
         Storage::disk('public')->assertMissing('offers/test.jpg');
