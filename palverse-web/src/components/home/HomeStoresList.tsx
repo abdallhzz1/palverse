@@ -10,22 +10,31 @@ interface HomeStoresListProps {
   bgClass?: string;
 }
 
-export async function HomeStoresList({ title, subtitle, sort = "newest", bgClass = "bg-white dark:bg-[#1F2522]" }: HomeStoresListProps) {
+export async function HomeStoresList({
+  title,
+  subtitle,
+  sort = "newest",
+  bgClass = "bg-white dark:bg-[#1F2522]",
+}: HomeStoresListProps) {
   let stores: any[] = [];
   let error = false;
 
   try {
-    const params: any = { sort: 'relevance' };
-    
-    if (sort === 'featured') {
+    const params: Record<string, string | boolean | number> = {
+      sort: "newest",
+      per_page: 8,
+    };
+
+    if (sort === "featured") {
       params.is_featured = true;
-    } else if (sort === 'newest') {
-      params.sort = 'newest';
     }
 
-    const data = await serverFetch<{ data: any[] }>('/stores', { params, cache: 'no-store' });
-    const items = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
-    stores = items.slice(0, 4); // top 4 for home page row
+    const data = await serverFetch<{ data: any[] }>("/stores", {
+      params,
+      cache: "no-store",
+    });
+    const items = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+    stores = items.slice(0, 4);
   } catch (err) {
     console.error(`Failed to load stores (sort: ${sort}) server-side:`, err);
     error = true;
@@ -45,15 +54,28 @@ export async function HomeStoresList({ title, subtitle, sort = "newest", bgClass
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4 md:gap-6">
           {stores.map((store) => (
             <StoreCard
-              key={store.slug}
+              key={store.slug || store.public_id}
               name={store.name_ar || store.name_en || ""}
               slug={store.slug}
               categoryName={store.category?.name_ar || store.category?.name_en || ""}
-              cityName={store.zone?.city?.name_ar || store.zone?.city?.name_en || ""}
+              cityName={
+                store.city?.name_ar ||
+                store.city?.name_en ||
+                store.zone?.city?.name_ar ||
+                store.zone?.city?.name_en ||
+                ""
+              }
               coverImage={store.cover?.url}
               logoImage={store.logo?.url}
-              averageRating={store.published_reviews_avg_rating ? Number(store.published_reviews_avg_rating) : undefined}
-              ratingsCount={store.published_reviews_count ? Number(store.published_reviews_count) : undefined}
+              averageRating={
+                store.published_reviews_avg_rating
+                  ? Number(store.published_reviews_avg_rating)
+                  : undefined
+              }
+              ratingsCount={
+                store.published_reviews_count ? Number(store.published_reviews_count) : undefined
+              }
+              sponsored={sort === "featured"}
             />
           ))}
         </div>

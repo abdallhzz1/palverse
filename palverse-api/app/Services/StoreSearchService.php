@@ -111,13 +111,27 @@ class StoreSearchService
             $query->whereHas('cover');
         }
 
-        // 7. Featured Filter (Advertised Stores)
+        // 7. Featured Filter (active featured_store advertisements in date window)
         if (isset($filters['is_featured']) && filter_var($filters['is_featured'], FILTER_VALIDATE_BOOLEAN)) {
-            $query->whereHas('advertisements', function ($q) {
-                $q->where('is_active', true)
-                  ->where('start_date', '<=', now()->toDateString())
-                  ->where('end_date', '>=', now()->toDateString());
+            $today = now()->toDateString();
+            $query->whereHas('advertisements', function ($q) use ($today) {
+                $q->where('ad_type', 'featured_store')
+                    ->where('is_active', true)
+                    ->whereDate('start_date', '<=', $today)
+                    ->whereDate('end_date', '>=', $today);
             });
+
+            // Prefer stores with the newest active featured campaign first
+            $query->orderByDesc(
+                \App\Models\StoreAdvertisement::select('created_at')
+                    ->whereColumn('store_advertisements.store_id', 'stores.id')
+                    ->where('ad_type', 'featured_store')
+                    ->where('is_active', true)
+                    ->whereDate('start_date', '<=', $today)
+                    ->whereDate('end_date', '>=', $today)
+                    ->latest('created_at')
+                    ->limit(1)
+            );
         }
 
         // 7. Open Now Filter
@@ -136,59 +150,60 @@ class StoreSearchService
 
         // 8. Sorting
         $sort = $filters['sort'] ?? 'newest';
-        $direction = strtolower($filters['direction'] ?? 'desc');
+        $featuredActive = isset($filters['is_featured']) && filter_var($filters['is_featured'], FILTER_VALIDATE_BOOLEAN);
 
-        if (! in_array($direction, ['asc', 'desc'])) {
-            $direction = 'desc';
-        }
+        if ($featuredActive) {
+            // Ranking by latest featured campaign already applied; secondary by newest store.
+            $query->orderBy('created_at', 'desc');
+        } else {
+            switch ($sort) {
+                case 'oldest':
+                    $query->orderBy('created_at', 'asc');
+                    break;
 
-        switch ($sort) {
-            case 'oldest':
-                $query->orderBy('created_at', 'asc');
-                break;
+                case 'name_ar':
+                    $query->orderBy('name_ar', 'asc');
+                    break;
 
-            case 'name_ar':
-                $query->orderBy('name_ar', 'asc');
-                break;
+                case 'name_en':
+                    $query->orderBy('name_en', 'asc');
+                    break;
 
-            case 'name_en':
-                $query->orderBy('name_en', 'asc');
-                break;
+                case 'offers':
+                    $query->orderBy('active_offers_count', 'desc');
+                    break;
 
-            case 'offers':
-                $query->orderBy('active_offers_count', 'desc');
-                break;
+                case 'relevance':
+                    if (! empty($filters['query'])) {
+                        $textQuery = preg_replace('/\s+/', ' ', trim($filters['query']));
+                        $query->orderByRaw('
+                            CASE 
+                                WHEN name_ar = ? THEN 1
+                                WHEN name_en = ? THEN 1
+                                WHEN name_ar LIKE ? THEN 2
+                                WHEN name_en LIKE ? THEN 2
+                                WHEN name_ar LIKE ? THEN 3
+                                WHEN name_en LIKE ? THEN 3
+                                ELSE 4
+                            END ASC
+                        ', [
+                            $textQuery,
+                            $textQuery,
+                            "{$textQuery}%",
+                            "{$textQuery}%",
+                            "%{$textQuery}%",
+                            "%{$textQuery}%",
+                        ]);
+                    } else {
+                        $query->orderBy('created_at', 'desc');
+                    }
+                    break;
 
-            case 'relevance':
-                if (! empty($filters['query'])) {
-                    $textQuery = preg_replace('/\s+/', ' ', trim($filters['query']));
-                    $query->orderByRaw('
-                        CASE 
-                            WHEN name_ar = ? THEN 1
-                            WHEN name_en = ? THEN 1
-                            WHEN name_ar LIKE ? THEN 2
-                            WHEN name_en LIKE ? THEN 2
-                            WHEN name_ar LIKE ? THEN 3
-                            WHEN name_en LIKE ? THEN 3
-                            ELSE 4
-                        END ASC
-                    ', [
-                        $textQuery,
-                        $textQuery,
-                        "{$textQuery}%",
-                        "{$textQuery}%",
-                        "%{$textQuery}%",
-                        "%{$textQuery}%",
-                    ]);
-                } else {
+                case 'newest':
+                default:
                     $query->orderBy('created_at', 'desc');
-                }
-                break;
-
-            case 'newest':
-            default:
-                $query->orderBy('created_at', 'desc');
-                break;
+                    break;
+            }
         }
 
         // 9. Pagination

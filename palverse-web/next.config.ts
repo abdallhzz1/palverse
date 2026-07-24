@@ -37,6 +37,8 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "127.0.0.1" },
       { protocol: "https", hostname: "*.up.railway.app" },
       { protocol: "https", hostname: "*.vercel.app" },
+      { protocol: "https", hostname: "api.alfajrhealth.com" },
+      { protocol: "https", hostname: "*.alfajrhealth.com" },
     ],
   },
   async headers() {

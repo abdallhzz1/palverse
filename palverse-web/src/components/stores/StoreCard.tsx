@@ -13,6 +13,7 @@ interface StoreCardProps {
   logoImage?: string;
   averageRating?: number;
   ratingsCount?: number;
+  sponsored?: boolean;
 }
 
 export function StoreCard({
@@ -24,6 +25,7 @@ export function StoreCard({
   logoImage,
   averageRating,
   ratingsCount,
+  sponsored = false,
 }: StoreCardProps) {
   const cleanCover =
     typeof coverImage === "string" && coverImage.trim()
@@ -51,6 +53,12 @@ export function StoreCard({
           className="object-cover duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/55 via-transparent to-transparent" />
+
+        {sponsored ? (
+          <div className="absolute top-2 end-2 rounded-lg bg-[#1E7D4E] px-2 py-0.5 text-[10px] font-bold text-white shadow-sm md:text-xs">
+            مميز
+          </div>
+        ) : null}
 
         <div className="absolute bottom-2 start-2">
           {averageRating !== undefined && ratingsCount !== undefined && ratingsCount > 0 ? (
