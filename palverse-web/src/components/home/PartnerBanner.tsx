@@ -26,6 +26,11 @@ export async function PartnerBanner() {
             <h2 className="font-heading text-2xl font-extrabold text-[#0F3D2E] md:text-3xl">
               إعلانات الشركاء
             </h2>
+            {banners.length === 0 ? (
+              <p className="mt-2 max-w-xl text-sm leading-7 text-[#5F7B6A]">
+                لا يوجد بنر ممول نشط الآن. يظهر البنر هنا عندما يكون مفعّلاً وضمن تاريخ الحملة ومعه صورة.
+              </p>
+            ) : null}
           </div>
         </div>
 

@@ -12,13 +12,15 @@ export default function Home() {
   return (
     <div className="flex w-full flex-col bg-[#F5F7F6]">
       <Hero />
-      <HomeCategories />
+      {/* Paid ads stay above browse sections so campaigns are visible without scrolling past categories */}
       <PartnerBanner />
+      <HomeCategories />
       <HomeStoresList
         title={dict.home.featuredStores}
         subtitle="محلات مُبرَزة عبر حملات إعلانية ممولة نشطة"
         sort="featured"
         bgClass="bg-[#F5F7F6]"
+        showWhenEmpty
       />
       <HomeStoresList
         title={dict.home.latestStores}
