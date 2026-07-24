@@ -2,10 +2,48 @@
 
 import { usePublicAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { User, LogIn, Bell, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  User,
+  Bell,
+  Heart,
+  LayoutDashboard,
+  Store,
+  MapPinned,
+  Shield,
+  Briefcase,
+} from "lucide-react";
+import { useEffect, useState, type ComponentType } from "react";
 import { authService } from "@/services/auth.service";
 import { isMerchantRole, isRepresentativeRole } from "@/lib/auth/roles";
+import { cn } from "@/lib/utils";
+
+function PanelIconLink({
+  href,
+  label,
+  icon: Icon,
+  className,
+}: {
+  href: string;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+  className?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      title={label}
+      aria-label={label}
+      className={cn(
+        "inline-flex items-center justify-center rounded-full bg-[#1E7D4E] text-white transition-colors hover:bg-[#0F3D2E]",
+        "h-10 w-10 md:h-auto md:w-auto md:gap-2 md:rounded-full md:px-5 md:py-2.5 md:font-bold",
+        className
+      )}
+    >
+      <Icon className="h-5 w-5 shrink-0" />
+      <span className="hidden md:inline">{label}</span>
+    </Link>
+  );
+}
 
 export function AuthNav() {
   const { user, isAuthenticated, isInitializing } = usePublicAuth();
@@ -13,14 +51,15 @@ export function AuthNav() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      authService.getUnreadNotificationCount()
+      authService
+        .getUnreadNotificationCount()
         .then(setUnreadCount)
         .catch(() => {});
     }
   }, [isAuthenticated]);
 
   if (isInitializing) {
-    return <div className="w-24 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />;
+    return <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100 dark:bg-gray-800 md:w-24 md:rounded-lg" />;
   }
 
   if (isAuthenticated && user) {
@@ -33,70 +72,55 @@ export function AuthNav() {
     const isStaff = isMerchant || isRep || isFollowUp || isAdmin || isExecutive;
 
     return (
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex items-center gap-1.5 md:gap-4">
         {isMerchant && (
-          <Link
-            href="/merchant"
-            className="bg-[#1E7D4E] text-white px-5 py-2 rounded-xl font-bold hover:bg-[#0F3D2E] transition-colors"
-          >
-            لوحة المحل
-          </Link>
+          <PanelIconLink href="/merchant" label="لوحة المحل" icon={Store} />
         )}
         {isRep && (
-          <Link
-            href="/representative"
-            className="flex items-center gap-2 bg-[#1E7D4E] text-white px-5 py-2.5 rounded-full font-bold hover:bg-[#0F3D2E] transition-colors"
-          >
-            لوحة المندوب
-          </Link>
+          <PanelIconLink href="/representative" label="لوحة المندوب" icon={MapPinned} />
         )}
         {isFollowUp && (
-          <Link
-            href="/follow-up"
-            className="flex items-center gap-2 bg-[#1E7D4E] text-white px-5 py-2.5 rounded-full font-bold hover:bg-[#0F3D2E] transition-colors"
-          >
-            لوحة المتابعة
-          </Link>
+          <PanelIconLink href="/follow-up" label="لوحة المتابعة" icon={LayoutDashboard} />
         )}
         {isAdmin && (
-          <Link
+          <PanelIconLink
             href="/admin"
-            className="flex items-center gap-2 bg-[#0F3D2E] text-white px-5 py-2.5 rounded-full font-bold hover:bg-[#1E7D4E] transition-colors"
-          >
-            لوحة الإدارة
-          </Link>
+            label="لوحة الإدارة"
+            icon={Shield}
+            className="bg-[#0F3D2E] hover:bg-[#1E7D4E]"
+          />
         )}
         {isExecutive && (
-          <Link
+          <PanelIconLink
             href="/executive"
-            className="flex items-center gap-2 bg-[#0F3D2E] text-white px-5 py-2.5 rounded-full font-bold hover:bg-[#1E7D4E] transition-colors"
-          >
-            الإدارة التنفيذية
-          </Link>
+            label="الإدارة التنفيذية"
+            icon={Briefcase}
+            className="bg-[#0F3D2E] hover:bg-[#1E7D4E]"
+          />
         )}
 
         {!isStaff && (
           <>
-            <Link 
-              href="/account/favorites" 
-              className="relative p-2 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-full transition-colors hidden md:flex"
+            <Link
+              href="/account/favorites"
+              className="relative hidden rounded-full p-2 text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC] dark:text-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 md:flex"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="h-5 w-5" />
             </Link>
-            <Link 
-              href="/account/notifications" 
-              className="relative p-2 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-full transition-colors hidden md:flex"
+            <Link
+              href="/account/notifications"
+              className="relative hidden rounded-full p-2 text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC] dark:text-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 md:flex"
             >
-              <Bell className="w-5 h-5" />
+              <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-[#1F2522]" />
+                <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-red-500 dark:border-[#1F2522]" />
               )}
             </Link>
-            <Link 
-              href="/account" 
-              className="flex items-center gap-2 bg-[#0F3D2E] text-white px-5 py-2.5 rounded-full font-bold hover:bg-[#1E7D4E] transition-colors"
+            <Link
+              href="/account"
+              className="flex items-center gap-2 rounded-full bg-[#0F3D2E] px-5 py-2.5 font-bold text-white transition-colors hover:bg-[#1E7D4E]"
             >
-              <User className="w-4 h-4" />
+              <User className="h-4 w-4" />
               <span className="hidden md:inline">{user.name.split(" ")[0]}</span>
               <span className="md:hidden">حسابي</span>
             </Link>
