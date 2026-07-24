@@ -25,7 +25,14 @@ export function useStoreSocialLinks(publicId: string) {
   }, [publicId]);
 
   useEffect(() => {
-    fetchLinks();
+    let isMounted = true;
+    const load = async () => {
+      await fetchLinks();
+    };
+    if (isMounted) load();
+    return () => {
+      isMounted = false;
+    };
   }, [fetchLinks]);
 
   const create = async (payload: SocialLinkPayload) => {

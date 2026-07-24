@@ -259,10 +259,10 @@ export const storesService = {
       return response.data;
     }
 
-    const { image, ...rest } = payload;
+    // payload.image is undefined here (no file branch above), so it is dropped during JSON serialization.
     const response = await apiClient.put<unknown, ApiSuccessResponse<StoreOffer>>(
       `${BASE_PATH}/${publicId}/offers/${offerId}`,
-      rest
+      payload
     );
     return response.data;
   },

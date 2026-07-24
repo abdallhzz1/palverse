@@ -99,6 +99,103 @@ class StoreRegistrationRequestWorkflowTest extends TestCase
         ]);
     }
 
+    public function test_approve_copies_optional_profile_extras_onto_store(): void
+    {
+        $days = [];
+        for ($i = 0; $i < 7; $i++) {
+            $days[] = [
+                'day_of_week' => $i,
+                'is_closed' => $i === 5,
+                'periods' => $i === 5 ? [] : [
+                    ['opens_at' => '09:00', 'closes_at' => '17:00'],
+                ],
+            ];
+        }
+
+        $request = StoreRegistrationRequest::create([
+            'public_id' => (string) Str::ulid(),
+            'representative_id' => $this->representative->id,
+            'zone_id' => $this->zone->id,
+            'city_id' => $this->city->id,
+            'category_id' => $this->category->id,
+            'proposed_merchant_name' => 'Merchant With Extras',
+            'proposed_merchant_phone' => '0599000555',
+            'proposed_merchant_email' => 'extras.merchant@palverse.demo',
+            'store_name_ar' => 'متجر بالبيانات الإضافية',
+            'phone' => '0599000666',
+            'email' => 'store.extras@palverse.demo',
+            'website' => 'https://example.com',
+            'address_ar' => 'شارع التست',
+            'status' => StoreRequestStatus::SUBMITTED->value,
+            'submitted_at' => now(),
+            'working_hours' => ['days' => $days],
+            'social_links' => [
+                ['platform' => 'facebook', 'url' => 'https://facebook.com/palverse-store', 'username' => null],
+                ['platform' => 'instagram', 'url' => '', 'username' => null],
+            ],
+            'draft_media' => [
+                'logo' => [
+                    'path' => 'store-requests/demo/logo.jpg',
+                    'disk' => 'public',
+                    'original_name' => 'logo.jpg',
+                    'mime_type' => 'image/jpeg',
+                    'file_size' => 1024,
+                ],
+                'cover' => [
+                    'path' => 'store-requests/demo/cover.jpg',
+                    'disk' => 'public',
+                    'original_name' => 'cover.jpg',
+                    'mime_type' => 'image/jpeg',
+                    'file_size' => 2048,
+                ],
+                'gallery' => [
+                    [
+                        'path' => 'store-requests/demo/gallery-1.jpg',
+                        'disk' => 'public',
+                        'original_name' => 'gallery-1.jpg',
+                        'mime_type' => 'image/jpeg',
+                        'file_size' => 512,
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->actingAs($this->admin)->postJson('/api/v1/admin/store-requests/' . $request->public_id . '/review', [
+            'action' => 'approve',
+        ])->assertOk();
+
+        $request->refresh();
+        $store = \App\Models\Store::findOrFail($request->resulting_store_id);
+
+        $this->assertEquals('store.extras@palverse.demo', $store->email);
+        $this->assertEquals('https://example.com', $store->website);
+        $this->assertDatabaseCount('store_working_hours', 7);
+        $this->assertDatabaseHas('store_social_links', [
+            'store_id' => $store->id,
+            'platform' => 'facebook',
+            'url' => 'https://facebook.com/palverse-store',
+        ]);
+        $this->assertDatabaseMissing('store_social_links', [
+            'store_id' => $store->id,
+            'platform' => 'instagram',
+        ]);
+        $this->assertDatabaseHas('store_media', [
+            'store_id' => $store->id,
+            'type' => 'logo',
+            'file_path' => 'store-requests/demo/logo.jpg',
+        ]);
+        $this->assertDatabaseHas('store_media', [
+            'store_id' => $store->id,
+            'type' => 'cover',
+            'file_path' => 'store-requests/demo/cover.jpg',
+        ]);
+        $this->assertDatabaseHas('store_media', [
+            'store_id' => $store->id,
+            'type' => 'gallery',
+            'file_path' => 'store-requests/demo/gallery-1.jpg',
+        ]);
+    }
+
     public function test_representative_cannot_review_requests()
     {
         $request = StoreRegistrationRequest::create([

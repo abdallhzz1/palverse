@@ -7,6 +7,7 @@ import { StoreVisibilityBadge } from "@/components/stores/store-visibility-badge
 import { StoreMediaGallery } from "@/components/stores/store-media-gallery";
 import { StoreWorkingHours } from "@/components/stores/store-working-hours";
 import { StoreActions } from "@/components/stores/store-actions";
+import { StoreDetailNav } from "@/components/stores/store-detail-nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,6 +85,8 @@ export default function StoreDetailsPage({ params }: { params: Promise<{ publicI
           </Link>
         </Button>
       </div>
+
+      <StoreDetailNav publicId={store.public_id} />
 
       {/* Header Card */}
       <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-lg shadow-sm overflow-hidden">

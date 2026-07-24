@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { StoreDetailNav } from "@/components/stores/store-detail-nav";
 import { UpdateAdminStoreRequest } from "@/types/store";
 
 interface StoreEditForm {
@@ -184,6 +185,8 @@ export default function StoreEditPage({ params }: { params: Promise<{ publicId: 
           <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">{store.name_ar}</p>
         </div>
       </div>
+
+      <StoreDetailNav publicId={publicId} />
 
       <form
         onSubmit={handleSubmit}

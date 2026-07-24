@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Store, Save, Send, AlertTriangle, Upload, Trash2, Plus, ImageIcon, Camera } from "lucide-react";
+import { Save, Send, AlertTriangle, Upload, Trash2, Plus, ImageIcon, Camera } from "lucide-react";
 import LocationPicker from "@/components/map/LocationPicker";
 import { RepresentativeZoneSelect } from "@/components/representative/RepresentativeZoneSelect";
 import {

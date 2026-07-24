@@ -25,7 +25,14 @@ export function useStoreWorkingHours(publicId: string) {
   }, [publicId]);
 
   useEffect(() => {
-    fetchHours();
+    let isMounted = true;
+    const load = async () => {
+      await fetchHours();
+    };
+    if (isMounted) load();
+    return () => {
+      isMounted = false;
+    };
   }, [fetchHours]);
 
   const save = async (nextHours: WorkingHours) => {

@@ -70,4 +70,25 @@ class FollowUpStoreManagementTest extends TestCase
 
         $this->assertDatabaseCount('store_working_hours', 7);
     }
+
+    public function test_follow_up_can_manage_social_links_and_list_offers(): void
+    {
+        $this->actingAs($this->followUp, 'sanctum')
+            ->postJson("/api/v1/follow-up/stores/{$this->store->public_id}/social-links", [
+                'platform' => 'facebook',
+                'url' => 'https://facebook.com/follow-up-store',
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('store_social_links', [
+            'store_id' => $this->store->id,
+            'platform' => 'facebook',
+            'url' => 'https://facebook.com/follow-up-store',
+        ]);
+
+        $this->actingAs($this->followUp, 'sanctum')
+            ->getJson("/api/v1/follow-up/stores/{$this->store->public_id}/offers")
+            ->assertOk()
+            ->assertJsonPath('success', true);
+    }
 }

@@ -31,7 +31,14 @@ export function useStoreOffersList(publicId: string) {
   );
 
   useEffect(() => {
-    fetchOffers(page);
+    let isMounted = true;
+    const load = async () => {
+      await fetchOffers(page);
+    };
+    if (isMounted) load();
+    return () => {
+      isMounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publicId, page]);
 
@@ -58,19 +65,19 @@ export function useStoreOfferDetails(publicId: string, offerId: string) {
   useEffect(() => {
     if (!publicId || !offerId) return;
     let isMounted = true;
-    setIsLoading(true);
-    setError(null);
-    storesService
-      .getOffer(publicId, offerId)
-      .then((data) => {
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await storesService.getOffer(publicId, offerId);
         if (isMounted) setOffer(data);
-      })
-      .catch((err) => {
+      } catch (err) {
         if (isMounted) setError(normalizeApiError(err));
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) setIsLoading(false);
-      });
+      }
+    };
+    load();
     return () => {
       isMounted = false;
     };

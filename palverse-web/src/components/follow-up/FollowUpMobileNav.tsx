@@ -27,6 +27,7 @@ export function FollowUpMobileNav() {
 
   const menuItems = [
     { href: "/follow-up", label: "نظرة عامة", icon: LayoutDashboard },
+    { href: "/follow-up/stores", label: "المحلات", icon: Store },
     { href: "/follow-up/store-requests", label: "طلبات المحلات", icon: Store },
     { href: "/follow-up/renewals", label: "التجديدات", icon: RefreshCcw },
     { href: "/follow-up/unpaid", label: "غير المسددين", icon: CreditCard },

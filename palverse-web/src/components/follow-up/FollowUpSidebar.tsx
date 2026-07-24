@@ -29,6 +29,7 @@ export function FollowUpSidebar() {
 
   const menuItems = [
     { href: "/follow-up", label: "نظرة عامة", icon: LayoutDashboard },
+    { href: "/follow-up/stores", label: "المحلات", icon: Store },
     { href: "/follow-up/store-requests", label: "طلبات المحلات", icon: Store },
     { href: "/follow-up/join-requests", label: "طلبات الانضمام", icon: Store },
     { href: "/follow-up/receipts", label: "سندات القبض", icon: Banknote },
