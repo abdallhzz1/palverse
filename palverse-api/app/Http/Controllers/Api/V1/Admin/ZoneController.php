@@ -30,15 +30,14 @@ class ZoneController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم جلب المناطق بنجاح.',
-            'data' => ZoneResource::collection($zones),
+            'data' => ZoneResource::collection($zones)->resolve(),
             'meta' => [
-                'pagination' => [
-                    'total' => $zones->total(),
-                    'count' => $zones->count(),
-                    'per_page' => $zones->perPage(),
-                    'current_page' => $zones->currentPage(),
-                    'total_pages' => $zones->lastPage(),
-                ],
+                'current_page' => $zones->currentPage(),
+                'last_page' => $zones->lastPage(),
+                'per_page' => $zones->perPage(),
+                'total' => $zones->total(),
+                'from' => $zones->firstItem(),
+                'to' => $zones->lastItem(),
             ],
         ]);
     }

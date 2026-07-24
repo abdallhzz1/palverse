@@ -5,7 +5,7 @@ import { normalizeApiError, NormalizedApiError } from "@/lib/api/error";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-export function useZonesList(initialParams: ZonesListParams = { page: 1, per_page: 15 }, syncUrl: boolean = true) {
+export function useZonesList(initialParams: ZonesListParams = { page: 1, per_page: 50 }, syncUrl: boolean = true) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

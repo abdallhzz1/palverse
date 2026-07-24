@@ -64,6 +64,13 @@ export function ZonesList() {
         </Button>
       </div>
 
+      {!isLoading && data?.meta?.total != null && (
+        <p className="text-sm text-muted-foreground">
+          إجمالي المناطق: {data.meta.total}
+          {params.city ? " (بعد التصفية)" : ""}
+        </p>
+      )}
+
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>

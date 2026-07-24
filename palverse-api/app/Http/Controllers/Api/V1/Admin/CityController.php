@@ -27,15 +27,14 @@ class CityController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم جلب المدن بنجاح.',
-            'data' => CityResource::collection($cities),
+            'data' => CityResource::collection($cities)->resolve(),
             'meta' => [
-                'pagination' => [
-                    'total' => $cities->total(),
-                    'count' => $cities->count(),
-                    'per_page' => $cities->perPage(),
-                    'current_page' => $cities->currentPage(),
-                    'total_pages' => $cities->lastPage(),
-                ],
+                'current_page' => $cities->currentPage(),
+                'last_page' => $cities->lastPage(),
+                'per_page' => $cities->perPage(),
+                'total' => $cities->total(),
+                'from' => $cities->firstItem(),
+                'to' => $cities->lastItem(),
             ],
         ]);
     }

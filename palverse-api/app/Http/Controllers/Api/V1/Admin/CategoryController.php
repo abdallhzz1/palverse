@@ -44,15 +44,14 @@ class CategoryController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم جلب التصنيفات بنجاح.',
-            'data' => CategoryResource::collection($categories),
+            'data' => CategoryResource::collection($categories)->resolve(),
             'meta' => [
-                'pagination' => [
-                    'total' => $categories->total(),
-                    'count' => $categories->count(),
-                    'per_page' => $categories->perPage(),
-                    'current_page' => $categories->currentPage(),
-                    'total_pages' => $categories->lastPage(),
-                ],
+                'current_page' => $categories->currentPage(),
+                'last_page' => $categories->lastPage(),
+                'per_page' => $categories->perPage(),
+                'total' => $categories->total(),
+                'from' => $categories->firstItem(),
+                'to' => $categories->lastItem(),
             ],
         ]);
     }

@@ -39,7 +39,9 @@ class AdminZoneTest extends TestCase
         $this->actingAsAdmin()
             ->getJson('/api/v1/admin/zones')
             ->assertOk()
-            ->assertJsonPath('success', true);
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.total', 3)
+            ->assertJsonPath('meta.current_page', 1);
     }
 
     public function test_admin_can_filter_zones_by_city(): void
