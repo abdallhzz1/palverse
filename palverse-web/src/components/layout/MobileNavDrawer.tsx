@@ -78,10 +78,19 @@ export function MobileNavDrawer() {
                 {dict.navigation.categories}
               </Link>
               <Link onClick={() => setIsOpen(false)} href="/stores" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                {dict.navigation.stores}
+                المحلات
               </Link>
               <Link onClick={() => setIsOpen(false)} href="/offers" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
                 {dict.navigation.offers}
+              </Link>
+              <Link onClick={() => setIsOpen(false)} href="/join-us" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
+                أضف نشاطك
+              </Link>
+              <Link onClick={() => setIsOpen(false)} href="/blog" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
+                المدونة
+              </Link>
+              <Link onClick={() => setIsOpen(false)} href="/contact" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
+                تواصل معنا
               </Link>
             </nav>
 

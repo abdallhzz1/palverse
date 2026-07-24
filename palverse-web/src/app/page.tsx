@@ -8,25 +8,22 @@ export default function Home() {
   const dict = getDictionary("ar");
 
   return (
-    <div className="flex flex-col w-full bg-[#F5F7F6]">
+    <div className="flex w-full flex-col bg-[#F5F7F6]">
       <Hero />
       <HomeCategories />
-      
+      <HomeStoresList
+        title={dict.home.featuredStores}
+        subtitle="أعمال مختارة بعناية لتبدأ منها"
+        sort="featured"
+        bgClass="bg-white"
+      />
+      <HomeStoresList
+        title={dict.home.latestStores}
+        subtitle="أحدث الانضمامات إلى الدليل"
+        sort="newest"
+        bgClass="bg-[#F5F7F6]"
+      />
       <PartnerBanner />
-
-      {/* Featured Stores */}
-      <HomeStoresList 
-        title={dict.home.featuredStores} 
-        sort="featured" 
-        bgClass="bg-transparent"
-      />
-      
-      {/* Latest Stores */}
-      <HomeStoresList 
-        title={dict.home.latestStores} 
-        sort="newest" 
-        bgClass="bg-transparent"
-      />
     </div>
   );
 }

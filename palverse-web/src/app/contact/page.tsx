@@ -44,10 +44,11 @@ export default async function ContactPage() {
         "نحن هنا لمساعدتك! لا تتردد في التواصل معنا لأي استفسار أو اقتراح."
       }
       eyebrow={cms?.meta?.hero_eyebrow_ar}
+      variant="contact"
     >
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-6">
         {cms?.content_ar ? (
-          <div className="bg-white dark:bg-[#1F2522] rounded-[2rem] shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 md:p-10">
+          <div className="bg-white rounded-[2rem] border border-[#EAF3EC] shadow-[0_1px_3px_rgba(15,61,46,0.04)] p-8 md:p-10">
             <CmsContentBody html={cms.content_ar} />
           </div>
         ) : null}

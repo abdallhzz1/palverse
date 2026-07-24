@@ -12,6 +12,7 @@ import { RatingSummary } from "@/components/reviews/RatingSummary";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { ReviewList } from "@/components/reviews/ReviewList";
 import { sanitizeExternalUrl } from "@/lib/security/urls";
+import { BRAND_PHOTOS } from "@/lib/brand-photos";
 
 export default async function StoreDetailPage({
   params,
@@ -43,7 +44,7 @@ export default async function StoreDetailPage({
   const category = storeData.category as Record<string, unknown> | undefined;
   const categoryName = (category?.name_ar as string) || (category?.name_en as string) || "فئة";
   
-  const fallbackCover = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNFQUYzRUMiLz48L3N2Zz4=";
+  const fallbackCover = BRAND_PHOTOS.storeFallback;
   
   const coverObj = storeData.cover as Record<string, any> | undefined;
   const cover = coverObj?.url as string | undefined;

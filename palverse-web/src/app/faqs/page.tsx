@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { BrandSectionHeading } from "@/components/brand/BrandSectionHeading";
+import { PublicPageHero } from "@/components/public/PublicPageHero";
+import { EmptyStateArt } from "@/components/public/EmptyStateArt";
 import { FaqAccordion } from "@/components/faqs/FaqAccordion";
+import { BRAND_PHOTOS } from "@/lib/brand-photos";
 
 export const metadata: Metadata = {
   title: "الأسئلة الشائعة | Palverse",
@@ -35,22 +37,30 @@ export default async function FaqsPage() {
   const faqs = await fetchFaqs();
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <BrandSectionHeading
+    <div className="min-h-screen bg-[#F5F7F6]">
+      <PublicPageHero
         title="الأسئلة الشائعة"
-        className="mb-4 text-center"
+        subtitle="إجابات واضحة على أكثر ما يسأل عنه زوار وتجار بالفيرس."
+        imageSrc={BRAND_PHOTOS.faq}
+        imageAlt=""
+        size="page"
+        priority
       />
-      <p className="text-center text-[#7FA789] mb-10">
-        إجابات على أكثر الأسئلة شيوعاً حول المنصة
-      </p>
 
-      {faqs.length === 0 ? (
-        <div className="text-center text-[#7FA789] py-24 border border-dashed border-[#EAF3EC] dark:border-[#0F3D2E] rounded-xl">
-          لا توجد أسئلة شائعة متاحة حالياً
-        </div>
-      ) : (
-        <FaqAccordion faqs={faqs} />
-      )}
+      <section className="public-container relative z-20 -mt-8 max-w-3xl pb-20 md:-mt-10">
+        {faqs.length === 0 ? (
+          <EmptyStateArt
+            title="لا توجد أسئلة شائعة حالياً"
+            description="سنضيف إجابات مفيدة قريباً. يمكنك التواصل معنا لأي استفسار."
+            actionHref="/contact"
+            actionLabel="تواصل معنا"
+          />
+        ) : (
+          <div className="rounded-[1.75rem] border border-[#EAF3EC] bg-white p-4 shadow-[0_1px_3px_rgba(15,61,46,0.04)] md:p-6">
+            <FaqAccordion faqs={faqs} />
+          </div>
+        )}
+      </section>
     </div>
   );
 }

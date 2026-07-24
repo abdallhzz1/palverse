@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import { StoreListFilters } from "@/components/stores/StoreListFilters";
 import { StoreCard } from "@/components/stores/StoreCard";
 import { serverFetch } from "@/lib/api/server";
-import { IslamicPatternBackground } from "@/components/brand/IslamicPatternBackground";
+import { PublicPageHero } from "@/components/public/PublicPageHero";
+import { EmptyStateArt } from "@/components/public/EmptyStateArt";
+import { BRAND_PHOTOS } from "@/lib/brand-photos";
 import Link from "next/link";
-import { Store, SlidersHorizontal } from "lucide-react";
 
 export const metadata = {
   title: "استكشف المتاجر | بال فيرس",
@@ -49,31 +50,17 @@ export default async function StoresPage(props: {
     <div className="min-h-screen bg-[#F5F7F6]/50 dark:bg-[#111714]">
 
       {/* ── Hero ── */}
-      <section className="relative w-full bg-[#0F3D2E] pt-20 md:pt-28 pb-28 md:pb-40 overflow-hidden">
-        {/* decorative glows */}
-        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-[#1E7D4E]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-[#0a2e1e]/60 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="absolute inset-0 opacity-10 pointer-events-none text-white">
-          <IslamicPatternBackground />
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <span className="inline-flex items-center gap-2 bg-white/10 text-[#EAF3EC] px-5 py-2 rounded-full text-sm font-semibold mb-6 border border-white/20 backdrop-blur-sm">
-            <SlidersHorizontal className="w-4 h-4" />
-            استكشاف المتاجر
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight">
-            اكتشف أفضل الأعمال
-          </h1>
-          <p className="text-[#A8C5B0] text-lg md:text-xl max-w-2xl mx-auto">
-            تصفح أفضل الأعمال والخدمات المتوفرة في جميع المحافظات والمدن الفلسطينية بكل سهولة.
-          </p>
-        </div>
-      </section>
+      <PublicPageHero
+        imageSrc={BRAND_PHOTOS.stores}
+        imageAlt="شارع تجاري فلسطيني بواجهات متاجر متنوعة"
+        title="اكتشف أفضل الأعمال"
+        subtitle="تصفح أفضل الأعمال والخدمات المتوفرة في جميع المحافظات والمدن الفلسطينية بكل سهولة."
+        size="page"
+        priority
+      />
 
       {/* ── Main Content ── */}
-      <section className="container mx-auto px-4 -mt-14 md:-mt-16 relative z-20 pb-28">
+      <section className="public-container relative z-20 -mt-10 pb-28 md:-mt-14">
 
         {/* Filter Bar */}
         <Suspense
@@ -100,22 +87,16 @@ export default async function StoresPage(props: {
         {/* Grid / Empty / Error */}
         <div className="w-full">
           {error ? (
-            <div className="text-center py-24 bg-white dark:bg-[#1F2522] shadow-sm text-red-600 rounded-3xl border border-red-100 dark:border-red-900/30 max-w-3xl mx-auto">
+            <div className="public-card text-center py-24 text-red-600 border-red-100 dark:border-red-900/30 max-w-3xl mx-auto">
               <p className="font-bold text-lg">عذراً، حدث خطأ أثناء جلب المتاجر.</p>
               <p className="text-sm mt-2 text-red-400">يرجى المحاولة مرة أخرى لاحقاً.</p>
             </div>
           ) : stores.length === 0 ? (
-            <div className="text-center py-24 bg-white dark:bg-[#1F2522] shadow-sm rounded-3xl border border-dashed border-gray-200 dark:border-gray-700 flex flex-col items-center max-w-3xl mx-auto">
-              <div className="w-20 h-20 bg-[#EAF3EC] dark:bg-[#0F3D2E]/30 rounded-full flex items-center justify-center mb-6">
-                <Store className="w-10 h-10 text-[#7FA789]" />
-              </div>
-              <p className="font-bold text-xl text-[#0F3D2E] dark:text-[#EAF3EC] mb-3">
-                لا توجد نتائج مطابقة
-              </p>
-              <p className="text-[#7FA789] text-sm max-w-sm">
-                جرّب البحث بكلمات مختلفة أو تغيير إعدادات الفلترة.
-              </p>
-            </div>
+            <EmptyStateArt
+              title="لا توجد نتائج مطابقة"
+              description="جرّب البحث بكلمات مختلفة أو تغيير إعدادات الفلترة."
+              className="max-w-2xl mx-auto"
+            />
           ) : (
             <>
               {/* ✦ 2-col on mobile, 3 on md, 4 on xl */}

@@ -18,68 +18,73 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
   return (
     <ProtectedRoute>
-      <div className="container mx-auto px-4 py-8 lg:py-12 pb-24 lg:pb-12 min-h-screen">
-        <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
-          {/* Sidebar */}
-          <aside className="w-full lg:w-72 shrink-0">
-            <div className="bg-white rounded-[2rem] p-3 shadow-[0_2px_20px_-3px_rgba(0,0,0,0.03)] border border-gray-50 sticky top-24">
-              
-              {/* User Profile Mini Header */}
-              {user && (
-                <div className="p-4 mb-2 flex items-center gap-4 border-b border-gray-50 pb-6 pt-2">
-                  <div className="w-12 h-12 rounded-2xl bg-[#EAF3EC] text-[#1E7D4E] flex items-center justify-center font-bold text-xl shrink-0">
-                    {user.name.charAt(0)}
-                  </div>
-                  <div className="flex flex-col overflow-hidden">
-                    <span className="font-bold text-[#0F3D2E] truncate">{user.name}</span>
-                    <span className="text-xs text-[#7FA789] truncate">{user.email}</span>
-                  </div>
-                </div>
-              )}
+      <div className="min-h-screen bg-[#F5F7F6] pb-24 lg:pb-12">
+        <div className="public-container py-8 lg:py-12">
+          <div className="mb-8">
+            <p className="text-sm font-bold text-[#1E7D4E]">حسابك</p>
+            <h1 className="mt-1 font-heading text-2xl font-extrabold text-[#0F3D2E] md:text-3xl">
+              إعدادات الزائر
+            </h1>
+          </div>
 
-              <nav className="space-y-1.5 px-1">
-                {navigation.map((item) => {
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`flex items-center justify-between px-4 py-3.5 rounded-2xl font-bold transition-all ${
-                        isActive
-                          ? "bg-[#EAF3EC]/60 text-[#1E7D4E]"
-                          : "text-gray-500 hover:bg-gray-50 hover:text-[#0F3D2E]"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <item.icon className={`w-5 h-5 ${isActive ? "text-[#1E7D4E]" : "text-gray-400"}`} />
-                        {item.name}
-                      </div>
-                      {isActive && <ChevronLeft className="w-4 h-4 text-[#1E7D4E]" />}
-                    </Link>
-                  );
-                })}
-                
-                <hr className="my-4 border-gray-50" />
-                
-                <button
-                  onClick={() => logout()}
-                  className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl font-bold text-red-500 hover:bg-red-50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <LogOut className="w-5 h-5 text-red-400" />
-                    تسجيل الخروج
+          <div className="flex flex-col gap-8 lg:flex-row">
+            <aside className="w-full shrink-0 lg:w-72">
+              <div className="sticky top-24 rounded-[1.75rem] border border-[#EAF3EC] bg-white p-3">
+                {user && (
+                  <div className="mb-2 flex items-center gap-4 border-b border-[#EAF3EC] p-4 pb-6 pt-2">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#EAF3EC] text-xl font-bold text-[#1E7D4E]">
+                      {user.name.charAt(0)}
+                    </div>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="truncate font-bold text-[#0F3D2E]">{user.name}</span>
+                      <span className="truncate text-xs text-[#7FA789]">{user.email}</span>
+                    </div>
                   </div>
-                </button>
-              </nav>
-            </div>
-          </aside>
+                )}
 
-          {/* Main Content */}
-          <main className="flex-1">
-            <div className="bg-white rounded-[2rem] p-6 lg:p-10 shadow-[0_2px_20px_-3px_rgba(0,0,0,0.03)] border border-gray-50 min-h-[500px]">
-              {children}
-            </div>
-          </main>
+                <nav className="space-y-1.5 px-1">
+                  {navigation.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`flex items-center justify-between rounded-2xl px-4 py-3.5 font-bold transition-all ${
+                          isActive
+                            ? "bg-[#EAF3EC] text-[#1E7D4E]"
+                            : "text-[#7FA789] hover:bg-[#F5F7F6] hover:text-[#0F3D2E]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <item.icon className={`h-5 w-5 ${isActive ? "text-[#1E7D4E]" : "text-[#7FA789]"}`} />
+                          {item.name}
+                        </div>
+                        {isActive && <ChevronLeft className="h-4 w-4 text-[#1E7D4E]" />}
+                      </Link>
+                    );
+                  })}
+
+                  <hr className="my-4 border-[#EAF3EC]" />
+
+                  <button
+                    onClick={() => logout()}
+                    className="flex w-full items-center justify-between rounded-2xl px-4 py-3.5 font-bold text-red-500 transition-colors hover:bg-red-50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <LogOut className="h-5 w-5 text-red-400" />
+                      تسجيل الخروج
+                    </div>
+                  </button>
+                </nav>
+              </div>
+            </aside>
+
+            <main className="flex-1">
+              <div className="min-h-[500px] rounded-[1.75rem] border border-[#EAF3EC] bg-white p-6 lg:p-10">
+                {children}
+              </div>
+            </main>
+          </div>
         </div>
       </div>
     </ProtectedRoute>

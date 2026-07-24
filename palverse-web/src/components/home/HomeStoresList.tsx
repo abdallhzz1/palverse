@@ -38,13 +38,13 @@ export async function HomeStoresList({ title, subtitle, sort = "newest", bgClass
   const Icon = sort === "featured" ? <Award className="w-6 h-6" /> : <Clock className="w-6 h-6" />;
 
   return (
-    <section className={`py-8 md:py-16 ${bgClass}`}>
-      <div className="container mx-auto px-4">
+    <section className={`public-section ${bgClass}`}>
+      <div className="public-container">
         <BrandSectionHeading title={title} subtitle={subtitle} icon={Icon} className="mb-8 md:mb-12" />
-        
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-          {stores.map((store, i) => (
-            <StoreCard 
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4 md:gap-6">
+          {stores.map((store) => (
+            <StoreCard
               key={store.slug}
               name={store.name_ar || store.name_en || ""}
               slug={store.slug}

@@ -1,50 +1,36 @@
 # Palverse Public Visual Reference Guide
 
-## Visual Reference Files
-- **Desktop Reference**: `public/brand/references/palverse-web-ui-reference.png`
-- **Mobile Reference**: `public/brand/references/palverse-mobile-ui-reference.png`
+## Brand photos (AI-generated lifestyle)
+Located in `public/brand/photos/`:
 
-## Brand Image Assets
-- `public/brand/illustrations/dome-of-the-rock-watercolor.png`
-- `public/brand/illustrations/al-aqsa-line-art.png`
-- `public/brand/patterns/islamic-geometric-pattern.png`
-- `public/brand/decorations/olive-branch-divider.png`
-- `public/brand/logo/palverse-logo.png`
-- `public/brand/logo/palverse-icon.png`
+| File | Role |
+|------|------|
+| `hero-market-cafe.jpg` | Home hero (full-bleed) |
+| `browse-stores-street.jpg` | `/stores` hero |
+| `browse-categories-shopfronts.jpg` | `/categories` hero |
+| `offers-lifestyle.jpg` | `/offers` hero + offer image fallback |
+| `join-merchant-workspace.jpg` | `/join-us` hero |
+| `join-benefit-atmosphere.jpg` | Join benefits + partner banner fallback |
+| `cms-about-community.jpg` | CMS / about shell |
+| `contact-warm-desk.jpg` | Contact shell |
+| `blog-editorial.jpg` | Blog hero + article cover fallback |
+| `faq-soft-help.jpg` | FAQ header |
+| `auth-register-side.jpg` | Merchant register / auth side art |
+| `empty-search.jpg` | Empty search states |
+| `store-cover-fallback.jpg` | Missing store cover |
 
-## Design Guidelines
+Access via `src/lib/brand-photos.ts` (`BRAND_PHOTOS`).
 
-### Hero Composition
-- **Desktop**: Split layout with large Arabic headline on the right (in RTL) and Dome of the Rock visual on the left.
-- **Mobile**: Stacked layout.
+## Design rules
+- Keep Palverse greens: `#0F3D2E`, `#1E7D4E`, `#7FA789`, `#EAF3EC`, `#F5F7F6`.
+- Home and page heroes use **full-bleed photography** with soft green reading gradients — not inset cards or floating badges.
+- First viewport: brand signal + one headline + one subtitle + one CTA/search group + dominant image.
+- Do **not** use Dome of the Rock / Al-Aqsa as the primary homepage hero.
+- Legacy illustrations under `public/brand/illustrations/` remain available for niche decoration only.
+- Cards only where the user interacts (store, offer, article).
+- Fonts: Cairo (headings) + IBM Plex Sans Arabic (body).
 
-### Navigation Composition
-- **Desktop**: Compact header, logo clearly positioned, primary actions.
-- **Mobile**: Mobile-specific header with hamburger menu and mobile drawer. Bottom navigation bar for primary routes.
-
-### Search Composition
-- Large search bar featuring location and search controls.
-- Categories presented as quick chips below the search area.
-
-### Store & Category Cards
-- **Category Card**: Clean outlined style, muted green borders, square proportions.
-- **Store Card**: Image on top, subtle border/shadow, structured content (name, category, location).
-
-### Mobile Store Details Layout
-- Large top image, floating profile card.
-- Compact action grid for Call, WhatsApp, Location.
-- Sections for Description, Hours, Gallery, and QR block.
-
-### Decorative Asset Usage
-- The Dome of the Rock illustration is the primary hero visual.
-- Al-Aqsa line art is for footers, empty states, and decorative areas.
-- Islamic geometric pattern is used as a subtle background.
-- Olive branch divider is used for taglines and section dividers.
-
-### Responsive Interpretation Rules
-- **Mobile (320px–767px)**: Use mobile UI reference. Strive for compact cards, mobile search, and bottom navigation.
-- **Tablet (768px–1023px)**: Transition state, two-column grids, wrapped chips.
-- **Desktop (1024px+)**: Follow desktop UI reference. Wide containers, horizontal layout.
-
-### Omitted Elements
-- Features like ratings, reviews, distance, or advanced filtering are omitted unless explicitly provided by the API `v1.0.0` to avoid displaying fake data.
+## Shared components
+- `PublicPageHero` — photo heroes
+- `EmptyStateArt` — empty results with lifestyle photo
+- `Header` / `Footer` / `BottomNav` — public chrome

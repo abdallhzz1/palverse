@@ -35,3 +35,48 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .text-tech {
   font-family: var(--font-inter);
 }
+
+/* Public visitor motion */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-ken {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s ease-out both;
+}
+
+.animate-hero-ken {
+  animation: hero-ken 8s ease-out both;
+}
+
+.public-section {
+  @apply py-14 md:py-20;
+}
+
+.public-container {
+  @apply mx-auto w-full max-w-6xl px-4;
+}
+
+.public-card {
+  @apply overflow-hidden rounded-2xl border border-[#EAF3EC] bg-white transition-all duration-300;
+}
+
+.public-card:hover {
+  @apply border-[#1E7D4E]/25 shadow-[0_12px_40px_-16px_rgba(15,61,46,0.18)];
+}

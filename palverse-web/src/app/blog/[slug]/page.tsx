@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Calendar, Eye, FileText } from "lucide-react";
+import { ArrowRight, Calendar, Eye } from "lucide-react";
 import { notFound } from "next/navigation";
+import { BRAND_PHOTOS } from "@/lib/brand-photos";
 
 async function getArticle(slug: string) {
   try {
@@ -45,51 +46,52 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F9FBF9] dark:bg-[#171717]">
-      {article.cover_image && (
-        <div className="relative w-full h-[400px] md:h-[500px]">
-          <Image 
-            src={article.cover_image} 
-            alt={article.title_ar} 
-            fill 
-            className="object-cover"
-            unoptimized 
-          />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-      )}
+    <div className="flex min-h-screen flex-col bg-[#F5F7F6]">
+      <div className="relative h-[320px] w-full md:h-[420px]">
+        <Image
+          src={article.cover_image || BRAND_PHOTOS.blog}
+          alt={article.title_ar}
+          fill
+          className="object-cover"
+          unoptimized={!!article.cover_image}
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/85 via-[#0F3D2E]/25 to-[#0F3D2E]/10" />
+      </div>
 
-      <div className="container mx-auto px-4 -mt-32 relative z-10 pb-20">
-        <div className="max-w-4xl mx-auto">
-          <Link 
-            href="/blog" 
-            className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-6 transition-colors"
+      <div className="container relative z-10 mx-auto -mt-28 px-4 pb-20 md:-mt-32">
+        <div className="mx-auto max-w-4xl">
+          <Link
+            href="/blog"
+            className="mb-6 inline-flex items-center gap-2 text-white/90 transition-colors hover:text-white"
           >
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="h-5 w-5" />
             العودة للمدونة
           </Link>
-          
-          <article className="bg-white dark:bg-[#1F2522] rounded-3xl shadow-xl border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 md:p-12">
-            <h1 className="text-3xl md:text-5xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-6 leading-tight">
+
+          <article className="rounded-[2rem] border border-[#EAF3EC] bg-white p-8 shadow-[0_1px_3px_rgba(15,61,46,0.06)] md:p-12">
+            <h1 className="mb-6 font-heading text-3xl font-bold leading-tight text-[#0F3D2E] md:text-5xl">
               {article.title_ar}
             </h1>
-            
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mb-10 pb-6 border-b border-gray-100 dark:border-gray-800">
+
+            <div className="mb-10 flex flex-wrap items-center gap-6 border-b border-[#EAF3EC] pb-6 text-sm text-[#7FA789]">
               <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
+                <Calendar className="h-5 w-5" />
                 <span>{new Date(article.published_at || article.created_at).toLocaleDateString('ar-SA')}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Eye className="w-5 h-5" />
+                <Eye className="h-5 w-5" />
                 <span>{article.views_count} مشاهدة</span>
               </div>
             </div>
 
-            <div className="prose prose-lg dark:prose-invert max-w-none prose-green">
+            <div className="max-w-none">
               {article.content_ar.split('\n').map((paragraph: string, i: number) => (
-                <p key={i} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  {paragraph}
-                </p>
+                paragraph.trim() ? (
+                  <p key={i} className="mb-4 text-lg leading-loose text-[#1F2522]">
+                    {paragraph}
+                  </p>
+                ) : null
               ))}
             </div>
           </article>

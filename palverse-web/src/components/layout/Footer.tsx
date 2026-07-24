@@ -42,38 +42,44 @@ export async function Footer() {
       : FALLBACK_LINKS;
 
   return (
-    <footer className="bg-[#0F3D2E] text-white pt-6 pb-28 md:py-6 mt-auto">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <BrandLogo className="h-6 md:h-8 w-auto brightness-0 invert" />
+    <footer className="mt-auto border-t border-[#1E7D4E]/30 bg-[#0F3D2E] pb-28 pt-12 text-white md:pb-12 md:pt-14">
+      <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 md:grid-cols-[1.2fr_1fr_1fr]">
+        <div className="space-y-4">
+          <BrandLogo className="h-8 w-auto brightness-0 invert" />
+          <p className="max-w-sm text-sm font-medium leading-relaxed text-[#EAF3EC]/85">
+            دليل الأعمال الفلسطيني — اكتشف المطاعم، المقاهي، والخدمات والمحلات في مدينتك.
+          </p>
         </div>
 
-        <div className="flex items-center gap-4 text-[#7FA789] text-sm md:text-base font-bold">
-          <span className="hidden md:inline">🌿</span>
-          <p>كل فلسطين في دليل واحد</p>
-          <span className="hidden md:inline">🌿</span>
+        <div>
+          <h3 className="mb-4 font-heading text-sm font-bold tracking-wide text-[#7FA789]">استكشف</h3>
+          <div className="flex flex-col gap-2.5 text-sm font-semibold text-[#EAF3EC]">
+            <Link href="/stores" className="transition-colors hover:text-white">المحلات</Link>
+            <Link href="/categories" className="transition-colors hover:text-white">الفئات</Link>
+            <Link href="/offers" className="transition-colors hover:text-white">العروض</Link>
+            <Link href="/join-us" className="transition-colors hover:text-white">أضف نشاطك</Link>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-[#EAF3EC]">
-          {cmsLinks.map((page) => (
-            <Link
-              key={page.slug}
-              href={cmsPageHref(page.slug)}
-              className="hover:text-white transition-colors border-l border-[#1E7D4E] pl-4"
-            >
-              {page.title_ar}
-            </Link>
-          ))}
-          <Link href="/faqs" className="hover:text-white transition-colors border-l border-[#1E7D4E] pl-4">
-            الأسئلة الشائعة
-          </Link>
-          <Link href="/login" className="hover:text-white transition-colors border-l border-[#1E7D4E] pl-4">
-            بوابة الشركاء
-          </Link>
-          <a href="https://www.palverse.ps" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-            www.palverse.ps
-          </a>
+        <div>
+          <h3 className="mb-4 font-heading text-sm font-bold tracking-wide text-[#7FA789]">المزيد</h3>
+          <div className="flex flex-col gap-2.5 text-sm font-semibold text-[#EAF3EC]">
+            {cmsLinks.map((page) => (
+              <Link key={page.slug} href={cmsPageHref(page.slug)} className="transition-colors hover:text-white">
+                {page.title_ar}
+              </Link>
+            ))}
+            <Link href="/faqs" className="transition-colors hover:text-white">الأسئلة الشائعة</Link>
+            <Link href="/login" className="transition-colors hover:text-white">بوابة الشركاء</Link>
+          </div>
         </div>
+      </div>
+
+      <div className="mx-auto mt-10 flex w-full max-w-6xl items-center justify-between border-t border-white/10 px-4 pt-6 text-xs font-medium text-[#7FA789]">
+        <span>© {new Date().getFullYear()} Palverse</span>
+        <a href="https://www.palverse.ps" target="_blank" rel="noreferrer" className="hover:text-white">
+          www.palverse.ps
+        </a>
       </div>
     </footer>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePublicAuth } from "@/contexts/AuthContext";
-import { User, Mail, Phone, Calendar, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
+import { User, Mail, Phone, Calendar, AlertTriangle, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export default function AccountPage() {
@@ -44,20 +44,20 @@ export default function AccountPage() {
       )}
 
       {/* Info Card (Settings Style) */}
-      <div className="bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
-        <div className="p-6 bg-gray-50/50 border-b border-gray-100">
+      <div className="bg-white border border-[#EAF3EC] rounded-[2rem] shadow-[0_1px_3px_rgba(15,61,46,0.04)] overflow-hidden">
+        <div className="p-6 bg-[#F9FBF9] border-b border-[#EAF3EC]">
           <h2 className="font-bold text-[#0F3D2E] flex items-center gap-2">
             <User className="w-5 h-5 text-[#1E7D4E]" />
             المعلومات الأساسية
           </h2>
         </div>
 
-        <div className="flex flex-col divide-y divide-gray-50">
+        <div className="flex flex-col divide-y divide-[#EAF3EC]">
           
           {/* Name Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-gray-50/50 transition-colors">
-            <div className="flex items-center gap-3 text-gray-500">
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-[#F9FBF9] transition-colors">
+            <div className="flex items-center gap-3 text-[#7FA789]">
+              <div className="w-8 h-8 rounded-full bg-[#F5F7F6] flex items-center justify-center">
                 <User className="w-4 h-4" />
               </div>
               <span className="font-medium text-sm">الاسم الكامل</span>
@@ -66,9 +66,9 @@ export default function AccountPage() {
           </div>
 
           {/* Email Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-gray-50/50 transition-colors">
-            <div className="flex items-center gap-3 text-gray-500">
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-[#F9FBF9] transition-colors">
+            <div className="flex items-center gap-3 text-[#7FA789]">
+              <div className="w-8 h-8 rounded-full bg-[#F5F7F6] flex items-center justify-center">
                 <Mail className="w-4 h-4" />
               </div>
               <span className="font-medium text-sm">البريد الإلكتروني</span>
@@ -76,7 +76,7 @@ export default function AccountPage() {
             <div className="flex items-center gap-2">
               <span className="font-bold text-[#0F3D2E] text-lg" dir="ltr">{user.email}</span>
               {user.email_verified_at ? (
-                <div title="موثق" className="bg-green-100/50 p-1 rounded-full text-green-600">
+                <div title="موثق" className="bg-[#EAF3EC] p-1 rounded-full text-[#1E7D4E]">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
               ) : null}
@@ -84,9 +84,9 @@ export default function AccountPage() {
           </div>
 
           {/* Phone Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-gray-50/50 transition-colors">
-            <div className="flex items-center gap-3 text-gray-500">
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-[#F9FBF9] transition-colors">
+            <div className="flex items-center gap-3 text-[#7FA789]">
+              <div className="w-8 h-8 rounded-full bg-[#F5F7F6] flex items-center justify-center">
                 <Phone className="w-4 h-4" />
               </div>
               <span className="font-medium text-sm">رقم الهاتف</span>
@@ -97,9 +97,9 @@ export default function AccountPage() {
           </div>
 
           {/* Date Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-gray-50/50 transition-colors">
-            <div className="flex items-center gap-3 text-gray-500">
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-2 hover:bg-[#F9FBF9] transition-colors">
+            <div className="flex items-center gap-3 text-[#7FA789]">
+              <div className="w-8 h-8 rounded-full bg-[#F5F7F6] flex items-center justify-center">
                 <Calendar className="w-4 h-4" />
               </div>
               <span className="font-medium text-sm">تاريخ الانضمام</span>

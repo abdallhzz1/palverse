@@ -5,6 +5,7 @@ import { CmsContentBody } from "@/components/cms/CmsContentBody";
 import { CmsContactPanel } from "@/components/cms/CmsContactPanel";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { serverFetch } from "@/lib/api/server";
+import { CMS_PAGE_SLUGS } from "@/lib/cms-pages";
 
 interface StaticPageData {
   slug: string;
@@ -71,18 +72,22 @@ export default async function StaticPageRoute({
     notFound();
   }
 
-  const isContact = page.page_type === "contact" || page.slug === "contact" || page.slug === "contact-us";
+  const isContact =
+    page.page_type === "contact" || page.slug === CMS_PAGE_SLUGS.contact || page.slug === "contact-us";
+  const isAbout = page.slug === CMS_PAGE_SLUGS.about || page.slug === "about-us";
+  const variant = isContact ? "contact" : isAbout ? "about" : "default";
 
   return (
     <CmsPageShell
       title={page.title_ar}
       subtitle={page.excerpt_ar}
       eyebrow={page.meta?.hero_eyebrow_ar}
+      variant={variant}
     >
       {isContact ? (
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-6">
           {page.content_ar ? (
-            <div className="bg-white dark:bg-[#1F2522] rounded-[2rem] shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 md:p-10">
+            <div className="bg-white rounded-[2rem] border border-[#EAF3EC] shadow-[0_1px_3px_rgba(15,61,46,0.04)] p-8 md:p-10">
               <CmsContentBody html={page.content_ar} />
             </div>
           ) : null}
@@ -100,10 +105,10 @@ export default async function StaticPageRoute({
           </div>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto bg-white dark:bg-[#1F2522] rounded-[2rem] shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 md:p-12 min-h-[320px]">
+        <div className="max-w-4xl mx-auto bg-white rounded-[2rem] border border-[#EAF3EC] shadow-[0_1px_3px_rgba(15,61,46,0.04)] p-8 md:p-12 min-h-[320px]">
           <CmsContentBody html={page.content_ar} />
           {page.updated_at ? (
-            <p className="text-xs text-[#7FA789] mt-10 text-center">
+            <p className="text-xs text-[#7FA789] mt-10 text-center border-t border-[#EAF3EC] pt-6">
               آخر تحديث:{" "}
               {new Date(page.updated_at).toLocaleDateString("ar-SA", {
                 year: "numeric",

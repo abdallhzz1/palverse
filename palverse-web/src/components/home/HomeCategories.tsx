@@ -1,7 +1,7 @@
 import { CategoryCard } from "@/components/stores/CategoryCard";
 import { serverFetch } from "@/lib/api/server";
 import Link from "next/link";
-import { MoreHorizontal } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export async function HomeCategories() {
   let categories: Record<string, unknown>[] = [];
@@ -21,17 +21,31 @@ export async function HomeCategories() {
   }
 
   return (
-    <section className="relative z-20 -mt-24 bg-transparent py-8 md:-mt-32 md:py-12">
-      <div className="container mx-auto px-4">
+    <section className="public-section bg-[#F5F7F6]">
+      <div className="public-container">
+        <div className="mb-8 flex items-end justify-between gap-4 md:mb-10">
+          <div>
+            <p className="mb-2 text-sm font-bold text-[#1E7D4E]">تصفّح حسب الاهتمام</p>
+            <h2 className="font-heading text-2xl font-extrabold text-[#0F3D2E] md:text-3xl">الفئات</h2>
+          </div>
+          <Link
+            href="/categories"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1E7D4E] transition-colors hover:text-[#0F3D2E]"
+          >
+            عرض الكل
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+        </div>
+
         <div
-          className="overflow-x-auto pb-4 pt-2 md:overflow-visible"
+          className="overflow-x-auto pb-2"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="mx-auto flex w-max max-w-full gap-3 sm:gap-6 md:w-full md:max-w-6xl md:justify-center lg:justify-start">
+          <div className="mx-auto flex w-max max-w-full gap-4 sm:gap-6 md:w-full md:max-w-none md:justify-between">
             {categories.map((cat, i) => (
               <div
                 key={(cat.publicId as string) || (cat.public_id as string) || i}
-                className="w-[72px] flex-none snap-start sm:w-[88px]"
+                className="w-[76px] flex-none sm:w-[96px]"
               >
                 <CategoryCard
                   name={(cat.name_ar as string) || (cat.name_en as string) || "فئة غير معروفة"}
@@ -40,20 +54,6 @@ export async function HomeCategories() {
                 />
               </div>
             ))}
-
-            <div className="w-[72px] flex-none snap-start sm:w-[88px]">
-              <Link
-                href="/categories"
-                className="group flex h-full flex-col items-center justify-start"
-              >
-                <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-50 bg-white text-[#1E7D4E] shadow-sm transition-all group-hover:scale-110 group-hover:bg-emerald-50 group-hover:shadow-md sm:h-16 sm:w-16">
-                  <MoreHorizontal className="h-6 w-6 sm:h-7 sm:w-7" />
-                </div>
-                <h3 className="line-clamp-2 px-1 text-center text-[10px] font-bold leading-tight text-[#0F3D2E] sm:text-xs">
-                  المزيد
-                </h3>
-              </Link>
-            </div>
           </div>
         </div>
       </div>

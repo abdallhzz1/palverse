@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { IslamicPatternBackground } from "@/components/brand/IslamicPatternBackground";
 import { ImagePreviewModal } from "@/components/layout/ImagePreviewModal";
+import { BRAND_PHOTOS } from "@/lib/brand-photos";
 
 interface StoreHeroProps {
   name: string;
@@ -14,39 +14,40 @@ interface StoreHeroProps {
 
 export function StoreHero({ name, categoryName, cleanLogo, cleanCover }: StoreHeroProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const cover =
+    typeof cleanCover === "string" && cleanCover.trim() && !cleanCover.startsWith("data:")
+      ? cleanCover.trim()
+      : BRAND_PHOTOS.storeFallback;
 
   return (
     <>
-      <div className="relative w-full bg-[#0F3D2E]">
-        {/* Cover Image */}
-        <div className="absolute inset-0 z-0">
-          <Image 
-            src={cleanCover} 
-            alt={`${name} Cover`} 
-            fill 
-            sizes="100vw"
-            unoptimized={true}
-            className="object-cover opacity-40 mix-blend-overlay"
-          />
-        </div>
-        <IslamicPatternBackground className="opacity-20 z-0" />
-        
-        {/* Store Header Content */}
-        <div className="relative z-10 container mx-auto px-4 pt-24 pb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-start">
-          <div 
-            className={`w-32 h-32 md:w-40 md:h-40 bg-white rounded-full border-4 border-white shadow-xl overflow-hidden flex items-center justify-center shrink-0 relative ${cleanLogo ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}
+      <div className="relative min-h-[280px] w-full overflow-hidden md:min-h-[360px]">
+        <Image
+          src={cover}
+          alt=""
+          fill
+          sizes="100vw"
+          unoptimized
+          priority
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/90 via-[#0F3D2E]/45 to-[#0F3D2E]/15" />
+
+        <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 pb-10 pt-24 text-center md:flex-row md:items-end md:text-start">
+          <div
+            className={`relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white shadow-xl md:h-36 md:w-36 ${cleanLogo ? "cursor-pointer transition-transform hover:scale-105" : ""}`}
             onClick={() => cleanLogo && setIsPreviewOpen(true)}
             title={cleanLogo ? "اضغط لتكبير الصورة" : ""}
           >
             {cleanLogo ? (
-              <Image src={cleanLogo} alt={name} fill unoptimized={true} className="object-cover" />
+              <Image src={cleanLogo} alt={name} fill unoptimized className="object-cover" />
             ) : (
-              <span className="text-[#0F3D2E] font-bold text-5xl">{(name || "U").charAt(0)}</span>
+              <span className="text-5xl font-bold text-[#0F3D2E]">{(name || "U").charAt(0)}</span>
             )}
           </div>
-          <div className="flex-1 text-white pb-2">
-            <h1 className="text-3xl md:text-5xl font-bold mb-3 drop-shadow-md">{name}</h1>
-            <span className="inline-block px-4 py-1.5 bg-[#1E7D4E]/80 backdrop-blur-md border border-white/20 rounded-full text-sm font-medium shadow-sm">
+          <div className="flex-1 pb-2 text-white">
+            <h1 className="mb-3 font-heading text-3xl font-bold drop-shadow-md md:text-5xl">{name}</h1>
+            <span className="inline-block rounded-full border border-white/20 bg-[#1E7D4E]/85 px-4 py-1.5 text-sm font-medium backdrop-blur-md">
               {categoryName}
             </span>
           </div>

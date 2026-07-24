@@ -61,45 +61,45 @@ export function CmsContactPanel({ meta }: CmsContactPanelProps) {
     `https://maps.google.com/maps?q=${encodeURIComponent(`${data.map_lat},${data.map_lng}`)}&z=16&output=embed`;
 
   return (
-    <div className="bg-white dark:bg-[#1F2522] rounded-[2rem] shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-8 flex flex-col gap-8 h-full">
-      <h3 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-2">
+    <div className="bg-white rounded-[2rem] border border-[#EAF3EC] shadow-[0_1px_3px_rgba(15,61,46,0.04)] p-8 flex flex-col gap-7 h-full">
+      <h3 className="text-2xl font-bold text-[#0F3D2E] mb-1">
         {data.info_card_title_ar}
       </h3>
 
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-[#EAF3EC] dark:bg-[#0F3D2E] rounded-full flex items-center justify-center shrink-0 text-[#1E7D4E]">
-          <Phone className="w-6 h-6" />
+        <div className="w-12 h-12 bg-[#F4FAF6] rounded-2xl flex items-center justify-center shrink-0 text-[#1E7D4E]">
+          <Phone className="w-5 h-5" />
         </div>
         <div>
-          <h4 className="font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-1">{data.phone_label_ar}</h4>
+          <h4 className="font-bold text-[#0F3D2E] mb-1">{data.phone_label_ar}</h4>
           <p className="text-[#7FA789] dir-ltr text-right">{data.phone}</p>
           {data.phone_hint_ar ? <p className="text-[#7FA789] text-sm mt-1">{data.phone_hint_ar}</p> : null}
         </div>
       </div>
 
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-[#EAF3EC] dark:bg-[#0F3D2E] rounded-full flex items-center justify-center shrink-0 text-[#1E7D4E]">
-          <Mail className="w-6 h-6" />
+        <div className="w-12 h-12 bg-[#F4FAF6] rounded-2xl flex items-center justify-center shrink-0 text-[#1E7D4E]">
+          <Mail className="w-5 h-5" />
         </div>
         <div>
-          <h4 className="font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-1">{data.email_label_ar}</h4>
+          <h4 className="font-bold text-[#0F3D2E] mb-1">{data.email_label_ar}</h4>
           <p className="text-[#7FA789]">{data.email}</p>
           {data.email_hint_ar ? <p className="text-[#7FA789] text-sm mt-1">{data.email_hint_ar}</p> : null}
         </div>
       </div>
 
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-[#EAF3EC] dark:bg-[#0F3D2E] rounded-full flex items-center justify-center shrink-0 text-[#1E7D4E]">
-          <MapPin className="w-6 h-6" />
+        <div className="w-12 h-12 bg-[#F4FAF6] rounded-2xl flex items-center justify-center shrink-0 text-[#1E7D4E]">
+          <MapPin className="w-5 h-5" />
         </div>
         <div>
-          <h4 className="font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-1">{data.address_label_ar}</h4>
+          <h4 className="font-bold text-[#0F3D2E] mb-1">{data.address_label_ar}</h4>
           <p className="text-[#7FA789]">{data.address_ar}</p>
           {data.address_line2_ar ? <p className="text-[#7FA789] text-sm mt-1">{data.address_line2_ar}</p> : null}
         </div>
       </div>
 
-      <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-xl mt-auto overflow-hidden relative">
+      <div className="w-full h-48 bg-[#F4FAF6] border border-[#EAF3EC] rounded-2xl mt-auto overflow-hidden relative">
         <iframe
           src={mapSrc}
           width="100%"
