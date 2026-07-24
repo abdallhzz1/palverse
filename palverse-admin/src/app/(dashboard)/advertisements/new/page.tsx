@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { advertisementsService } from "@/services/advertisements.service";
 import { apiClient } from "@/lib/api/client";
 import { normalizeApiError } from "@/lib/api/error";
+import { defaultAdDateRange } from "@/lib/ads/ad-schedule";
 
 export default function NewAdminAdvertisementPage() {
   const router = useRouter();
@@ -28,8 +29,7 @@ export default function NewAdminAdvertisementPage() {
   const [formData, setFormData] = useState({
     store_public_id: "",
     ad_type: "featured_store",
-    start_date: "",
-    end_date: "",
+    ...defaultAdDateRange(30),
     amount_paid: "",
     notes: "",
   });

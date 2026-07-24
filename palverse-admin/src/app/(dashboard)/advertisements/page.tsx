@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { advertisementsService, type StoreAdvertisement } from "@/services/advertisements.service";
 import { normalizeApiError } from "@/lib/api/error";
+import { adScheduleLabel, getAdScheduleStatus } from "@/lib/ads/ad-schedule";
 
 function bannerImageUrl(path?: string | null) {
   if (!path) return null;
@@ -64,7 +65,7 @@ export default function AdminAdvertisementsPage() {
             الإعلانات الممولة
           </h2>
           <p className="mt-1 text-muted-foreground">
-            إدارة إعلانات المتاجر المميزة والبنرات على الصفحة الرئيسية
+            يظهر الإعلان على الرئيسية فقط إذا كان مفعّلاً وتاريخ اليوم ضمن فترة البداية والنهاية.
           </p>
         </div>
         <Button asChild className="bg-[#1E7D4E] hover:bg-[#0F3D2E]">
@@ -103,7 +104,8 @@ export default function AdminAdvertisementsPage() {
                   <th className="px-6 py-4 text-right font-semibold">البداية</th>
                   <th className="px-6 py-4 text-right font-semibold">النهاية</th>
                   <th className="px-6 py-4 text-right font-semibold">المبلغ</th>
-                  <th className="px-6 py-4 text-right font-semibold">الحالة</th>
+                  <th className="px-6 py-4 text-right font-semibold">الظهور</th>
+                  <th className="px-6 py-4 text-right font-semibold">التفعيل</th>
                   <th className="px-6 py-4 text-right font-semibold">إجراءات</th>
                 </tr>
               </thead>
@@ -159,6 +161,17 @@ export default function AdminAdvertisementsPage() {
                       </td>
                       <td className="px-6 py-4 font-bold text-[#1E7D4E]">{ad.amount_paid} ₪</td>
                       <td className="px-6 py-4">
+                        {(() => {
+                          const status = getAdScheduleStatus(ad);
+                          const meta = adScheduleLabel(status);
+                          return (
+                            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${meta.className}`}>
+                              {meta.label}
+                            </span>
+                          );
+                        })()}
+                      </td>
+                      <td className="px-6 py-4">
                         <button
                           type="button"
                           onClick={() => toggleActive(ad)}
@@ -171,7 +184,7 @@ export default function AdminAdvertisementsPage() {
                           {ad.is_active ? (
                             <>
                               <CheckCircle2 className="h-4 w-4" />
-                              نشط
+                              مفعّل
                             </>
                           ) : (
                             <>

@@ -5,6 +5,7 @@ import { Megaphone, Plus, Trash2, CheckCircle2, XCircle, Store } from "lucide-re
 import Link from "next/link";
 import { apiClient } from "@/lib/api/client";
 import { toast } from "sonner";
+import { adScheduleLabel, getAdScheduleStatus } from "@/lib/ads/ad-schedule";
 
 export default function FollowUpAdvertisementsPage() {
   const [advertisements, setAdvertisements] = useState<any[]>([]);
@@ -58,7 +59,9 @@ export default function FollowUpAdvertisementsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">الإعلانات الممولة</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            إدارة إعلانات المتاجر المميزة على الصفحة الرئيسية
+            إدارة إعلانات المتاجر المميزة على الصفحة الرئيسية. يظهر الإعلان فقط إذا كان
+            <span className="font-bold text-[#1E7D4E]"> نشطاً </span>
+            وتاريخ اليوم ضمن فترة البداية والنهاية.
           </p>
         </div>
         <Link
@@ -99,7 +102,8 @@ export default function FollowUpAdvertisementsPage() {
                   <th className="text-right py-4 px-6 font-semibold text-gray-600 dark:text-gray-300">تاريخ البداية</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-600 dark:text-gray-300">تاريخ النهاية</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-600 dark:text-gray-300">المبلغ المدفوع</th>
-                  <th className="text-right py-4 px-6 font-semibold text-gray-600 dark:text-gray-300">الحالة</th>
+                  <th className="text-right py-4 px-6 font-semibold text-gray-600 dark:text-gray-300">الظهور</th>
+                  <th className="text-right py-4 px-6 font-semibold text-gray-600 dark:text-gray-300">التفعيل</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-600 dark:text-gray-300">إجراءات</th>
                 </tr>
               </thead>
@@ -141,6 +145,17 @@ export default function FollowUpAdvertisementsPage() {
                       {ad.amount_paid} ₪
                     </td>
                     <td className="py-4 px-6">
+                      {(() => {
+                        const status = getAdScheduleStatus(ad);
+                        const meta = adScheduleLabel(status);
+                        return (
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${meta.className}`}>
+                            {meta.label}
+                          </span>
+                        );
+                      })()}
+                    </td>
+                    <td className="py-4 px-6">
                       <button
                         onClick={() => toggleActive(ad)}
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
@@ -152,7 +167,7 @@ export default function FollowUpAdvertisementsPage() {
                         {ad.is_active ? (
                           <>
                             <CheckCircle2 className="w-4 h-4" />
-                            نشط
+                            مفعّل
                           </>
                         ) : (
                           <>

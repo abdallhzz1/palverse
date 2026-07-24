@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/api/client";
 import { toast } from "sonner";
 import Image from "next/image";
+import { defaultAdDateRange } from "@/lib/ads/ad-schedule";
 
 export default function NewAdvertisementPage() {
   const router = useRouter();
@@ -17,8 +18,7 @@ export default function NewAdvertisementPage() {
   const [formData, setFormData] = useState({
     store_public_id: "",
     ad_type: "featured_store",
-    start_date: "",
-    end_date: "",
+    ...defaultAdDateRange(30),
     amount_paid: "",
     notes: "",
   });
