@@ -48,30 +48,31 @@ export default function NewAdvertisementPage() {
 
     try {
       const data = new FormData();
-      data.append('store_public_id', formData.store_public_id);
-      data.append('ad_type', formData.ad_type);
-      data.append('start_date', formData.start_date);
-      data.append('end_date', formData.end_date);
-      data.append('amount_paid', formData.amount_paid);
-      if (formData.notes) data.append('notes', formData.notes);
-      
-      if (formData.ad_type === 'banner' && imageFile) {
-        data.append('image', imageFile);
-      } else if (formData.ad_type === 'banner' && !imageFile) {
+      data.append("store_public_id", formData.store_public_id);
+      data.append("ad_type", formData.ad_type);
+      data.append("start_date", formData.start_date);
+      data.append("end_date", formData.end_date);
+      data.append("amount_paid", formData.amount_paid);
+      data.append("notes", formData.notes ?? "");
+
+      if (formData.ad_type === "banner" && imageFile) {
+        data.append("image", imageFile);
+      } else if (formData.ad_type === "banner" && !imageFile) {
         throw new Error("يجب رفع صورة للبنر الإعلاني");
       }
 
-      await apiClient.post('/follow-up/advertisements', data);
-      toast.success("تم إنشاء الإعلان بنجاح");
+      await apiClient.post("/follow-up/advertisements", data, { timeout: 60000 });
+      toast.success("تم إنشاء الإعلان وتفعيله بنجاح");
+      router.push("/follow-up/advertisements");
       router.refresh();
-      router.push('/follow-up/advertisements');
     } catch (error: any) {
       console.error("Full Error:", error);
-      if (error.data && error.data.errors) {
-        const errorMessages = Object.values(error.data.errors).flat().join(" | ");
+      const fieldErrors = error?.data?.errors;
+      if (fieldErrors && typeof fieldErrors === "object") {
+        const errorMessages = Object.values(fieldErrors).flat().join(" | ");
         toast.error(`خطأ في البيانات: ${errorMessages}`);
       } else {
-        toast.error(error.message || "حدث خطأ أثناء حفظ الإعلان");
+        toast.error(error?.message || "حدث خطأ أثناء حفظ الإعلان");
       }
     } finally {
       setIsSubmitting(false);

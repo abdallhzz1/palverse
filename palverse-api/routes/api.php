@@ -354,6 +354,14 @@ Route::prefix('v1')->group(function (): void {
                 Route::delete('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'destroy']);
             });
 
+            // Sponsored advertisements (same Gate as follow-up)
+            Route::prefix('advertisements')->group(function (): void {
+                Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'store']);
+                Route::put('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'update']);
+                Route::delete('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'destroy']);
+            });
+
             // Offers
             Route::prefix('offers')->group(function (): void {
                 Route::get('/', [App\Http\Controllers\Api\V1\Admin\OfferController::class, 'index']);

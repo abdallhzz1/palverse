@@ -27,6 +27,7 @@ import {
   FileText,
   Settings,
   Bell,
+  Megaphone,
 } from "lucide-react";
 
 interface NavItem {
@@ -51,6 +52,7 @@ const navSections: NavSection[] = [
       { href: "/join-requests", icon: UserPlus, label: "طلبات الانضمام المباشرة" },
       { href: "/reviews", icon: Star, label: "التقييمات" },
       { href: "/offers", icon: Percent, label: "العروض" },
+      { href: "/advertisements", icon: Megaphone, label: "الإعلانات الممولة" },
     ],
   },
   {

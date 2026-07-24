@@ -1,0 +1,108 @@
+<?php
+
+namespace Tests\Feature\Api\V1\FollowUp;
+
+use App\Models\Store;
+use App\Models\SubscriptionPlan;
+use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
+use Tests\TestCase;
+
+class AdvertisementManagementTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private User $followUp;
+
+    private User $admin;
+
+    private Store $store;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $this->followUp = User::factory()->create();
+        $this->followUp->assignRole('follow_up');
+
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole('admin');
+
+        $owner = User::factory()->create();
+        $owner->assignRole('merchant');
+
+        $this->store = Store::factory()->create([
+            'owner_id' => $owner->id,
+            'status' => 'approved',
+            'is_active' => true,
+        ]);
+
+        $plan = SubscriptionPlan::factory()->create();
+        $this->store->currentSubscription()->create([
+            'public_id' => (string) Str::ulid(),
+            'subscription_plan_id' => $plan->id,
+            'status' => 'active',
+            'price_snapshot' => 100,
+            'currency_snapshot' => 'ILS',
+            'plan_name_ar_snapshot' => 'خطة تجريبية',
+            'plan_name_en_snapshot' => 'Test Plan',
+            'starts_at' => now()->subDay(),
+            'ends_at' => now()->addYear(),
+        ]);
+    }
+
+    public function test_follow_up_can_create_featured_ad_without_notes(): void
+    {
+        $this->actingAs($this->followUp, 'sanctum')
+            ->postJson('/api/v1/follow-up/advertisements', [
+                'store_public_id' => $this->store->public_id,
+                'ad_type' => 'featured_store',
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays(7)->toDateString(),
+                'amount_paid' => 100,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.is_active', true);
+
+        $this->assertDatabaseHas('store_advertisements', [
+            'store_id' => $this->store->id,
+            'ad_type' => 'featured_store',
+            'is_active' => 1,
+        ]);
+    }
+
+    public function test_admin_can_list_and_create_advertisement(): void
+    {
+        $this->actingAs($this->admin, 'sanctum')
+            ->getJson('/api/v1/admin/advertisements')
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->actingAs($this->admin, 'sanctum')
+            ->postJson('/api/v1/admin/advertisements', [
+                'store_public_id' => $this->store->public_id,
+                'ad_type' => 'featured_store',
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays(5)->toDateString(),
+                'amount_paid' => 75,
+                'notes' => '',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.is_active', true);
+
+        $this->assertDatabaseCount('store_advertisements', 1);
+    }
+
+    public function test_guest_cannot_manage_advertisements(): void
+    {
+        $this->postJson('/api/v1/follow-up/advertisements', [])
+            ->assertUnauthorized();
+
+        $this->getJson('/api/v1/admin/advertisements')
+            ->assertUnauthorized();
+    }
+}

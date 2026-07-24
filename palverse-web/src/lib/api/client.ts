@@ -12,6 +12,16 @@ export const apiClient = axios.create({
   timeout: 10000,
 });
 
+apiClient.interceptors.request.use((config) => {
+  // Let the browser set multipart boundary for FormData uploads.
+  if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+    if (config.headers) {
+      delete (config.headers as Record<string, unknown>)["Content-Type"];
+    }
+  }
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {

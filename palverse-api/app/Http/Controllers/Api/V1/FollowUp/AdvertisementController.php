@@ -78,14 +78,14 @@ class AdvertisementController extends Controller
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'amount_paid' => $validated['amount_paid'],
-            'notes' => $validated['notes'],
+            'notes' => $validated['notes'] ?? null,
             'created_by' => $request->user()->id,
             'is_active' => true,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Advertisement created successfully',
+            'message' => 'تم إنشاء الإعلان وتفعيله بنجاح',
             'data' => $advertisement->load('store'),
         ], 201);
     }
