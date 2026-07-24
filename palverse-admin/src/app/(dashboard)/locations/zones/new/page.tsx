@@ -8,11 +8,10 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Save, AlertTriangle } from "lucide-react";
+import { ArrowRight, Save } from "lucide-react";
 import Link from "next/link";
 import { LocalizedNameFields } from "@/components/taxonomy/localized-name-fields";
 import { CitySelect } from "@/components/taxonomy/city-select";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 
 const zoneSchema = z.object({
@@ -49,9 +48,9 @@ export default function CreateZonePage() {
   const onSubmit = async (data: FormValues) => {
     const payload: CreateZoneRequest = {
       city_public_id: data.city_public_id,
-      name_ar: data.name_ar,
-      name_en: data.name_en || null,
-    } as any; // Cast as any since type still has city_id
+      name_ar: data.name_ar.trim(),
+      name_en: data.name_en?.trim() || null,
+    };
     await create(payload);
   };
 

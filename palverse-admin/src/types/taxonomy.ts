@@ -81,7 +81,7 @@ export interface ZonesListParams {
 export type ZonesListResponse = PaginatedApiSuccessResponse<Zone>;
 
 export interface CreateZoneRequest {
-  city_id: number; // NOTE: Backend requires numeric ID, but frontend can't safely provide it
+  city_public_id: string;
   name_ar: string;
   name_en?: string | null;
 }

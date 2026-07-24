@@ -104,7 +104,11 @@ export function useZoneActions(onSuccess?: () => void) {
       if (onSuccess) onSuccess();
       return data;
     } catch (err) {
-      toast.error(normalizeApiError(err).message);
+      const normalized = normalizeApiError(err);
+      const firstFieldError = normalized.details
+        ? Object.values(normalized.details).flat()[0]
+        : undefined;
+      toast.error(firstFieldError || normalized.message);
       return null;
     } finally {
       setIsSubmitting(false);

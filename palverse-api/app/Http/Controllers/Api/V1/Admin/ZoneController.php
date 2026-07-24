@@ -48,7 +48,7 @@ class ZoneController extends Controller
      */
     public function store(StoreZoneRequest $request): JsonResponse
     {
-        $zone = Zone::create($request->validated());
+        $zone = Zone::create($request->zoneAttributes());
         $zone->load('city');
 
         return response()->json([

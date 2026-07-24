@@ -88,12 +88,39 @@ class AdminZoneTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_create_zone_using_city_public_id(): void
+    {
+        $city = City::factory()->create();
+
+        $response = $this->actingAsAdmin()
+            ->postJson('/api/v1/admin/zones', [
+                'city_public_id' => $city->public_id,
+                'name_ar' => 'البلدة القديمة',
+                'name_en' => 'Old City',
+            ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('data.name_ar', 'البلدة القديمة');
+
+        $this->assertDatabaseHas('zones', [
+            'name_ar' => 'البلدة القديمة',
+            'city_id' => $city->id,
+        ]);
+    }
+
     public function test_create_zone_requires_city_id_and_name_ar(): void
     {
-        $this->actingAsAdmin()
+        $response = $this->actingAsAdmin()
             ->postJson('/api/v1/admin/zones', [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['city_id', 'name_ar']);
+            ->assertJsonValidationErrors(['name_ar']);
+
+        $errors = $response->json('errors');
+        $this->assertTrue(
+            isset($errors['city_id']) || isset($errors['city_public_id']),
+            'Expected a city validation error'
+        );
     }
 
     public function test_create_zone_rejects_invalid_city_id(): void
