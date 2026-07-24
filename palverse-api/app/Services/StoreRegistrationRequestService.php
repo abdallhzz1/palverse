@@ -3,10 +3,13 @@
 namespace App\Services;
 
 use App\Enums\StoreRequestStatus;
+use App\Enums\StoreMediaType;
 use App\Models\StoreRegistrationRequest;
 use App\Models\StoreRequestStatusHistory;
 use App\Models\User;
 use App\Models\Store;
+use App\Models\StoreMedia;
+use App\Models\StoreSocialLink;
 use App\Models\CommissionRecord;
 use App\Enums\StoreStatus;
 use App\Enums\CommissionStatus;
@@ -18,7 +21,8 @@ use Illuminate\Support\Str;
 class StoreRegistrationRequestService
 {
     public function __construct(
-        private NotificationService $notificationService
+        private NotificationService $notificationService,
+        private StoreWorkingHoursService $workingHoursService,
     ) {
     }
     /**
@@ -215,6 +219,8 @@ class StoreRegistrationRequestService
                 'description_en' => $request->description_en,
                 'phone' => $request->phone,
                 'whatsapp' => $request->whatsapp,
+                'email' => $request->email,
+                'website' => $request->website,
                 'address_ar' => $request->address_ar,
                 'address_en' => $request->address_en,
                 'latitude' => $request->latitude,
@@ -231,6 +237,7 @@ class StoreRegistrationRequestService
             $store->approved_by = $admin->id;
             $store->save();
 
+            $this->copyOptionalProfileExtras($request, $store);
             // 3. Update Request
             $request->status = StoreRequestStatus::APPROVED;
             $request->reviewed_at = now();
@@ -321,5 +328,69 @@ class StoreRegistrationRequestService
 
             return $request;
         });
+    }
+
+    private function copyOptionalProfileExtras(StoreRegistrationRequest $request, Store $store): void
+    {
+        if (is_array($request->working_hours) && ! empty($request->working_hours['days'])) {
+            $this->workingHoursService->replaceSchedule($store, $request->working_hours['days']);
+        }
+
+        if (is_array($request->social_links)) {
+            foreach ($request->social_links as $index => $link) {
+                if (empty($link['platform']) || empty($link['url'])) {
+                    continue;
+                }
+
+                StoreSocialLink::create([
+                    'store_id' => $store->id,
+                    'platform' => $link['platform'],
+                    'url' => $link['url'],
+                    'username' => $link['username'] ?? null,
+                    'sort_order' => $index + 1,
+                    'is_active' => true,
+                ]);
+            }
+        }
+
+        $draftMedia = $request->draft_media;
+        if (! is_array($draftMedia)) {
+            return;
+        }
+
+        foreach (['logo' => StoreMediaType::LOGO, 'cover' => StoreMediaType::COVER] as $key => $type) {
+            $file = $draftMedia[$key] ?? null;
+            if (! is_array($file) || empty($file['path'])) {
+                continue;
+            }
+
+            StoreMedia::create([
+                'store_id' => $store->id,
+                'type' => $type->value,
+                'file_path' => $file['path'],
+                'disk' => $file['disk'] ?? 'public',
+                'original_name' => $file['original_name'] ?? basename($file['path']),
+                'mime_type' => $file['mime_type'] ?? null,
+                'file_size' => $file['file_size'] ?? 0,
+                'sort_order' => 0,
+            ]);
+        }
+
+        foreach (array_values($draftMedia['gallery'] ?? []) as $index => $file) {
+            if (! is_array($file) || empty($file['path'])) {
+                continue;
+            }
+
+            StoreMedia::create([
+                'store_id' => $store->id,
+                'type' => StoreMediaType::GALLERY->value,
+                'file_path' => $file['path'],
+                'disk' => $file['disk'] ?? 'public',
+                'original_name' => $file['original_name'] ?? basename($file['path']),
+                'mime_type' => $file['mime_type'] ?? null,
+                'file_size' => $file['file_size'] ?? 0,
+                'sort_order' => $index + 1,
+            ]);
+        }
     }
 }

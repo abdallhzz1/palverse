@@ -12,7 +12,7 @@ class OfferPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('offers.view');
+        return $user->can('offers.view') || $user->hasAnyRole(['admin', 'follow_up']);
     }
 
     /**
@@ -20,19 +20,11 @@ class OfferPolicy
      */
     public function view(User $user, Offer $offer): bool
     {
-        if ($user->can('offers.manage')) {
-            // Admins can manage all, merchants can manage theirs
-            if ($user->hasRole('admin')) {
-                return true;
-            }
+        if ($user->hasAnyRole(['admin', 'follow_up'])) {
+            return true;
         }
 
-        if ($user->can('offers.view')) {
-            if ($user->hasRole('admin')) {
-                return true;
-            }
-
-            // Merchant viewing their own store's offer
+        if ($user->can('offers.view') || $user->can('offers.manage')) {
             return $offer->store->owner_id === $user->id;
         }
 
@@ -44,7 +36,7 @@ class OfferPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('offers.manage');
+        return $user->can('offers.manage') || $user->hasAnyRole(['admin', 'follow_up']);
     }
 
     /**
@@ -52,11 +44,11 @@ class OfferPolicy
      */
     public function update(User $user, Offer $offer): bool
     {
-        if ($user->can('offers.manage')) {
-            if ($user->hasRole('admin')) {
-                return true;
-            }
+        if ($user->hasAnyRole(['admin', 'follow_up'])) {
+            return true;
+        }
 
+        if ($user->can('offers.manage')) {
             return $offer->store->owner_id === $user->id;
         }
 

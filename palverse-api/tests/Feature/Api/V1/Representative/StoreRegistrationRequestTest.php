@@ -102,11 +102,14 @@ class StoreRegistrationRequestTest extends TestCase
 
     public function test_representative_can_submit_draft_request(): void
     {
+        $category = \App\Models\Category::factory()->create();
+
         $request = StoreRegistrationRequest::create([
             'public_id' => (string) Str::ulid(),
             'representative_id' => $this->representative->id,
             'zone_id' => $this->zone->id,
             'city_id' => $this->city->id,
+            'category_id' => $category->id,
             'proposed_merchant_name' => 'تاجر',
             'proposed_merchant_phone' => '059',
             'store_name_ar' => 'متجر',

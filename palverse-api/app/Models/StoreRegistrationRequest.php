@@ -20,6 +20,7 @@ class StoreRegistrationRequest extends Model
         'store_name_ar', 'store_name_en', 'description_ar', 'description_en',
         'phone', 'whatsapp', 'email', 'website', 'address_ar', 'address_en',
         'latitude', 'longitude', 'status', 'representative_notes', 'admin_notes',
+        'working_hours', 'social_links', 'draft_media',
         'submitted_at', 'reviewed_at', 'reviewed_by', 'rejection_reason',
         'resulting_merchant_user_id', 'resulting_store_id',
     ];
@@ -48,6 +49,8 @@ class StoreRegistrationRequest extends Model
             'latitude',
             'longitude',
             'representative_notes',
+            'working_hours',
+            'social_links',
             'zone_id',
             'city_id',
             'category_id',
@@ -65,6 +68,9 @@ class StoreRegistrationRequest extends Model
         'reviewed_at' => 'datetime',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
+        'working_hours' => 'array',
+        'social_links' => 'array',
+        'draft_media' => 'array',
     ];
 
     public function representative(): BelongsTo

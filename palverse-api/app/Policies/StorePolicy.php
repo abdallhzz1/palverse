@@ -20,12 +20,12 @@ class StorePolicy
      */
     public function view(User $user, Store $store): bool
     {
-        if ($user->can('stores.approve') || $user->can('stores.update')) {
-            // Admins with specific permissions can view any store, OR users who own the store
-            if ($user->can('stores.approve')) {
-                return true; // Assume admin with approve permission can view all
-            }
-            // For merchants, they can only view if they own it or if they have global view and it's active/public (though admin panel might differ)
+        if ($user->hasAnyRole(['admin', 'follow_up'])) {
+            return true;
+        }
+
+        if ($user->can('stores.approve')) {
+            return true;
         }
 
         return $store->owner_id == $user->id;
@@ -44,15 +44,11 @@ class StorePolicy
      */
     public function update(User $user, Store $store): bool
     {
-        if ($user->can('stores.update') && $store->owner_id == $user->id) {
+        if ($user->hasAnyRole(['admin', 'follow_up'])) {
             return true;
         }
 
-        // Admins might have an overarching update permission,
-        // but MVP specifically states: "Merchant may view and update only stores they own."
-        // We will strictly check ownership for merchants. Admins might use a different permission bypass,
-        // but let's check if user has admin role or specific admin permission.
-        return $user->hasRole('admin');
+        return $user->can('stores.update') && $store->owner_id == $user->id;
     }
 
     /**

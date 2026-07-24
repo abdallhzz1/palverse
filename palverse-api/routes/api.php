@@ -239,6 +239,12 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/{publicId}', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'show']);
                 Route::put('/{publicId}', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'update']);
                 Route::post('/{publicId}/submit', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestController::class, 'submit']);
+                Route::post('/{publicId}/logo', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestMediaController::class, 'storeLogo']);
+                Route::delete('/{publicId}/logo', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestMediaController::class, 'destroyLogo']);
+                Route::post('/{publicId}/cover', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestMediaController::class, 'storeCover']);
+                Route::delete('/{publicId}/cover', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestMediaController::class, 'destroyCover']);
+                Route::post('/{publicId}/gallery', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestMediaController::class, 'storeGallery']);
+                Route::delete('/{publicId}/gallery/{pathHash}', [\App\Http\Controllers\Api\V1\Representative\StoreRegistrationRequestMediaController::class, 'destroyGalleryItem']);
             });
 
             // Rejection Reports
@@ -332,6 +338,20 @@ Route::prefix('v1')->group(function (): void {
                 Route::post('/{publicId}/gallery', [StoreMediaController::class, 'storeGallery']);
                 Route::delete('/{publicId}/gallery/{mediaPublicId}', [StoreMediaController::class, 'destroyGallery']);
                 Route::patch('/{publicId}/gallery/reorder', [StoreMediaController::class, 'reorderGallery']);
+
+                // Working hours + socials + offers (same as merchant panel)
+                Route::get('/{publicId}/working-hours', [StoreWorkingHoursController::class, 'show']);
+                Route::put('/{publicId}/working-hours', [StoreWorkingHoursController::class, 'update']);
+                Route::get('/{publicId}/social-links', [StoreSocialLinkController::class, 'index']);
+                Route::post('/{publicId}/social-links', [StoreSocialLinkController::class, 'store']);
+                Route::get('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'show']);
+                Route::put('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'update']);
+                Route::delete('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'destroy']);
+                Route::get('/{publicId}/offers', [OfferController::class, 'index']);
+                Route::post('/{publicId}/offers', [OfferController::class, 'store']);
+                Route::get('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'show']);
+                Route::put('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'update']);
+                Route::delete('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'destroy']);
             });
 
             // Offers
@@ -447,6 +467,36 @@ Route::prefix('v1')->group(function (): void {
         ->group(function (): void {
             // Dashboard Summary
             Route::get('/dashboard/summary', [\App\Http\Controllers\Api\V1\FollowUp\DashboardController::class, 'summary']);
+
+            // Live stores (full merchant-parity panel for follow-up staff)
+            Route::prefix('stores')->group(function (): void {
+                Route::get('/', [AdminStoreController::class, 'index']);
+                Route::get('/{publicId}', [AdminStoreController::class, 'show']);
+                Route::put('/{publicId}', [AdminStoreController::class, 'update']);
+                Route::get('/{publicId}/links', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'links']);
+                Route::get('/{publicId}/qr', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'qr']);
+
+                Route::post('/{publicId}/logo', [StoreMediaController::class, 'storeLogo']);
+                Route::delete('/{publicId}/logo', [StoreMediaController::class, 'destroyLogo']);
+                Route::post('/{publicId}/cover', [StoreMediaController::class, 'storeCover']);
+                Route::delete('/{publicId}/cover', [StoreMediaController::class, 'destroyCover']);
+                Route::post('/{publicId}/gallery', [StoreMediaController::class, 'storeGallery']);
+                Route::delete('/{publicId}/gallery/{mediaPublicId}', [StoreMediaController::class, 'destroyGallery']);
+                Route::patch('/{publicId}/gallery/reorder', [StoreMediaController::class, 'reorderGallery']);
+
+                Route::get('/{publicId}/working-hours', [StoreWorkingHoursController::class, 'show']);
+                Route::put('/{publicId}/working-hours', [StoreWorkingHoursController::class, 'update']);
+                Route::get('/{publicId}/social-links', [StoreSocialLinkController::class, 'index']);
+                Route::post('/{publicId}/social-links', [StoreSocialLinkController::class, 'store']);
+                Route::get('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'show']);
+                Route::put('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'update']);
+                Route::delete('/{publicId}/social-links/{socialLinkPublicId}', [StoreSocialLinkController::class, 'destroy']);
+                Route::get('/{publicId}/offers', [OfferController::class, 'index']);
+                Route::post('/{publicId}/offers', [OfferController::class, 'store']);
+                Route::get('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'show']);
+                Route::put('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'update']);
+                Route::delete('/{publicId}/offers/{offerPublicId}', [OfferController::class, 'destroy']);
+            });
 
             // Store Requests (Shared Queue)
             Route::prefix('store-requests')->group(function (): void {

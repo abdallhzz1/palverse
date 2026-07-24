@@ -43,6 +43,25 @@ export interface StoreRegistrationRequest {
   address_en: string | null;
   latitude: number | null;
   longitude: number | null;
+  email?: string | null;
+  website?: string | null;
+  working_hours?: {
+    days: Array<{
+      day_of_week: number;
+      is_closed: boolean;
+      periods: Array<{ opens_at: string; closes_at: string }>;
+    }>;
+  } | null;
+  social_links?: Array<{
+    platform: string;
+    url: string;
+    username?: string | null;
+  }> | null;
+  draft_media?: {
+    logo?: { url?: string; path?: string; path_hash?: string } | null;
+    cover?: { url?: string; path?: string; path_hash?: string } | null;
+    gallery?: Array<{ url?: string; path?: string; path_hash?: string }>;
+  } | null;
   status: StoreRequestStatus;
   status_label_ar: string;
   representative_notes: string | null;

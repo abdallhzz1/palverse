@@ -37,6 +37,17 @@ class CreateStoreRegistrationRequestRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
             'representative_notes' => ['nullable', 'string', 'max:1000'],
+            'working_hours' => ['nullable', 'array'],
+            'working_hours.days' => ['required_with:working_hours', 'array', 'size:7'],
+            'working_hours.days.*.day_of_week' => ['required_with:working_hours', 'integer', 'between:0,6'],
+            'working_hours.days.*.is_closed' => ['required_with:working_hours', 'boolean'],
+            'working_hours.days.*.periods' => ['nullable', 'array'],
+            'working_hours.days.*.periods.*.opens_at' => ['required_with:working_hours.days.*.periods', 'date_format:H:i'],
+            'working_hours.days.*.periods.*.closes_at' => ['required_with:working_hours.days.*.periods', 'date_format:H:i'],
+            'social_links' => ['nullable', 'array', 'max:20'],
+            'social_links.*.platform' => ['required_with:social_links', 'string', 'in:facebook,instagram,tiktok,linkedin,youtube,x,telegram,snapchat,other'],
+            'social_links.*.url' => ['required_with:social_links', 'url', 'max:500'],
+            'social_links.*.username' => ['nullable', 'string', 'max:100'],
         ];
     }
 

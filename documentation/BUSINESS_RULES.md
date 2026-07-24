@@ -13,6 +13,8 @@ Inbound creation paths only:
 2. **Public merchant join request** (submitted → admin/follow-up review → approve creates merchant + store + pending subscription).
    - Public form email is **required** (used later as the merchant login email).
    - On approval, follow-up/admin set password + plan; email comes from the join request (override still allowed if needed).
+3. **Staff live-store management**: Admin and Follow-up can manage an approved store with merchant-panel parity (profile, media, working hours, social links, offers).
+4. **Representative registration intake** may optionally include working hours, social links, and draft media; on approve these are copied onto the created store. Core fields remain required; extras are optional.
 
 Store listing statuses for an existing store:
 1.  **Draft / Pending**: When a store awaits moderation it is not visible to the public.
@@ -61,10 +63,12 @@ stateDiagram-v2
 
 ## 5. Security & Role-Based Access Control (RBAC)
 
-The system distinguishes between three distinct user roles:
-1.  **Admin**: Full access to dashboard parameters, content moderation, category configurations, user management, and manual subscription updates.
-2.  **Merchant**: Can manage only the stores they own. They cannot access other merchants' stores or any administrative controls.
-3.  **Guest / Public**: Can browse stores, search, view offers, and download QR codes without authentication.
+The system distinguishes between these roles:
+1.  **Admin**: Full access including live store panel parity (profile, media, hours, socials, offers), content moderation, and subscriptions.
+2.  **Follow-up**: Operational queue plus the same live store management surface as admin for store content (profile/media/hours/socials/offers). Store approve/reject/activate lifecycle actions remain admin-oriented where policy requires.
+3.  **Merchant**: Can manage only the stores they own.
+4.  **Representative**: Field intake via store-registration requests (optional full profile extras before approval).
+5.  **Guest / Public**: Can browse stores, search, view offers, and download QR codes without authentication.
 
 ---
 

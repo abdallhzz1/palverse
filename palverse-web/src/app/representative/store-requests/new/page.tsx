@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, CheckCircle, Store, X, Save, Send } from "lucide-react";
 import LocationPicker from "@/components/map/LocationPicker";
 import { RepresentativeZoneSelect } from "@/components/representative/RepresentativeZoneSelect";
+import {
+  StoreRequestExtrasSections,
+  type SocialLinkDraft,
+  type WorkingHoursDraft,
+} from "@/components/representative/StoreRequestExtrasSections";
 import { RepresentativeService } from "@/services/representative.service";
 import { publicService } from "@/services/public.service";
 import type { RepresentativeZone } from "@/types/representative";
@@ -36,6 +41,8 @@ export default function NewStoreRequestPage() {
     description_ar: "",
     description_en: "",
   });
+  const [workingHours, setWorkingHours] = useState<WorkingHoursDraft | null>(null);
+  const [socialLinks, setSocialLinks] = useState<SocialLinkDraft[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,11 +80,20 @@ export default function NewStoreRequestPage() {
     setFieldErrors({});
     setIsLoading(true);
     try {
-      // filter out empty strings to prevent validation issues on nullable fields if needed, or let Laravel handle it
-      const payload = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v === "" ? null : v]));
-      
+      const payload = Object.fromEntries(
+        Object.entries(formData).map(([k, v]) => [k, v === "" ? null : v])
+      ) as Record<string, unknown>;
+
+      if (workingHours) {
+        payload.working_hours = workingHours;
+      }
+      const cleanedSocials = socialLinks.filter((l) => l.url.trim());
+      if (cleanedSocials.length > 0) {
+        payload.social_links = cleanedSocials;
+      }
+
       const res = await RepresentativeService.createStoreRequest(payload as any);
-      router.push(`/representative/store-requests/${res.data.public_id}`);
+      router.push(`/representative/store-requests/${res.data.public_id}/edit`);
     } catch (err: any) {
       const errorData = err.data || err.response?.data;
       if (errorData?.errors) {
@@ -177,6 +193,17 @@ export default function NewStoreRequestPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-[#252525] focus:ring-2 focus:ring-[#1E7D4E]"
                   required
+                />
+              </div>
+              <div className="space-y-1 md:col-span-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">اسم المحل بالإنجليزية (اختياري)</label>
+                <input
+                  type="text"
+                  name="store_name_en"
+                  value={formData.store_name_en}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-[#252525] focus:ring-2 focus:ring-[#1E7D4E]"
+                  dir="ltr"
                 />
               </div>
               <div className="space-y-1">
@@ -301,6 +328,18 @@ export default function NewStoreRequestPage() {
               </div>
             </div>
           </section>
+
+          <StoreRequestExtrasSections
+            workingHours={workingHours}
+            onWorkingHoursChange={setWorkingHours}
+            socialLinks={socialLinks}
+            onSocialLinksChange={setSocialLinks}
+            disabled={isLoading}
+          />
+
+          <p className="text-sm text-gray-500 bg-gray-50 dark:bg-[#1A1A1A] rounded-xl p-3">
+            بعد حفظ المسودة ستنتقل لصفحة التعديل حيث يمكنك رفع شعار المحل والغلاف ومعرض الصور (اختياري).
+          </p>
 
         </div>
         <div className="p-6 bg-gray-50 dark:bg-[#1A1A1A] border-t border-[#EAF3EC] dark:border-[#1F2522] flex justify-end gap-3">

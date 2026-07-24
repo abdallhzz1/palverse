@@ -142,3 +142,96 @@ export interface UpdateAdminStoreRequest {
   city_public_id?: string;
   zone_public_id?: string;
 }
+
+// ─── Working Hours ─────────────────────────────────────────────────────────
+
+export interface WorkingPeriod {
+  start: string;
+  end: string;
+}
+
+export interface WorkingDay {
+  is_closed: boolean;
+  periods: WorkingPeriod[];
+}
+
+/** Keyed by day_of_week (0=Sunday ... 6=Saturday), matching the merchant panel shape. */
+export type WorkingHours = Record<string, WorkingDay>;
+
+// ─── Social Links ──────────────────────────────────────────────────────────
+
+export type SocialPlatform =
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "linkedin"
+  | "youtube"
+  | "x"
+  | "telegram"
+  | "snapchat"
+  | "other";
+
+export interface StoreSocialLinkItem {
+  public_id: string;
+  platform: SocialPlatform;
+  url: string;
+  username: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SocialLinkPayload {
+  platform: SocialPlatform;
+  url: string;
+}
+
+// ─── Offers ────────────────────────────────────────────────────────────────
+
+export interface StoreOffer {
+  public_id: string;
+  title_ar: string;
+  title_en: string | null;
+  description_ar: string | null;
+  description_en: string | null;
+  price: number | string | null;
+  old_price: number | string | null;
+  currency: string;
+  discount_percentage: number | null;
+  image_url: string | null;
+  starts_at: string | null;
+  ends_at: string | null;
+  is_active: boolean;
+  is_currently_valid: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StoreOffersMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface StoreOffersListResponse {
+  data: StoreOffer[];
+  meta: StoreOffersMeta;
+}
+
+export interface StoreOfferPayload {
+  title_ar: string;
+  title_en?: string | null;
+  description_ar?: string | null;
+  description_en?: string | null;
+  price?: number | string | null;
+  old_price?: number | string | null;
+  currency?: string;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  is_active?: boolean;
+  image?: File | null;
+  remove_image?: boolean;
+}

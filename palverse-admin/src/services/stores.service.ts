@@ -2,16 +2,57 @@ import { apiClient } from "@/lib/api/client";
 import {
   AdminStore,
   RejectStoreRequest,
+  SocialLinkPayload,
   StoreLinksResponse,
   StoreMediaSummary,
+  StoreOffer,
+  StoreOfferPayload,
+  StoreOffersListResponse,
+  StoreSocialLinkItem,
   StoresListParams,
   StoresListResponse,
   StoreSubscriptionsListResponse,
   UpdateAdminStoreRequest,
+  WorkingHours,
 } from "@/types/store";
 import { ApiSuccessResponse } from "@/types/api";
 
 const BASE_PATH = "/admin/stores";
+
+interface RawWorkingHourDay {
+  day_of_week: number;
+  is_closed: boolean;
+  periods?: { opens_at?: string; closes_at?: string }[];
+}
+
+// Backend returns/expects an array of day objects with day_of_week (0-6) and opens_at/closes_at.
+// The admin UI works with a keyed object to match the merchant panel shape: { "0": { is_closed, periods: [{start, end}] }, ... }
+function mapWorkingHoursResponse(raw: RawWorkingHourDay[]): WorkingHours {
+  const hours: WorkingHours = {};
+  raw.forEach((day) => {
+    hours[String(day.day_of_week)] = {
+      is_closed: Boolean(day.is_closed),
+      periods: (day.periods || []).map((p) => ({
+        start: p.opens_at || "09:00",
+        end: p.closes_at || "17:00",
+      })),
+    };
+  });
+  return hours;
+}
+
+function buildOfferFormData(payload: StoreOfferPayload): FormData {
+  const formData = new FormData();
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === null || value === undefined) return;
+    if (typeof value === "boolean") {
+      formData.append(key, value ? "1" : "0");
+    } else {
+      formData.append(key, value as string | Blob);
+    }
+  });
+  return formData;
+}
 
 export const storesService = {
   list: async (params: StoresListParams): Promise<StoresListResponse> => {
@@ -115,5 +156,118 @@ export const storesService = {
 
   deleteGallery: async (publicId: string, mediaId: string): Promise<void> => {
     await apiClient.delete(`${BASE_PATH}/${publicId}/gallery/${mediaId}`);
+  },
+
+  // ─── Working Hours ─────────────────────────────────────────────────────
+  getWorkingHours: async (publicId: string): Promise<WorkingHours> => {
+    const response = await apiClient.get<unknown, ApiSuccessResponse<RawWorkingHourDay[]>>(
+      `${BASE_PATH}/${publicId}/working-hours`
+    );
+    return mapWorkingHoursResponse(Array.isArray(response.data) ? response.data : []);
+  },
+
+  updateWorkingHours: async (publicId: string, hours: WorkingHours): Promise<WorkingHours> => {
+    // Frontend day IDs match backend day_of_week (0=Sunday, 1=Monday, ..., 6=Saturday)
+    const days = Object.entries(hours)
+      .map(([dayKey, dayData]) => ({
+        day_of_week: parseInt(dayKey, 10),
+        is_closed: dayData.is_closed,
+        periods: dayData.is_closed
+          ? []
+          : (dayData.periods || []).map((p) => ({
+              opens_at: p.start,
+              closes_at: p.end,
+            })),
+      }))
+      .sort((a, b) => a.day_of_week - b.day_of_week);
+
+    const response = await apiClient.put<unknown, ApiSuccessResponse<RawWorkingHourDay[]>>(
+      `${BASE_PATH}/${publicId}/working-hours`,
+      { days }
+    );
+    return mapWorkingHoursResponse(Array.isArray(response.data) ? response.data : []);
+  },
+
+  // ─── Social Links ────────────────────────────────────────────────────────
+  getSocialLinks: async (publicId: string): Promise<StoreSocialLinkItem[]> => {
+    const response = await apiClient.get<unknown, ApiSuccessResponse<StoreSocialLinkItem[]>>(
+      `${BASE_PATH}/${publicId}/social-links`
+    );
+    return response.data;
+  },
+
+  addSocialLink: async (publicId: string, payload: SocialLinkPayload): Promise<StoreSocialLinkItem> => {
+    const response = await apiClient.post<unknown, ApiSuccessResponse<StoreSocialLinkItem>>(
+      `${BASE_PATH}/${publicId}/social-links`,
+      payload
+    );
+    return response.data;
+  },
+
+  updateSocialLink: async (
+    publicId: string,
+    linkId: string,
+    payload: SocialLinkPayload
+  ): Promise<StoreSocialLinkItem> => {
+    const response = await apiClient.put<unknown, ApiSuccessResponse<StoreSocialLinkItem>>(
+      `${BASE_PATH}/${publicId}/social-links/${linkId}`,
+      payload
+    );
+    return response.data;
+  },
+
+  deleteSocialLink: async (publicId: string, linkId: string): Promise<void> => {
+    await apiClient.delete(`${BASE_PATH}/${publicId}/social-links/${linkId}`);
+  },
+
+  // ─── Offers ────────────────────────────────────────────────────────────
+  getOffers: async (publicId: string, page: number = 1): Promise<StoreOffersListResponse> => {
+    const response = await apiClient.get<unknown, StoreOffersListResponse>(`${BASE_PATH}/${publicId}/offers`, {
+      params: { page },
+    });
+    return response;
+  },
+
+  getOffer: async (publicId: string, offerId: string): Promise<StoreOffer> => {
+    const response = await apiClient.get<unknown, ApiSuccessResponse<StoreOffer>>(
+      `${BASE_PATH}/${publicId}/offers/${offerId}`
+    );
+    return response.data;
+  },
+
+  createOffer: async (publicId: string, payload: StoreOfferPayload): Promise<StoreOffer> => {
+    const formData = buildOfferFormData(payload);
+    const response = await apiClient.post<unknown, ApiSuccessResponse<StoreOffer>>(
+      `${BASE_PATH}/${publicId}/offers`,
+      formData
+    );
+    return response.data;
+  },
+
+  updateOffer: async (publicId: string, offerId: string, payload: StoreOfferPayload): Promise<StoreOffer> => {
+    // Send PUT with JSON when there is no file upload. When a file is present, use POST with
+    // _method=PUT so Laravel can parse the multipart body (PUT bodies aren't parsed by PHP).
+    const hasFile = payload.image instanceof File;
+
+    if (hasFile) {
+      const formData = buildOfferFormData(payload);
+      formData.append("_method", "PUT");
+      const response = await apiClient.post<unknown, ApiSuccessResponse<StoreOffer>>(
+        `${BASE_PATH}/${publicId}/offers/${offerId}`,
+        formData
+      );
+      return response.data;
+    }
+
+    const { image, ...rest } = payload;
+    const response = await apiClient.put<unknown, ApiSuccessResponse<StoreOffer>>(
+      `${BASE_PATH}/${publicId}/offers/${offerId}`,
+      rest
+    );
+    return response.data;
+  },
+
+  deleteOffer: async (publicId: string, offerId: string): Promise<void> => {
+    await apiClient.delete(`${BASE_PATH}/${publicId}/offers/${offerId}`);
   },
 };

@@ -144,6 +144,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'representatives.activity.view',
             'notifications.send_operational',
             'articles.manage',
+            'stores.view',
+            'stores.update',
+            'offers.view',
+            'offers.manage',
         ]);
 
         $admin->syncPermissions(Permission::all());

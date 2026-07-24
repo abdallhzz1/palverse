@@ -29,6 +29,9 @@ class StoreRegistrationRequestResource extends JsonResource
             'status' => $this->status->value,
             'status_label_ar' => $this->status->labelAr(),
             'representative_notes' => $this->representative_notes,
+            'working_hours' => $this->working_hours,
+            'social_links' => $this->social_links,
+            'draft_media' => $this->resolveDraftMediaUrls($this->draft_media),
             'admin_notes' => $this->when(
                 $this->status->value !== 'draft' && $this->admin_notes,
                 $this->admin_notes
@@ -80,6 +83,37 @@ class StoreRegistrationRequestResource extends JsonResource
             'status_history' => StoreRequestStatusHistoryResource::collection(
                 $this->whenLoaded('statusHistory')
             ),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $draftMedia
+     * @return array<string, mixed>|null
+     */
+    private function resolveDraftMediaUrls(?array $draftMedia): ?array
+    {
+        if ($draftMedia === null) {
+            return null;
+        }
+
+        $mapFile = function (?array $file): ?array {
+            if (! $file || empty($file['path'])) {
+                return null;
+            }
+
+            return [
+                ...$file,
+                'url' => \Illuminate\Support\Facades\Storage::disk($file['disk'] ?? 'public')->url($file['path']),
+            ];
+        };
+
+        return [
+            'logo' => $mapFile($draftMedia['logo'] ?? null),
+            'cover' => $mapFile($draftMedia['cover'] ?? null),
+            'gallery' => array_values(array_filter(array_map(
+                $mapFile,
+                $draftMedia['gallery'] ?? []
+            ))),
         ];
     }
 }

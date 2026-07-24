@@ -68,6 +68,36 @@ export const RepresentativeService = {
     return apiClient.post(`/representative/store-requests/${publicId}/submit`) as any;
   },
 
+  uploadRequestLogo: async (publicId: string, file: File): Promise<{ data: StoreRegistrationRequest }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return apiClient.post(`/representative/store-requests/${publicId}/logo`, formData) as any;
+  },
+
+  deleteRequestLogo: async (publicId: string): Promise<{ data: StoreRegistrationRequest }> => {
+    return apiClient.delete(`/representative/store-requests/${publicId}/logo`) as any;
+  },
+
+  uploadRequestCover: async (publicId: string, file: File): Promise<{ data: StoreRegistrationRequest }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return apiClient.post(`/representative/store-requests/${publicId}/cover`, formData) as any;
+  },
+
+  deleteRequestCover: async (publicId: string): Promise<{ data: StoreRegistrationRequest }> => {
+    return apiClient.delete(`/representative/store-requests/${publicId}/cover`) as any;
+  },
+
+  uploadRequestGallery: async (publicId: string, files: File[]): Promise<{ data: StoreRegistrationRequest }> => {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files[]", file));
+    return apiClient.post(`/representative/store-requests/${publicId}/gallery`, formData) as any;
+  },
+
+  deleteRequestGalleryItem: async (publicId: string, pathHash: string): Promise<{ data: StoreRegistrationRequest }> => {
+    return apiClient.delete(`/representative/store-requests/${publicId}/gallery/${pathHash}`) as any;
+  },
+
   // Rejection Reports
   getRejectionReports: async (page = 1): Promise<PaginatedResponse<RejectionReport>> => {
     const response = (await apiClient.get(
