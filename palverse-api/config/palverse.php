@@ -210,4 +210,14 @@ return [
             env('PALVERSE_DEMO_FOLLOWUP_PASSWORD', 'DemoFollowUp123!')
         ),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Business calendar timezone (ads / date windows)
+    |--------------------------------------------------------------------------
+    |
+    | Staff browsers use Palestine local dates. Comparing with UTC "today"
+    | hides same-day campaigns for several hours after midnight locally.
+    */
+    'business_timezone' => env('PALVERSE_BUSINESS_TIMEZONE', 'Asia/Hebron'),
 ];

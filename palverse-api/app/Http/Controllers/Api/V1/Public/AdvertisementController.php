@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\StoreAdvertisement;
+use App\Support\BusinessDate;
 use App\Support\PublicStorageUrl;
 use Illuminate\Http\JsonResponse;
 
@@ -14,7 +15,7 @@ class AdvertisementController extends Controller
      */
     public function banners(): JsonResponse
     {
-        $today = now()->toDateString();
+        $today = BusinessDate::today();
 
         $banners = StoreAdvertisement::query()
             ->with(['store' => function ($query) {
@@ -24,9 +25,7 @@ class AdvertisementController extends Controller
                 $query->publicVisible();
             })
             ->where('ad_type', 'banner')
-            ->where('is_active', true)
-            ->whereDate('start_date', '<=', $today)
-            ->whereDate('end_date', '>=', $today)
+            ->currentlyScheduled($today)
             ->whereNotNull('image_path')
             ->orderByDesc('created_at')
             ->limit(10)
@@ -37,6 +36,7 @@ class AdvertisementController extends Controller
             ->values()
             ->map(function (StoreAdvertisement $banner) {
                 $imageUrl = PublicStorageUrl::fromPath($banner->image_path);
+                $slug = $banner->store->slug ?: $banner->store->public_id;
 
                 return [
                     'public_id' => $banner->public_id,
@@ -44,7 +44,7 @@ class AdvertisementController extends Controller
                     'image_url' => $imageUrl,
                     'store' => [
                         'public_id' => $banner->store->public_id,
-                        'slug' => $banner->store->slug,
+                        'slug' => $slug,
                         'name_ar' => $banner->store->name_ar,
                         'name_en' => $banner->store->name_en,
                     ],
@@ -54,6 +54,10 @@ class AdvertisementController extends Controller
         return response()->json([
             'success' => true,
             'data' => $data,
+            'meta' => [
+                'business_today' => $today,
+                'business_timezone' => config('palverse.business_timezone'),
+            ],
         ]);
     }
 }

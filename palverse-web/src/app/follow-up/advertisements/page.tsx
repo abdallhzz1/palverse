@@ -146,10 +146,19 @@ export default function FollowUpAdvertisementsPage() {
                     </td>
                     <td className="py-4 px-6">
                       {(() => {
-                        const status = getAdScheduleStatus(ad);
-                        const meta = adScheduleLabel(status);
+                        const status =
+                          (ad.homepage_status as "live" | "scheduled" | "expired" | "paused" | "hidden" | undefined) ||
+                          getAdScheduleStatus(ad);
+                        const meta =
+                          status === "hidden"
+                            ? { label: "مخفي عن الرئيسية", className: "bg-orange-100 text-orange-700" }
+                            : adScheduleLabel(status === "live" || status === "scheduled" || status === "expired" || status === "paused" ? status : "paused");
+                        const reasons = Array.isArray(ad.homepage_reasons) ? ad.homepage_reasons.join(", ") : "";
                         return (
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${meta.className}`}>
+                          <span
+                            title={reasons || undefined}
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${meta.className}`}
+                          >
                             {meta.label}
                           </span>
                         );

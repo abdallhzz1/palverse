@@ -6,7 +6,8 @@ import { BRAND_PHOTOS } from "@/lib/brand-photos";
 
 interface StoreCardProps {
   name: string;
-  slug: string;
+  slug?: string | null;
+  publicId?: string | null;
   categoryName: string;
   cityName: string;
   coverImage?: string;
@@ -19,6 +20,7 @@ interface StoreCardProps {
 export function StoreCard({
   name,
   slug,
+  publicId,
   categoryName,
   cityName,
   coverImage,
@@ -27,6 +29,11 @@ export function StoreCard({
   ratingsCount,
   sponsored = false,
 }: StoreCardProps) {
+  const hrefSlug = (slug && String(slug).trim()) || (publicId && String(publicId).trim()) || "";
+  if (!hrefSlug) {
+    return null;
+  }
+
   const cleanCover =
     typeof coverImage === "string" && coverImage.trim()
       ? coverImage.trim()
@@ -37,7 +44,7 @@ export function StoreCard({
 
   return (
     <Link
-      href={`/stores/${slug}`}
+      href={`/stores/${hrefSlug}`}
       className={cn(
         "public-card group flex flex-col",
         "hover:-translate-y-1"

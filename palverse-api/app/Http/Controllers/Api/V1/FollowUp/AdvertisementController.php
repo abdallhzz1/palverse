@@ -19,13 +19,25 @@ class AdvertisementController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
+        $data = collect($advertisements->items())->map(function (StoreAdvertisement $ad) {
+            $visibility = $ad->homepageVisibility();
+
+            return array_merge($ad->toArray(), [
+                'shows_on_homepage' => $visibility['shows_on_homepage'],
+                'homepage_status' => $visibility['status'],
+                'homepage_reasons' => $visibility['reasons'],
+                'business_today' => $visibility['business_today'],
+            ]);
+        })->values();
+
         return response()->json([
             'success' => true,
-            'data' => $advertisements->items(),
+            'data' => $data,
             'meta' => [
                 'current_page' => $advertisements->currentPage(),
                 'last_page' => $advertisements->lastPage(),
                 'total' => $advertisements->total(),
+                'business_timezone' => config('palverse.business_timezone'),
             ],
         ]);
     }

@@ -113,12 +113,10 @@ class StoreSearchService
 
         // 7. Featured Filter (active featured_store advertisements in date window)
         if (isset($filters['is_featured']) && filter_var($filters['is_featured'], FILTER_VALIDATE_BOOLEAN)) {
-            $today = now()->toDateString();
+            $today = \App\Support\BusinessDate::today();
             $query->whereHas('advertisements', function ($q) use ($today) {
                 $q->where('ad_type', 'featured_store')
-                    ->where('is_active', true)
-                    ->whereDate('start_date', '<=', $today)
-                    ->whereDate('end_date', '>=', $today);
+                    ->currentlyScheduled($today);
             });
 
             // Prefer stores with the newest active featured campaign first
@@ -126,9 +124,7 @@ class StoreSearchService
                 \App\Models\StoreAdvertisement::select('created_at')
                     ->whereColumn('store_advertisements.store_id', 'stores.id')
                     ->where('ad_type', 'featured_store')
-                    ->where('is_active', true)
-                    ->whereDate('start_date', '<=', $today)
-                    ->whereDate('end_date', '>=', $today)
+                    ->currentlyScheduled($today)
                     ->latest('created_at')
                     ->limit(1)
             );

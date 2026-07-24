@@ -1,5 +1,9 @@
 export const env = {
-  NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1',
+  // Prefer server-only API_BASE_URL on Vercel/Node, fall back to public URL.
+  NEXT_PUBLIC_API_BASE_URL:
+    process.env.API_BASE_URL ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    'http://localhost:8000/api/v1',
   NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Palverse',
   NEXT_PUBLIC_APP_LOCALE: process.env.NEXT_PUBLIC_APP_LOCALE || 'ar',
   NEXT_PUBLIC_APP_DIRECTION: process.env.NEXT_PUBLIC_APP_DIRECTION || 'rtl',

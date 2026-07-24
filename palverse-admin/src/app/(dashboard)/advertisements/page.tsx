@@ -162,10 +162,27 @@ export default function AdminAdvertisementsPage() {
                       <td className="px-6 py-4 font-bold text-[#1E7D4E]">{ad.amount_paid} ₪</td>
                       <td className="px-6 py-4">
                         {(() => {
-                          const status = getAdScheduleStatus(ad);
-                          const meta = adScheduleLabel(status);
+                          const status =
+                            (ad as StoreAdvertisement & { homepage_status?: string }).homepage_status ||
+                            getAdScheduleStatus(ad);
+                          const meta =
+                            status === "hidden"
+                              ? { label: "مخفي عن الرئيسية", className: "bg-orange-100 text-orange-700" }
+                              : adScheduleLabel(
+                                  status === "live" ||
+                                    status === "scheduled" ||
+                                    status === "expired" ||
+                                    status === "paused"
+                                    ? status
+                                    : "paused"
+                                );
+                          const reasons = (ad as StoreAdvertisement & { homepage_reasons?: string[] })
+                            .homepage_reasons;
                           return (
-                            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${meta.className}`}>
+                            <span
+                              title={Array.isArray(reasons) ? reasons.join(", ") : undefined}
+                              className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${meta.className}`}
+                            >
                               {meta.label}
                             </span>
                           );

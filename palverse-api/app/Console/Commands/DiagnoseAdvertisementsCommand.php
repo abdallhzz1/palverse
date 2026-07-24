@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Store;
 use App\Models\StoreAdvertisement;
+use App\Support\BusinessDate;
 use App\Support\PublicStorageUrl;
 use Illuminate\Console\Command;
 
@@ -17,8 +18,8 @@ class DiagnoseAdvertisementsCommand extends Command
 
     public function handle(): int
     {
-        $today = now()->toDateString();
-        $this->info("Today (APP_TIMEZONE=".config('app.timezone')."): {$today}");
+        $today = BusinessDate::today();
+        $this->info("Business today (".config('palverse.business_timezone')."): {$today}");
         $this->info('APP_URL='.config('app.url'));
         $this->newLine();
 
@@ -124,7 +125,7 @@ class DiagnoseAdvertisementsCommand extends Command
             $count = $query->update([
                 'is_active' => true,
                 'start_date' => $today,
-                'end_date' => now()->addDays($days)->toDateString(),
+                'end_date' => BusinessDate::now()->addDays($days)->toDateString(),
             ]);
 
             $this->newLine();

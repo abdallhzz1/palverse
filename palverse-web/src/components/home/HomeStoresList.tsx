@@ -62,6 +62,7 @@ export async function HomeStoresList({
                 key={store.slug || store.public_id}
                 name={store.name_ar || store.name_en || ""}
                 slug={store.slug}
+                publicId={store.public_id}
                 categoryName={store.category?.name_ar || store.category?.name_en || ""}
                 cityName={
                   store.city?.name_ar ||
