@@ -80,3 +80,113 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .public-card:hover {
   @apply border-[#1E7D4E]/25 shadow-[0_12px_40px_-16px_rgba(15,61,46,0.18)];
 }
+
+/* CMS content readability */
+.cms-prose {
+  font-size: 1.125rem;
+  line-height: 2;
+  font-weight: 400;
+}
+
+.cms-prose > p:first-child {
+  font-size: 1.25rem;
+  line-height: 1.9;
+  font-weight: 500;
+  color: #0f3d2e;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eaf3ec;
+}
+
+.cms-prose p {
+  margin-bottom: 1.35rem;
+  color: #1f3d32;
+}
+
+.cms-prose h1 {
+  font-family: var(--font-cairo);
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: #0f3d2e;
+  margin: 0.5rem 0 1rem;
+  line-height: 1.35;
+}
+
+.cms-prose h2 {
+  font-family: var(--font-cairo);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f3d2e;
+  margin: 2.25rem 0 0.85rem;
+  line-height: 1.4;
+  padding-inline-start: 0.85rem;
+  border-inline-start: 3px solid #1e7d4e;
+}
+
+.cms-prose h3 {
+  font-family: var(--font-cairo);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f3d2e;
+  margin: 1.75rem 0 0.65rem;
+}
+
+.cms-prose ul,
+.cms-prose ol {
+  margin: 0 0 1.5rem;
+  padding-inline-start: 1.35rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.cms-prose ul {
+  list-style: disc;
+}
+
+.cms-prose ol {
+  list-style: decimal;
+}
+
+.cms-prose li {
+  line-height: 1.85;
+  padding-inline-start: 0.25rem;
+}
+
+.cms-prose a {
+  color: #1e7d4e;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgb(30 125 78 / 0.35);
+}
+
+.cms-prose strong {
+  font-weight: 700;
+  color: #0f3d2e;
+}
+
+.cms-prose blockquote {
+  margin: 1.75rem 0;
+  padding: 1rem 1.25rem;
+  border-inline-start: 4px solid #1e7d4e;
+  background: #eaf3ec;
+  border-radius: 0 1rem 1rem 0;
+  color: #3d5c4d;
+  font-style: italic;
+}
+
+.cms-prose img {
+  border-radius: 1.25rem;
+  margin: 1.75rem 0;
+}
+
+@media (min-width: 768px) {
+  .cms-prose {
+    font-size: 1.2rem;
+    line-height: 2.05;
+  }
+
+  .cms-prose > p:first-child {
+    font-size: 1.4rem;
+  }
+}

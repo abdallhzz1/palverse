@@ -6,20 +6,79 @@ interface CmsContentBodyProps {
   className?: string;
 }
 
+/** Split a wall-of-text into readable Arabic paragraphs when CMS has no structure. */
+function enhancePlainHtml(html: string): string {
+  const trimmed = html.trim();
+  if (!trimmed) return trimmed;
+
+  // Already has multiple block elements / headings — keep as authored
+  const blockCount = (trimmed.match(/<\/(p|h[1-6]|li|div|blockquote|section)>/gi) || []).length;
+  if (blockCount > 2) return trimmed;
+
+  const textOnly = trimmed
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (textOnly.length < 160) return trimmed;
+
+  // Split on Arabic/Latin sentence enders while keeping the delimiter
+  const sentences = textOnly
+    .split(/(?<=[.!?؟。])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (sentences.length < 2) {
+    // Fallback: soft-split long blob every ~180 chars at nearest space
+    const chunks: string[] = [];
+    let rest = textOnly;
+    while (rest.length > 200) {
+      let cut = rest.lastIndexOf(" ", 180);
+      if (cut < 80) cut = 180;
+      chunks.push(rest.slice(0, cut).trim());
+      rest = rest.slice(cut).trim();
+    }
+    if (rest) chunks.push(rest);
+    return chunks.map((c) => `<p>${escapeHtml(c)}</p>`).join("");
+  }
+
+  // Group 1–2 sentences per paragraph for comfortable reading
+  const paragraphs: string[] = [];
+  for (let i = 0; i < sentences.length; i += 2) {
+    paragraphs.push(sentences.slice(i, i + 2).join(" "));
+  }
+
+  return paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export function CmsContentBody({
   html,
   emptyMessage = "لا يوجد محتوى لهذه الصفحة بعد.",
   className = "",
 }: CmsContentBodyProps) {
   if (!html) {
-    return <p className="text-[#7FA789] text-center py-12">{emptyMessage}</p>;
+    return <p className="py-12 text-center text-[#7FA789]">{emptyMessage}</p>;
   }
+
+  const enhanced = enhancePlainHtml(html);
+  const sanitized = sanitizeHtmlContent(enhanced);
 
   return (
     <div
-      className={`text-[#1F2522] leading-loose text-base [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:text-[#0F3D2E] [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-[#0F3D2E] [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-[#0F3D2E] [&_p]:mb-4 [&_ul]:list-disc [&_ul]:mr-6 [&_ul]:mb-4 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:mr-6 [&_ol]:mb-4 [&_ol]:space-y-1 [&_li]:mb-1 [&_a]:text-[#1E7D4E] [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-[#1E7D4E]/40 [&_strong]:font-bold [&_strong]:text-[#0F3D2E] [&_img]:rounded-2xl [&_img]:my-6 [&_blockquote]:border-r-4 [&_blockquote]:border-[#1E7D4E]/30 [&_blockquote]:pr-4 [&_blockquote]:text-[#7FA789] [&_blockquote]:italic ${className}`}
+      className={`cms-prose text-[#0F3D2E] ${className}`}
       dir="rtl"
-      dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(html) }}
+      dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );
 }

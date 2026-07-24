@@ -1,26 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Menu, X, Search } from "lucide-react";
 import { isMerchantRole } from "@/lib/auth/roles";
-import { getDictionary } from "@/lib/i18n/dictionaries";
 import { usePublicAuth } from "@/contexts/AuthContext";
+import { CMS_PAGE_SLUGS, cmsPageHref } from "@/lib/cms-pages";
+import { cn } from "@/lib/utils";
+
+const EXPLORE_LINKS = [
+  { href: "/", label: "الرئيسية" },
+  { href: "/categories", label: "الفئات" },
+  { href: "/stores", label: "المحلات" },
+  { href: "/offers", label: "العروض" },
+  { href: "/join-us", label: "أضف نشاطك" },
+  { href: "/blog", label: "المدونة" },
+] as const;
+
+const INFO_LINKS = [
+  { href: cmsPageHref(CMS_PAGE_SLUGS.about), label: "من نحن" },
+  { href: cmsPageHref(CMS_PAGE_SLUGS.privacy), label: "الخصوصية" },
+  { href: cmsPageHref(CMS_PAGE_SLUGS.terms), label: "الشروط" },
+  { href: "/contact", label: "تواصل معنا" },
+  { href: "/faqs", label: "الأسئلة الشائعة" },
+  { href: "/login", label: "بوابة الشركاء" },
+] as const;
 
 function MerchantMobileLink({ onClose }: { onClose: () => void }) {
   const { user, isAuthenticated } = usePublicAuth();
-  
+
   if (!isAuthenticated || !user) return null;
-  
-  const isMerchant = isMerchantRole(user.roles);
-  if (!isMerchant) return null;
+  if (!isMerchantRole(user.roles)) return null;
 
   return (
-    <div className="p-4 mt-auto border-t border-[#EAF3EC] dark:border-[#0F3D2E]">
-      <Link 
-        onClick={onClose} 
-        href="/merchant" 
-        className="flex items-center justify-center gap-2 w-full py-3 bg-[#0F3D2E] text-white rounded-xl font-bold hover:bg-[#1E7D4E] transition-colors"
+    <div className="mt-auto border-t border-[#EAF3EC] p-4">
+      <Link
+        onClick={onClose}
+        href="/merchant"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0F3D2E] py-3 font-bold text-white transition-colors hover:bg-[#1E7D4E]"
       >
         لوحة التاجر
       </Link>
@@ -28,77 +46,114 @@ function MerchantMobileLink({ onClose }: { onClose: () => void }) {
   );
 }
 
+function NavSection({
+  title,
+  links,
+  onClose,
+}: {
+  title: string;
+  links: readonly { href: string; label: string }[];
+  onClose: () => void;
+}) {
+  return (
+    <div className="mb-6">
+      <p className="mb-2 px-4 text-xs font-bold tracking-wide text-[#7FA789]">{title}</p>
+      <nav className="flex flex-col gap-1 px-3">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={onClose}
+            className="rounded-xl px-4 py-3 font-semibold text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC] hover:text-[#1E7D4E]"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
 export function MobileNavDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const dict = getDictionary("ar");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
+
+  const close = () => setIsOpen(false);
+
+  const drawer = (
+    <>
+      <div
+        className={cn(
+          "fixed inset-0 z-[200] bg-[#0F3D2E]/45 backdrop-blur-[2px] transition-opacity duration-300",
+          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        )}
+        onClick={close}
+        aria-hidden={!isOpen}
+      />
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 end-0 z-[210] flex w-[min(20rem,88vw)] flex-col bg-white shadow-[-12px_0_40px_-12px_rgba(15,61,46,0.35)] transition-transform duration-300 ease-out",
+          isOpen ? "translate-x-0 pointer-events-auto" : "translate-x-full pointer-events-none"
+        )}
+        role="dialog"
+        aria-modal="true"
+        aria-label="القائمة الرئيسية"
+        aria-hidden={!isOpen}
+      >
+        <div className="flex items-center justify-between border-b border-[#EAF3EC] px-4 py-4">
+          <span className="font-heading text-lg font-bold text-[#0F3D2E]">القائمة الرئيسية</span>
+          <button
+            type="button"
+            onClick={close}
+            className="rounded-full p-2 text-[#7FA789] transition-colors hover:bg-[#EAF3EC] hover:text-[#0F3D2E]"
+            aria-label="إغلاق القائمة"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
+        <div className="flex flex-1 flex-col overflow-y-auto py-4">
+          <NavSection title="استكشف" links={EXPLORE_LINKS} onClose={close} />
+          <NavSection title="معلومات" links={INFO_LINKS} onClose={close} />
+          <MerchantMobileLink onClose={close} />
+        </div>
+      </aside>
+    </>
+  );
 
   return (
-    <div className="md:hidden flex items-center gap-4">
-      {/* Search Icon */}
-      <Link href="/stores" className="text-[#0F3D2E] dark:text-[#EAF3EC] p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
-        <Search className="w-6 h-6" />
+    <div className="flex items-center gap-1 lg:hidden">
+      <Link
+        href="/stores"
+        className="rounded-full p-2 text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC]"
+        aria-label="بحث"
+      >
+        <Search className="h-6 w-6" />
       </Link>
 
-      {/* Hamburger Menu */}
-      <button 
+      <button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="text-[#0F3D2E] dark:text-[#EAF3EC] p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+        className="rounded-full p-2 text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC]"
+        aria-label="فتح القائمة"
+        aria-expanded={isOpen}
       >
-        <Menu className="w-6 h-6" />
+        <Menu className="h-6 w-6" />
       </button>
 
-      {/* Drawer Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-50 transition-opacity"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* RTL Drawer */}
-      <div className={`fixed top-0 bottom-0 right-0 w-72 bg-white dark:bg-[#1F2522] z-50 transform transition-transform duration-300 ease-in-out shadow-2xl ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
-        <div className="flex flex-col h-full">
-          
-          <div className="flex items-center justify-between p-4 border-b border-[#EAF3EC] dark:border-[#0F3D2E]">
-            <span className="font-bold text-lg text-[#0F3D2E] dark:text-[#EAF3EC]">القائمة الرئيسية</span>
-            <button 
-              onClick={() => setIsOpen(false)}
-              className="p-2 text-[#7FA789] hover:text-[#0F3D2E] dark:hover:text-[#EAF3EC] transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto py-4 flex flex-col justify-between">
-            <nav className="flex flex-col px-4 gap-2">
-              <Link onClick={() => setIsOpen(false)} href="/" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                {dict.navigation.home}
-              </Link>
-              <Link onClick={() => setIsOpen(false)} href="/categories" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                {dict.navigation.categories}
-              </Link>
-              <Link onClick={() => setIsOpen(false)} href="/stores" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                المحلات
-              </Link>
-              <Link onClick={() => setIsOpen(false)} href="/offers" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                {dict.navigation.offers}
-              </Link>
-              <Link onClick={() => setIsOpen(false)} href="/join-us" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                أضف نشاطك
-              </Link>
-              <Link onClick={() => setIsOpen(false)} href="/blog" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                المدونة
-              </Link>
-              <Link onClick={() => setIsOpen(false)} href="/contact" className="px-4 py-3 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#EAF3EC] dark:hover:bg-[#0F3D2E]/50 rounded-xl font-medium transition-colors">
-                تواصل معنا
-              </Link>
-            </nav>
-
-            <MerchantMobileLink onClose={() => setIsOpen(false)} />
-          </div>
-
-        </div>
-      </div>
+      {mounted ? createPortal(drawer, document.body) : null}
     </div>
   );
 }

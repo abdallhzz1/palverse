@@ -105,10 +105,16 @@ export default async function StaticPageRoute({
           </div>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto bg-white rounded-[2rem] border border-[#EAF3EC] shadow-[0_1px_3px_rgba(15,61,46,0.04)] p-8 md:p-12 min-h-[320px]">
-          <CmsContentBody html={page.content_ar} />
+        <article className="mx-auto max-w-3xl overflow-hidden rounded-[1.75rem] border border-[#EAF3EC] bg-white shadow-[0_1px_3px_rgba(15,61,46,0.04)]">
+          <div className="border-b border-[#EAF3EC] bg-gradient-to-l from-[#EAF3EC]/80 to-white px-6 py-5 md:px-10 md:py-6">
+            <p className="text-sm font-bold text-[#1E7D4E]">محتوى الصفحة</p>
+            <p className="mt-1 text-sm text-[#7FA789]">اقرأ التفاصيل التالية بوضوح وراحة</p>
+          </div>
+          <div className="px-6 py-8 md:px-12 md:py-12">
+            <CmsContentBody html={page.content_ar} />
+          </div>
           {page.updated_at ? (
-            <p className="text-xs text-[#7FA789] mt-10 text-center border-t border-[#EAF3EC] pt-6">
+            <p className="border-t border-[#EAF3EC] px-6 py-5 text-center text-xs text-[#7FA789] md:px-12">
               آخر تحديث:{" "}
               {new Date(page.updated_at).toLocaleDateString("ar-SA", {
                 year: "numeric",
@@ -117,7 +123,7 @@ export default async function StaticPageRoute({
               })}
             </p>
           ) : null}
-        </div>
+        </article>
       )}
     </CmsPageShell>
   );
