@@ -1,36 +1,61 @@
 import { PublicPageHero } from "@/components/public/PublicPageHero";
 import { EmptyStateArt } from "@/components/public/EmptyStateArt";
 import { BRAND_PHOTOS } from "@/lib/brand-photos";
-import { publicService } from "@/services/public.service";
+import { serverFetch } from "@/lib/api/server";
 import Image from "next/image";
 import Link from "next/link";
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "العروض والخصومات | بال فيرس",
   description: "اكتشف أفضل العروض والخصومات من المتاجر المشاركة على منصة بال فيرس.",
 };
 
+type PublicOffer = {
+  public_id: string;
+  title_ar?: string | null;
+  title_en?: string | null;
+  description_ar?: string | null;
+  description_en?: string | null;
+  price?: string | number | null;
+  old_price?: string | number | null;
+  currency?: string | null;
+  discount_percentage?: number | null;
+  ends_at?: string | null;
+  image_url?: string | null;
+  store?: {
+    public_id?: string | null;
+    slug?: string | null;
+    name_ar?: string | null;
+    logo?: { url?: string | null } | null;
+  } | null;
+};
+
 export default async function OffersPage() {
-  let offers = [];
+  let offers: PublicOffer[] = [];
+
   try {
-    const res = await publicService.getOffers(1, 50);
-    offers = res?.data || [];
+    const res = await serverFetch<{ data: PublicOffer[] }>("/offers", {
+      params: { page: 1, per_page: 50 },
+      cache: "no-store",
+    });
+    offers = Array.isArray(res?.data) ? res.data : [];
   } catch (error) {
     console.error("Failed to fetch global offers:", error);
   }
 
-  const mappedOffers = offers.map((o: any) => ({
+  const mappedOffers = offers.map((o) => ({
     publicId: o.public_id,
     title: o.title_ar || o.title_en || "",
     description: o.description_ar || o.description_en || undefined,
-    price: o.price ? `${o.price} ${o.currency || 'ILS'}` : undefined,
-    oldPrice: o.old_price ? `${o.old_price} ${o.currency || 'ILS'}` : undefined,
+    price: o.price ? `${o.price} ${o.currency || "ILS"}` : undefined,
+    oldPrice: o.old_price ? `${o.old_price} ${o.currency || "ILS"}` : undefined,
     discountPercentage: o.discount_percentage ? `${o.discount_percentage}%` : undefined,
     expiresAt: o.ends_at ? new Date(o.ends_at).toLocaleDateString("ar-SA") : undefined,
     imageUrl: o.image_url,
     store: o.store,
+    storeHref: o.store?.slug || o.store?.public_id || null,
   }));
 
   return (
@@ -53,7 +78,7 @@ export default async function OffersPage() {
           />
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
-            {mappedOffers.map((offer: any) => (
+            {mappedOffers.map((offer) => (
               <div key={offer.publicId} className="public-card group flex flex-col">
                 <div className="relative h-44 w-full overflow-hidden bg-[#EAF3EC] md:h-48">
                   <Image
@@ -94,23 +119,33 @@ export default async function OffersPage() {
                       </span>
                     )}
 
-                    {offer.store && (
+                    {offer.store && offer.storeHref ? (
                       <Link
-                        href={`/stores/${offer.store.slug}`}
+                        href={`/stores/${offer.storeHref}`}
                         className="mt-1 flex items-center gap-2 rounded-xl bg-[#F5F7F6] p-2 transition-colors hover:bg-[#EAF3EC]"
                       >
                         {offer.store.logo?.url ? (
                           <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-[#EAF3EC] bg-white">
-                            <Image src={offer.store.logo.url} alt={offer.store.name_ar} fill unoptimized className="object-cover" />
+                            <Image
+                              src={offer.store.logo.url}
+                              alt={offer.store.name_ar || ""}
+                              fill
+                              unoptimized
+                              className="object-cover"
+                            />
                           </div>
                         ) : (
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#EAF3EC] bg-white">
-                            <span className="text-xs font-bold text-[#1E7D4E]">{offer.store.name_ar?.charAt(0) || "م"}</span>
+                            <span className="text-xs font-bold text-[#1E7D4E]">
+                              {offer.store.name_ar?.charAt(0) || "م"}
+                            </span>
                           </div>
                         )}
-                        <span className="truncate text-sm font-semibold text-[#0F3D2E]">{offer.store.name_ar}</span>
+                        <span className="truncate text-sm font-semibold text-[#0F3D2E]">
+                          {offer.store.name_ar}
+                        </span>
                       </Link>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>
