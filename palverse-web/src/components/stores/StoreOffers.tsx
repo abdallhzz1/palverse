@@ -19,14 +19,14 @@ export function StoreOffers({ offers }: StoreOffersProps) {
   if (!offers || offers.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div className="flex flex-col gap-3">
       {offers.map((offer) => (
         <article
           key={offer.publicId}
-          className="flex flex-col overflow-hidden rounded-xl border border-[#E2EAE5] bg-[#F7F9F8]"
+          className="overflow-hidden rounded-lg border border-[#E4E6EB] bg-white"
         >
           {offer.imageUrl ? (
-            <div className="relative h-40 w-full overflow-hidden bg-[#E8EEEA]">
+            <div className="relative h-48 w-full overflow-hidden bg-[#E4E6EB]">
               <Image
                 src={offer.imageUrl}
                 alt={offer.title}
@@ -35,36 +35,29 @@ export function StoreOffers({ offers }: StoreOffersProps) {
                 unoptimized
               />
               {offer.discountPercentage ? (
-                <div className="absolute top-3 end-3 rounded-lg bg-red-500 px-2.5 py-1 text-xs font-bold text-white">
+                <div className="absolute top-3 end-3 rounded-md bg-[#F02849] px-2.5 py-1 text-xs font-bold text-white">
                   خصم {offer.discountPercentage}
                 </div>
               ) : null}
             </div>
           ) : null}
 
-          <div className="flex flex-1 flex-col gap-2 p-4">
-            <h4 className="line-clamp-1 font-heading text-base font-bold text-[#1A3D32]">
-              {offer.title}
-            </h4>
+          <div className="space-y-2 p-3">
+            <h4 className="text-[17px] font-semibold text-[#050505]">{offer.title}</h4>
             {offer.description ? (
-              <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-[#6B8578]">
-                {offer.description}
-              </p>
+              <p className="text-[15px] leading-5 text-[#65676B]">{offer.description}</p>
             ) : null}
-
-            <div className="mt-auto space-y-2 border-t border-[#E2EAE5] pt-3">
-              {offer.price ? (
-                <div className="flex items-center gap-2">
-                  <span className="font-heading text-lg font-bold text-[#2F6B4F]">{offer.price}</span>
-                  {offer.oldPrice ? (
-                    <span className="text-sm text-[#6B8578] line-through">{offer.oldPrice}</span>
-                  ) : null}
-                </div>
-              ) : null}
-              {offer.expiresAt ? (
-                <p className="text-xs font-medium text-red-500">ينتهي: {offer.expiresAt}</p>
-              ) : null}
-            </div>
+            {offer.price ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[17px] font-bold text-[#050505]">{offer.price}</span>
+                {offer.oldPrice ? (
+                  <span className="text-sm text-[#65676B] line-through">{offer.oldPrice}</span>
+                ) : null}
+              </div>
+            ) : null}
+            {offer.expiresAt ? (
+              <p className="text-xs font-medium text-[#F02849]">ينتهي: {offer.expiresAt}</p>
+            ) : null}
           </div>
         </article>
       ))}

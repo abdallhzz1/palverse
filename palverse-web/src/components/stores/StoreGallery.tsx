@@ -15,19 +15,19 @@ export function StoreGallery({ images }: StoreGalleryProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-3 gap-1">
         {images.map((img, i) => (
           <button
             key={i}
             type="button"
-            className="relative aspect-square overflow-hidden rounded-xl border border-[#E2EAE5] bg-[#E8EEEA]"
+            className="relative aspect-square overflow-hidden bg-[#E4E6EB]"
             onClick={() => setPreviewIndex(i)}
           >
             <Image
               src={img}
               alt={`صورة ${i + 1}`}
               fill
-              sizes="(max-width: 768px) 50vw, 25vw"
+              sizes="(max-width: 768px) 33vw, 200px"
               unoptimized
               className="object-cover"
             />
