@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import {
   Phone,
   MessageCircle,
@@ -75,7 +75,6 @@ type StoreProfileViewProps = {
   hours: HourItem[];
   socialLinks: StoreSocialLinkItem[];
   ratingSummary: unknown;
-  sidebarAd?: ReactNode;
 };
 
 function FbCard({
@@ -119,7 +118,6 @@ export function StoreProfileView({
   hours,
   socialLinks,
   ratingSummary,
-  sidebarAd,
 }: StoreProfileViewProps) {
   const [tab, setTab] = useState<TabId>("home");
   const [showQr, setShowQr] = useState(false);
@@ -434,7 +432,6 @@ export function StoreProfileView({
               {photosWidget}
               {offersBlock}
               {reviewsBlock}
-              {sidebarAd}
             </>
           ) : null}
           {tab === "about" ? introCard : null}
@@ -466,7 +463,6 @@ export function StoreProfileView({
                   <StoreGallery images={gallery} />
                 </FbCard>
               ) : null}
-              {sidebarAd}
             </div>
           </aside>
 

@@ -3,7 +3,7 @@ import { serverFetch } from "@/lib/api/server";
 import { notFound } from "next/navigation";
 import { sanitizeExternalUrl } from "@/lib/security/urls";
 import { BRAND_PHOTOS } from "@/lib/brand-photos";
-import { AdBannerSlot } from "@/components/ads/AdBannerSlot";
+import { StoreAdsPopupSlot } from "@/components/ads/StoreAdsPopupSlot";
 
 export default async function StoreDetailPage({
   params,
@@ -110,34 +110,29 @@ export default async function StoreDetailPage({
   const storePublicId = (storeData.public_id as string) || slug;
 
   return (
-    <StoreProfileView
-      slug={slug}
-      name={name}
-      categoryName={categoryName}
-      description={description}
-      cleanLogo={cleanLogo}
-      cleanCover={cleanCover}
-      phone={phone}
-      whatsapp={whatsapp}
-      storeUrl={storeUrl}
-      address={address}
-      email={email}
-      website={website}
-      latitude={latitude}
-      longitude={longitude}
-      offers={offers}
-      gallery={gallery}
-      hours={hours}
-      socialLinks={socialLinks}
-      ratingSummary={ratingSummary}
-      sidebarAd={
-        <AdBannerSlot
-          placement="store_sidebar"
-          variant="sidebar"
-          title="إعلان ممول"
-          excludeStore={storePublicId}
-        />
-      }
-    />
+    <>
+      <StoreAdsPopupSlot excludeStore={storePublicId} />
+      <StoreProfileView
+        slug={slug}
+        name={name}
+        categoryName={categoryName}
+        description={description}
+        cleanLogo={cleanLogo}
+        cleanCover={cleanCover}
+        phone={phone}
+        whatsapp={whatsapp}
+        storeUrl={storeUrl}
+        address={address}
+        email={email}
+        website={website}
+        latitude={latitude}
+        longitude={longitude}
+        offers={offers}
+        gallery={gallery}
+        hours={hours}
+        socialLinks={socialLinks}
+        ratingSummary={ratingSummary}
+      />
+    </>
   );
 }

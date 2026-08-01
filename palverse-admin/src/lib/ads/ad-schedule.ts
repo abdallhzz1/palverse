@@ -57,7 +57,7 @@ export const BANNER_PLACEMENTS: BannerPlacementOption[] = [
   },
   {
     id: "store_sidebar",
-    label_ar: "بنر جانبي في بروفايل المحل",
+    label_ar: "إعلان منبثق في بروفايل المحل",
     aspect_ratio: "4:5",
     recommended_size: "800×1000",
     ui_variant: "sidebar",
@@ -103,7 +103,7 @@ export const AD_PLACEMENT_LABELS: Record<string, string> = {
   home_hero: "بنر الرئيسية (تحت البحث)",
   home_mid: "بنر وسط الرئيسية",
   stores_list: "بنر صفحة المتاجر",
-  store_sidebar: "بنر جانبي في بروفايل المحل",
+  store_sidebar: "إعلان منبثق في بروفايل المحل",
   home_featured_stores: "محلات مميزة في الرئيسية",
   stores_list_featured: "محلات مميزة في /stores",
   stores_list_sponsored_badge: "شارة ممول داخل النتائج",
