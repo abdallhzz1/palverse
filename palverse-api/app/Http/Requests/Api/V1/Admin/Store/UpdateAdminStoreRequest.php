@@ -63,6 +63,21 @@ class UpdateAdminStoreRequest extends FormRequest
             'address_en' => ['nullable', 'string', 'max:500'],
             'latitude' => ['nullable', 'required_with:longitude', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'required_with:latitude', 'numeric', 'between:-180,180'],
+            'category_public_ids' => ['sometimes', 'array', 'max:8'],
+            'category_public_ids.*' => ['string', Rule::exists('categories', 'public_id')],
+            'is_verified' => ['sometimes', 'boolean'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('is_verified')) {
+            $val = $this->input('is_verified');
+            if ($val === 'true' || $val === '1' || $val === 1 || $val === true) {
+                $this->merge(['is_verified' => true]);
+            } elseif ($val === 'false' || $val === '0' || $val === 0 || $val === false) {
+                $this->merge(['is_verified' => false]);
+            }
+        }
     }
 }

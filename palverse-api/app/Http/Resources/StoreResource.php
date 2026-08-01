@@ -36,6 +36,8 @@ class StoreResource extends JsonResource
             'longitude' => $this->longitude,
             'status' => $this->status,
             'is_active' => $this->is_active,
+            'is_verified' => (bool) $this->is_verified,
+            'verified_at' => $this->verified_at,
             'has_active_subscription' => $this->relationLoaded('currentSubscription')
                 ? $this->currentSubscription !== null
                 : $this->currentSubscription()->exists(),
@@ -54,6 +56,12 @@ class StoreResource extends JsonResource
                 'name_en' => $this->category->name_en,
                 'slug' => $this->category->slug,
             ]),
+            'categories' => $this->whenLoaded('categories', fn () => $this->categories->map(fn ($category) => [
+                'public_id' => $category->public_id,
+                'name_ar' => $category->name_ar,
+                'name_en' => $category->name_en,
+                'slug' => $category->slug,
+            ])->values()),
             'city' => $this->whenLoaded('city', fn () => [
                 'public_id' => $this->city->public_id,
                 'name_ar' => $this->city->name_ar,

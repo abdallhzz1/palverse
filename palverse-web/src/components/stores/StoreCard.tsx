@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Tag } from "lucide-react";
+import { MapPin, BadgeCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BRAND_PHOTOS } from "@/lib/brand-photos";
 
@@ -8,26 +8,32 @@ interface StoreCardProps {
   name: string;
   slug?: string | null;
   publicId?: string | null;
-  categoryName: string;
-  cityName: string;
+  categoryName?: string;
+  tags?: string[];
+  cityName?: string;
+  zoneName?: string;
   coverImage?: string;
   logoImage?: string;
   averageRating?: number;
   ratingsCount?: number;
   sponsored?: boolean;
+  verified?: boolean;
 }
 
 export function StoreCard({
   name,
   slug,
   publicId,
-  categoryName,
-  cityName,
+  categoryName = "",
+  tags = [],
+  cityName = "",
+  zoneName = "",
   coverImage,
   logoImage,
   averageRating,
   ratingsCount,
   sponsored = false,
+  verified = false,
 }: StoreCardProps) {
   const hrefSlug = (slug && String(slug).trim()) || (publicId && String(publicId).trim()) || "";
   if (!hrefSlug) {
@@ -41,6 +47,13 @@ export function StoreCard({
 
   const cleanLogo =
     typeof logoImage === "string" && logoImage.trim() ? logoImage.trim() : null;
+
+  const specialtyTags = (tags.length > 0 ? tags : categoryName ? [categoryName] : [])
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const locationLabel = [cityName, zoneName].filter(Boolean).join(" — ");
 
   return (
     <Link
@@ -61,11 +74,19 @@ export function StoreCard({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/55 via-transparent to-transparent" />
 
-        {sponsored ? (
-          <div className="absolute top-2 end-2 rounded-lg bg-[#1E7D4E] px-2 py-0.5 text-[10px] font-bold text-white shadow-sm md:text-xs">
-            مميز
-          </div>
-        ) : null}
+        <div className="absolute top-2 end-2 flex flex-col items-end gap-1">
+          {verified ? (
+            <div className="inline-flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-bold text-[#1E7D4E] shadow-sm md:text-xs">
+              <BadgeCheck className="h-3 w-3" />
+              موثّق
+            </div>
+          ) : null}
+          {sponsored ? (
+            <div className="rounded-lg bg-[#1E7D4E] px-2 py-0.5 text-[10px] font-bold text-white shadow-sm md:text-xs">
+              مميز
+            </div>
+          ) : null}
+        </div>
 
         <div className="absolute bottom-2 start-2">
           {averageRating !== undefined && ratingsCount !== undefined && ratingsCount > 0 ? (
@@ -97,16 +118,25 @@ export function StoreCard({
           {name}
         </h3>
 
-        <div className="flex flex-col gap-1 text-[10px] font-medium text-[#7FA789] md:flex-row md:items-center md:gap-4 md:text-xs">
-          <span className="flex items-center gap-1">
-            <Tag className="h-3 w-3 shrink-0" />
-            <span className="line-clamp-1">{categoryName}</span>
-          </span>
-          <span className="flex items-center gap-1">
+        {specialtyTags.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {specialtyTags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-md bg-[#EAF3EC] px-1.5 py-0.5 text-[9px] font-semibold text-[#1E7D4E] md:text-[10px]"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        {locationLabel ? (
+          <div className="flex items-center gap-1 text-[10px] font-medium text-[#7FA789] md:text-xs">
             <MapPin className="h-3 w-3 shrink-0" />
-            <span className="line-clamp-1">{cityName}</span>
-          </span>
-        </div>
+            <span className="line-clamp-1">{locationLabel}</span>
+          </div>
+        ) : null}
       </div>
     </Link>
   );

@@ -20,6 +20,7 @@ export default async function StoresPage(props: {
   const query    = typeof searchParams.query    === "string" ? searchParams.query    : undefined;
   const category = typeof searchParams.category === "string" ? searchParams.category : undefined;
   const city     = typeof searchParams.city     === "string" ? searchParams.city     : undefined;
+  const zone     = typeof searchParams.zone     === "string" ? searchParams.zone     : undefined;
   const sort     = typeof searchParams.sort     === "string" ? searchParams.sort     : "newest";
   const page     = typeof searchParams.page     === "string" ? searchParams.page     : "1";
 
@@ -29,7 +30,7 @@ export default async function StoresPage(props: {
 
   try {
     const [storesRes, bootstrapRes] = await Promise.all([
-      serverFetch<{ data: any[]; meta: any }>("/stores", { params: { query, category, city, sort, page } }),
+      serverFetch<{ data: any[]; meta: any }>("/stores", { params: { query, category, city, zone, sort, page } }),
       serverFetch<{ data: { categories: any[]; cities: any[] } }>("/bootstrap"),
     ]);
     storesData    = storesRes;
@@ -44,7 +45,7 @@ export default async function StoresPage(props: {
   const categories = bootstrapData?.data?.categories || [];
   const cities     = bootstrapData?.data?.cities     || [];
 
-  const hasActiveFilters = !!(query || category || city);
+  const hasActiveFilters = !!(query || category || city || zone);
 
   return (
     <div className="min-h-screen bg-[#F5F7F6]/50 dark:bg-[#111714]">
@@ -77,7 +78,8 @@ export default async function StoresPage(props: {
             <span className="text-sm text-[#7FA789] font-medium">نتائج البحث:</span>
             {query    && <span className="bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#1E7D4E] px-3 py-1 rounded-full text-xs font-bold">"{query}"</span>}
             {category && <span className="bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#1E7D4E] px-3 py-1 rounded-full text-xs font-bold">{category}</span>}
-            {city     && <span className="bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#1E7D4E] px-3 py-1 rounded-full text-xs font-bold">{city}</span>}
+            {city     && <span className="bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#1E7D4E] px-3 py-1 rounded-full text-xs font-bold">مدينة</span>}
+            {zone     && <span className="bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#1E7D4E] px-3 py-1 rounded-full text-xs font-bold">منطقة</span>}
             {meta.total !== undefined && (
               <span className="text-[#7FA789] text-xs">{meta.total} نتيجة</span>
             )}
@@ -103,13 +105,17 @@ export default async function StoresPage(props: {
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                 {stores.map((store: any) => (
                   <StoreCard
-                    key={store.slug}
+                    key={store.slug || store.public_id}
                     name={store.name_ar || store.name_en || ""}
                     slug={store.slug}
+                    publicId={store.public_id}
                     categoryName={store.category?.name_ar || store.category?.name_en || ""}
-                    cityName={store.zone?.city?.name_ar || store.zone?.city?.name_en || ""}
+                    tags={(store.categories || []).map((c: any) => c.name_ar || c.name_en).filter(Boolean)}
+                    cityName={store.city?.name_ar || store.city?.name_en || ""}
+                    zoneName={store.zone?.name_ar || store.zone?.name_en || ""}
                     coverImage={store.cover?.url}
                     logoImage={store.logo?.url}
+                    verified={Boolean(store.is_verified)}
                     averageRating={store.published_reviews_avg_rating ? Number(store.published_reviews_avg_rating) : undefined}
                     ratingsCount={store.published_reviews_count ? Number(store.published_reviews_count) : undefined}
                   />

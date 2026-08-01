@@ -17,7 +17,7 @@ class StoreSearchService
     public function search(array $filters): LengthAwarePaginator
     {
         $query = Store::publicVisible()
-            ->with(['category', 'city', 'zone', 'logo', 'cover'])
+            ->with(['category', 'categories', 'city', 'zone', 'logo', 'cover'])
             ->withCount('activeOffers');
 
         // 1. Text Search
@@ -38,8 +38,14 @@ class StoreSearchService
                         ->orWhere('address_en', 'like', "%{$textQuery}%");
                 });
 
-                // Category name search
+                // Primary category name search
                 $b->orWhereHas('category', function ($cq) use ($textQuery) {
+                    $cq->where('name_ar', 'like', "%{$textQuery}%")
+                        ->orWhere('name_en', 'like', "%{$textQuery}%");
+                });
+
+                // Specialty/tag category search
+                $b->orWhereHas('categories', function ($cq) use ($textQuery) {
                     $cq->where('name_ar', 'like', "%{$textQuery}%")
                         ->orWhere('name_en', 'like', "%{$textQuery}%");
                 });
@@ -58,14 +64,22 @@ class StoreSearchService
             });
         }
 
-        // 2. Category Filter (by slug)
+        // 2. Category Filter (by slug) — match primary or specialty tags
         if (! empty($filters['category'])) {
             $category = Category::where('slug', $filters['category'])->first();
             if ($category) {
-                $query->where('category_id', $category->id);
+                $query->where(function ($q) use ($category) {
+                    $q->where('category_id', $category->id)
+                        ->orWhereHas('categories', fn ($cq) => $cq->where('categories.id', $category->id));
+                });
             } else {
                 $query->where('id', 0);
             }
+        }
+
+        // 2b. Verified filter
+        if (isset($filters['is_verified']) && filter_var($filters['is_verified'], FILTER_VALIDATE_BOOLEAN)) {
+            $query->where('is_verified', true);
         }
 
         // 3. City Filter (by public_id)

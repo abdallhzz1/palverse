@@ -6,12 +6,14 @@ import { Suspense } from "react";
 
 export async function Hero() {
   let cities: { public_id: string; name_ar: string; name_en: string }[] = [];
+  let categories: { slug: string; name_ar: string; name_en: string }[] = [];
 
   try {
-    const data = await serverFetch<{ data: { categories: unknown[]; cities: typeof cities } }>(
+    const data = await serverFetch<{ data: { categories: typeof categories; cities: typeof cities } }>(
       "/bootstrap"
     );
     cities = data?.data?.cities || [];
+    categories = data?.data?.categories || [];
   } catch (err) {
     console.error("Failed to load bootstrap data for Hero:", err);
   }
@@ -26,7 +28,7 @@ export async function Hero() {
       subtitle="مطاعم، مقاهي، خدمات ومحلات — ابحث في مدينتك وابدأ الاستكشاف."
     >
       <Suspense fallback={<div className="h-16 w-full animate-pulse rounded-full bg-white/20" />}>
-        <SearchBar cities={cities} variant="onHero" />
+        <SearchBar cities={cities} categories={categories} variant="onHero" />
       </Suspense>
     </PublicPageHero>
   );

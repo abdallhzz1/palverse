@@ -40,7 +40,7 @@ class StoreController extends Controller
 
     public function index(AdminStoreIndexRequest $request): JsonResponse
     {
-        $query = Store::with(['category', 'city', 'zone', 'owner', 'logo', 'cover', 'currentSubscription']);
+        $query = Store::with(['category', 'categories', 'city', 'zone', 'owner', 'logo', 'cover', 'currentSubscription']);
 
         if ($request->filled('query')) {
             $q = $request->input('query');
@@ -103,7 +103,7 @@ class StoreController extends Controller
 
     public function show(string $publicId, Request $request): JsonResponse
     {
-        $store = Store::with(['category', 'city', 'zone', 'owner', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks', 'currentSubscription'])
+        $store = Store::with(['category', 'categories', 'city', 'zone', 'owner', 'logo', 'cover', 'gallery', 'workingHours', 'socialLinks', 'currentSubscription'])
             ->where('public_id', $publicId)
             ->firstOrFail();
 
@@ -366,7 +366,7 @@ class StoreController extends Controller
                 'phone', 'whatsapp', 'email', 'website',
                 'address_ar', 'address_en', 'latitude', 'longitude',
             ];
-            $oldValues = $store->only(array_merge($fillables, ['category_id', 'city_id', 'zone_id']));
+            $oldValues = $store->only(array_merge($fillables, ['category_id', 'city_id', 'zone_id', 'is_verified']));
 
             if (isset($validated['category_public_id'])) {
                 $store->category_id = Category::where('public_id', $validated['category_public_id'])->value('id');
@@ -384,7 +384,30 @@ class StoreController extends Controller
                 }
             }
 
+            if (array_key_exists('is_verified', $validated)) {
+                if ($validated['is_verified']) {
+                    $store->is_verified = true;
+                    $store->verified_at = $store->verified_at ?? now();
+                    $store->verified_by = $request->user()?->id;
+                } else {
+                    $store->is_verified = false;
+                    $store->verified_at = null;
+                    $store->verified_by = null;
+                }
+            }
+
             $store->save();
+
+            if (array_key_exists('category_public_ids', $validated)) {
+                $specialtyIds = Category::query()
+                    ->whereIn('public_id', $validated['category_public_ids'] ?? [])
+                    ->pluck('id')
+                    ->all();
+                $store->syncSpecialties($specialtyIds, $store->category_id);
+            } elseif (isset($validated['category_public_id'])) {
+                $existing = $store->categories()->pluck('categories.id')->all();
+                $store->syncSpecialties($existing, $store->category_id);
+            }
 
             $this->auditLogService->recordFromRequest(
                 action: AuditAction::StoreUpdated,
@@ -399,11 +422,61 @@ class StoreController extends Controller
             throw $e;
         }
 
-        $store->load(['category', 'city', 'zone', 'owner', 'logo', 'cover', 'gallery', 'currentSubscription']);
+        $store->load(['category', 'categories', 'city', 'zone', 'owner', 'logo', 'cover', 'gallery', 'currentSubscription']);
 
         return response()->json([
             'success' => true,
             'message' => app()->getLocale() === 'en' ? 'Store updated successfully.' : 'تم تحديث بيانات المحل بنجاح.',
+            'data' => new StoreResource($store),
+            'meta' => [],
+        ]);
+    }
+
+    public function verify(Request $request, string $publicId): JsonResponse
+    {
+        $store = Store::where('public_id', $publicId)->firstOrFail();
+        $this->authorize('update', $store);
+
+        $wasVerified = (bool) $store->is_verified;
+        $store->markVerified($request->user());
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::StoreVerified,
+            subject: $store,
+            oldValues: ['is_verified' => $wasVerified],
+            newValues: ['is_verified' => true]
+        );
+
+        $store->load(['category', 'categories', 'city', 'zone', 'owner', 'logo', 'cover']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم توثيق النشاط بنجاح.',
+            'data' => new StoreResource($store),
+            'meta' => [],
+        ]);
+    }
+
+    public function unverify(Request $request, string $publicId): JsonResponse
+    {
+        $store = Store::where('public_id', $publicId)->firstOrFail();
+        $this->authorize('update', $store);
+
+        $wasVerified = (bool) $store->is_verified;
+        $store->clearVerified();
+
+        $this->auditLogService->recordFromRequest(
+            action: AuditAction::StoreUnverified,
+            subject: $store,
+            oldValues: ['is_verified' => $wasVerified],
+            newValues: ['is_verified' => false]
+        );
+
+        $store->load(['category', 'categories', 'city', 'zone', 'owner', 'logo', 'cover']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم إلغاء توثيق النشاط.',
             'data' => new StoreResource($store),
             'meta' => [],
         ]);

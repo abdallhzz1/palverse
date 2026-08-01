@@ -19,6 +19,7 @@ class ProductionSeeder extends Seeder
 
         // 2b. West Bank cities and villages/localities
         $this->call(WestBankLocationsSeeder::class);
+        $this->call(MajorCityNeighborhoodsSeeder::class);
 
         // 3. System Settings (Idempotent: uses firstOrCreate)
         $this->call(SystemSettingSeeder::class);

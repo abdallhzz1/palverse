@@ -24,6 +24,7 @@ class PalverseDemoSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class, // Crucial for fresh migrations!
             WestBankLocationsSeeder::class,
+            MajorCityNeighborhoodsSeeder::class,
             DemoCategorySeeder::class,
             DemoUserSeeder::class,
             DemoStoreSeeder::class, // Stores, Media, Working Hours, Social Links

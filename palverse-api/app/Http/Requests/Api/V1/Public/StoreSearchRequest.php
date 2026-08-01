@@ -17,7 +17,7 @@ class StoreSearchRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $booleanFields = ['has_offers', 'offer_active_now', 'has_logo', 'has_cover', 'open_now', 'is_featured'];
+        $booleanFields = ['has_offers', 'offer_active_now', 'has_logo', 'has_cover', 'open_now', 'is_featured', 'is_verified'];
         foreach ($booleanFields as $field) {
             if ($this->has($field)) {
                 $val = $this->input($field);
@@ -46,6 +46,7 @@ class StoreSearchRequest extends FormRequest
             'has_cover' => ['nullable', 'boolean'],
             'open_now' => ['nullable', 'boolean'],
             'is_featured' => ['nullable', 'boolean'],
+            'is_verified' => ['nullable', 'boolean'],
             'sort' => ['nullable', 'string', 'in:newest,oldest,name_ar,name_en,offers,relevance'],
             'direction' => ['nullable', 'string', 'in:asc,desc,ASC,DESC'],
             'page' => ['nullable', 'integer', 'min:1'],

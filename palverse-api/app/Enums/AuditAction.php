@@ -32,6 +32,8 @@ enum AuditAction: string
     case StoreRejected = 'store.rejected';
     case StoreActivated = 'store.activated';
     case StoreDeactivated = 'store.deactivated';
+    case StoreVerified = 'store.verified';
+    case StoreUnverified = 'store.unverified';
 
     // Store Media and Content
     case StoreLogoUploaded = 'store.logo_uploaded';

@@ -43,6 +43,16 @@ class FollowUpStoresService {
     return res.data;
   }
 
+  async verifyStore(publicId: string): Promise<FollowUpStore> {
+    const res = await apiClient.patch<never, BaseResponse<FollowUpStore>>(`/follow-up/stores/${publicId}/verify`);
+    return res.data;
+  }
+
+  async unverifyStore(publicId: string): Promise<FollowUpStore> {
+    const res = await apiClient.patch<never, BaseResponse<FollowUpStore>>(`/follow-up/stores/${publicId}/unverify`);
+    return res.data;
+  }
+
   // Media
   async uploadLogo(publicId: string, file: File): Promise<StoreMediaItem> {
     const formData = new FormData();

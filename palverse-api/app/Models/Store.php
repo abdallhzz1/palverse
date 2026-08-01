@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,6 +38,9 @@ class Store extends Model
         'owner_id',
         'status',
         'is_active',
+        'is_verified',
+        'verified_at',
+        'verified_by',
     ];
 
     protected $hidden = [
@@ -46,14 +50,17 @@ class Store extends Model
     protected $casts = [
         'status' => StoreStatus::class,
         'is_active' => 'boolean',
+        'is_verified' => 'boolean',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'verified_at' => 'datetime',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
         'owner_id' => 'integer',
         'category_id' => 'integer',
         'city_id' => 'integer',
         'zone_id' => 'integer',
+        'verified_by' => 'integer',
     ];
 
     protected static function boot()
@@ -77,6 +84,15 @@ class Store extends Model
         return $this->belongsTo(Category::class);
     }
 
+    /**
+     * All specialties/tags for the store (includes primary category).
+     */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'category_store')
+            ->withTimestamps();
+    }
+
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
@@ -87,6 +103,11 @@ class Store extends Model
         return $this->belongsTo(Zone::class);
     }
 
+    public function verifiedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
@@ -95,6 +116,44 @@ class Store extends Model
     public function rejectedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    /**
+     * Sync specialty categories. Primary category_id remains the main category.
+     *
+     * @param  list<int>  $categoryIds
+     */
+    public function syncSpecialties(array $categoryIds, ?int $primaryCategoryId = null): void
+    {
+        $primary = $primaryCategoryId ?? $this->category_id;
+        $ids = array_values(array_unique(array_filter(array_map('intval', array_merge(
+            $primary ? [$primary] : [],
+            $categoryIds
+        )))));
+
+        $this->categories()->sync($ids);
+
+        if ($primary && $this->category_id !== $primary) {
+            $this->forceFill(['category_id' => $primary])->save();
+        }
+    }
+
+    public function markVerified(?User $actor = null): void
+    {
+        $this->forceFill([
+            'is_verified' => true,
+            'verified_at' => now(),
+            'verified_by' => $actor?->id,
+        ])->save();
+    }
+
+    public function clearVerified(): void
+    {
+        $this->forceFill([
+            'is_verified' => false,
+            'verified_at' => null,
+            'verified_by' => null,
+        ])->save();
     }
 
     public function scopePending(Builder $query): Builder

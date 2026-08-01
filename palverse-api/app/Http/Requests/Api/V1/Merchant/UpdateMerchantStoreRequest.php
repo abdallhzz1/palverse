@@ -76,6 +76,8 @@ class UpdateMerchantStoreRequest extends FormRequest
             'address_en' => ['nullable', 'string', 'max:500'],
             'latitude' => ['nullable', 'required_with:longitude', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'required_with:latitude', 'numeric', 'between:-180,180'],
+            'category_public_ids' => ['sometimes', 'array', 'max:8'],
+            'category_public_ids.*' => ['string', Rule::exists('categories', 'public_id')],
         ];
     }
 

@@ -64,15 +64,12 @@ export async function HomeStoresList({
                 slug={store.slug}
                 publicId={store.public_id}
                 categoryName={store.category?.name_ar || store.category?.name_en || ""}
-                cityName={
-                  store.city?.name_ar ||
-                  store.city?.name_en ||
-                  store.zone?.city?.name_ar ||
-                  store.zone?.city?.name_en ||
-                  ""
-                }
+                tags={(store.categories || []).map((c: any) => c.name_ar || c.name_en).filter(Boolean)}
+                cityName={store.city?.name_ar || store.city?.name_en || ""}
+                zoneName={store.zone?.name_ar || store.zone?.name_en || ""}
                 coverImage={store.cover?.url}
                 logoImage={store.logo?.url}
+                verified={Boolean(store.is_verified)}
                 averageRating={
                   store.published_reviews_avg_rating
                     ? Number(store.published_reviews_avg_rating)

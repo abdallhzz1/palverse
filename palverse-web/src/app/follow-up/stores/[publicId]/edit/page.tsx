@@ -30,10 +30,12 @@ export default function FollowUpStoreEditPage({ params }: { params: Promise<{ pu
     address_ar: "",
     address_en: "",
     category_public_id: "",
+    category_public_ids: [] as string[],
     city_public_id: "",
     zone_public_id: "",
     latitude: null as number | null,
     longitude: null as number | null,
+    is_verified: false,
   });
 
   useEffect(() => {
@@ -54,10 +56,14 @@ export default function FollowUpStoreEditPage({ params }: { params: Promise<{ pu
           address_ar: storeData.address_ar || "",
           address_en: storeData.address_en || "",
           category_public_id: storeData.category?.public_id || "",
+          category_public_ids: Array.isArray((storeData as any).categories)
+            ? (storeData as any).categories.map((c: any) => c.public_id).filter(Boolean)
+            : (storeData.category?.public_id ? [storeData.category.public_id] : []),
           city_public_id: storeData.city?.public_id || "",
           zone_public_id: storeData.zone?.public_id || "",
           latitude: storeData.latitude || null,
           longitude: storeData.longitude || null,
+          is_verified: Boolean((storeData as any).is_verified),
         });
 
         const [catsRes, citiesRes] = await Promise.allSettled([
@@ -219,11 +225,61 @@ export default function FollowUpStoreEditPage({ params }: { params: Promise<{ pu
           <h2 className="text-lg font-bold text-[#0F3D2E] dark:text-[#EAF3EC] border-b border-[#EAF3EC] dark:border-[#1F2522] pb-2">الموقع والتصنيف</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">التصنيف *</label>
-              <select required value={formData.category_public_id} onChange={e => setFormData({ ...formData, category_public_id: e.target.value })} className="w-full px-4 py-2 border rounded-xl dark:bg-[#1a1a1a] dark:border-gray-700 focus:ring-[#1E7D4E]">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">التصنيف الرئيسي *</label>
+              <select
+                required
+                value={formData.category_public_id}
+                onChange={(e) => {
+                  const primary = e.target.value;
+                  const extras = formData.category_public_ids.filter((id) => id !== primary);
+                  setFormData({
+                    ...formData,
+                    category_public_id: primary,
+                    category_public_ids: primary ? [primary, ...extras] : extras,
+                  });
+                }}
+                className="w-full px-4 py-2 border rounded-xl dark:bg-[#1a1a1a] dark:border-gray-700 focus:ring-[#1E7D4E]"
+              >
                 <option value="">اختر التصنيف</option>
                 {categories.map(c => <option key={c.public_id} value={c.public_id}>{c.name_ar}</option>)}
               </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تخصصات إضافية (اختياري)</label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto rounded-xl border border-[#EAF3EC] p-3">
+                {categories.map((c) => {
+                  const checked = formData.category_public_ids.includes(c.public_id);
+                  const isPrimary = c.public_id === formData.category_public_id;
+                  return (
+                    <label key={c.public_id} className="flex items-center gap-2 text-sm text-[#0F3D2E] dark:text-[#EAF3EC]">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled={isPrimary}
+                        onChange={(e) => {
+                          const next = e.target.checked
+                            ? [...formData.category_public_ids, c.public_id]
+                            : formData.category_public_ids.filter((id) => id !== c.public_id);
+                          setFormData({ ...formData, category_public_ids: next });
+                        }}
+                      />
+                      <span>{c.name_ar}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={formData.is_verified}
+                  onChange={(e) => setFormData({ ...formData, is_verified: e.target.checked })}
+                  className="h-4 w-4 rounded border-gray-300 text-[#1E7D4E] focus:ring-[#1E7D4E]"
+                />
+                شارة موثّق بعد مراجعة المتابعة
+              </label>
+              <p className="mt-1 text-xs text-gray-500">تظهر الشارة للجمهور على بطاقة النشاط وصفحته.</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">المدينة *</label>

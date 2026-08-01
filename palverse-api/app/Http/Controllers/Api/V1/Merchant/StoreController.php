@@ -23,7 +23,7 @@ class StoreController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $stores = Store::with(['category', 'city', 'zone', 'logo', 'cover'])
+        $stores = Store::with(['category', 'categories', 'city', 'zone', 'logo', 'cover'])
             ->ownedBy($request->user())
             ->ordered()
             ->paginate($request->input('per_page', 15));
@@ -120,6 +120,17 @@ class StoreController extends Controller
 
             $store->save();
 
+            if (array_key_exists('category_public_ids', $validated)) {
+                $specialtyIds = Category::query()
+                    ->whereIn('public_id', $validated['category_public_ids'] ?? [])
+                    ->pluck('id')
+                    ->all();
+                $store->syncSpecialties($specialtyIds, $store->category_id);
+            } elseif (isset($validated['category_public_id'])) {
+                $existing = $store->categories()->pluck('categories.id')->all();
+                $store->syncSpecialties($existing, $store->category_id);
+            }
+
             $newValues = $store->only(array_keys($oldValues));
             $this->auditLogService->recordFromRequest(
                 action: AuditAction::StoreUpdated,
@@ -143,7 +154,7 @@ class StoreController extends Controller
             throw $e;
         }
 
-        $store->load(['category', 'city', 'zone']);
+        $store->load(['category', 'categories', 'city', 'zone']);
 
         return response()->json([
             'success' => true,

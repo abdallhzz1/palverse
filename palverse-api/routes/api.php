@@ -329,6 +329,8 @@ Route::prefix('v1')->group(function (): void {
                 Route::patch('/{publicId}/reject', [AdminStoreController::class, 'reject']);
                 Route::patch('/{publicId}/activate', [AdminStoreController::class, 'activate']);
                 Route::patch('/{publicId}/deactivate', [AdminStoreController::class, 'deactivate']);
+                Route::patch('/{publicId}/verify', [AdminStoreController::class, 'verify']);
+                Route::patch('/{publicId}/unverify', [AdminStoreController::class, 'unverify']);
 
                 // Media moderation (reuses merchant media controller; StorePolicy::update allows admin)
                 Route::post('/{publicId}/logo', [StoreMediaController::class, 'storeLogo']);
@@ -481,6 +483,8 @@ Route::prefix('v1')->group(function (): void {
                 Route::get('/', [AdminStoreController::class, 'index']);
                 Route::get('/{publicId}', [AdminStoreController::class, 'show']);
                 Route::put('/{publicId}', [AdminStoreController::class, 'update']);
+                Route::patch('/{publicId}/verify', [AdminStoreController::class, 'verify']);
+                Route::patch('/{publicId}/unverify', [AdminStoreController::class, 'unverify']);
                 Route::get('/{publicId}/links', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'links']);
                 Route::get('/{publicId}/qr', [App\Http\Controllers\Api\V1\Admin\StoreLinkController::class, 'qr']);
 

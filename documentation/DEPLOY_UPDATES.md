@@ -237,3 +237,23 @@ php artisan cache:clear
 ```
 
 ثم Redeploy لـ **palverse-web** و **palverse-admin** على Vercel.
+
+---
+
+## تحديث منتجي (آب 2026): دليل أوضح مستوحى من شو بدك
+
+### ما أُضيف
+1. **أحياء/شوارع المدن الكبرى** عبر `MajorCityNeighborhoodsSeeder` (الخليل، رام الله، نابلس، بيت لحم، جنين، طولكرم)
+2. **تخصصات متعددة** للنشاط (`category_store` + `categories` في الـ API) مع الإبقاء على التصنيف الرئيسي
+3. **بحث عام**: نص + مدينة + حي/منطقة + فئة (شريط الرئيسية + فلاتر `/stores`)
+4. **شارة موثّق** (`is_verified`) بعد مراجعة المتابعة/الأدمن
+5. **بطاقة نتيجة**: شعار + tags + مدينة—حي + موثّق
+
+### أوامر السيرفر
+```bash
+cd ~/repositories/palverse/palverse-api
+php artisan migrate --force
+php artisan db:seed --class=MajorCityNeighborhoodsSeeder --force
+php artisan config:clear
+php artisan cache:clear
+```

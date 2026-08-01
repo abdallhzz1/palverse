@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             SubscriptionPlanSeeder::class,
             WestBankLocationsSeeder::class,
+            MajorCityNeighborhoodsSeeder::class,
             SystemSettingSeeder::class,
             StaticPageSeeder::class,
         ]);
