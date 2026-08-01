@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Store, Plus, LayoutGrid, Users } from "lucide-react";
+import { Home, Store, Plus, Users, Headset } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CMS_PAGE_SLUGS, cmsPageHref } from "@/lib/cms-pages";
 
@@ -14,8 +14,8 @@ export function BottomNav() {
     { name: "الرئيسية", href: "/", icon: Home },
     { name: "المحلات", href: "/stores", icon: Store },
     { isAction: true, href: "/join-us", icon: Plus, name: "أضف" },
-    { name: "الفئات", href: "/categories", icon: LayoutGrid },
     { name: "من نحن", href: aboutHref, icon: Users },
+    { name: "تواصل", href: "/contact", icon: Headset },
   ];
 
   return (

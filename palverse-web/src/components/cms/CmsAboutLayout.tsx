@@ -104,28 +104,16 @@ export function CmsAboutLayout({ html, excerpt, updatedAt }: CmsAboutLayoutProps
   const chunks = html ? extractChunks(sanitizeHtmlContent(html)) : [];
   const excerptText = normalizeText(excerpt || "");
 
-  // Hero already shows excerpt once — never repeat it as a second lead line.
-  const lead = excerptText ? null : chunks[0] || null;
-
+  // Keep every CMS story point. Only drop an exact duplicate of the hero excerpt.
   let body = excerptText
     ? chunks.filter((c) => normalizeText(c) !== excerptText)
-    : chunks.slice(1);
+    : [...chunks];
 
-  // If first body chunk still duplicates a short excerpt-like line, drop it
-  if (excerptText && body[0] && normalizeText(body[0]).includes(excerptText)) {
-    body = body.slice(1);
-  }
-
+  // Merge points 3 and 4 into one (1-based).
   body = mergeStoryPoints(body);
 
   return (
     <div className="mx-auto max-w-5xl space-y-10 md:space-y-14">
-      {lead ? (
-        <p className="mx-auto max-w-2xl text-center text-base font-medium leading-8 text-[#6B8578] md:text-lg md:leading-9">
-          {lead}
-        </p>
-      ) : null}
-
       <div
         className="-mx-4 overflow-x-auto px-4 pb-1 md:mx-0 md:overflow-visible md:px-0 md:pb-0"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
@@ -152,9 +140,6 @@ export function CmsAboutLayout({ html, excerpt, updatedAt }: CmsAboutLayoutProps
             <h2 className="font-heading text-xl font-extrabold text-[#1A3D32] md:text-2xl">
               قصتنا باختصار
             </h2>
-            <p className="mt-2 text-sm text-[#6B8578]">
-              نقاط أساسية عن بال فيرس — بدون صفحات طويلة مزدحمة.
-            </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
