@@ -12,6 +12,7 @@ interface PublicPageHeroProps {
   align?: "center" | "start";
   className?: string;
   priority?: boolean;
+  /** Optional label above the title. "بال فيرس" is never shown. */
   eyebrow?: string | null;
 }
 
@@ -23,12 +24,14 @@ export function PublicPageHero({
   subtitle,
   children,
   size = "page",
-  align = "start",
+  align = "center",
   className,
   eyebrow,
 }: PublicPageHeroProps) {
   const isHome = size === "home";
-  const resolvedEyebrow = eyebrow === undefined ? (isHome ? null : "بال فيرس") : eyebrow;
+  const resolvedEyebrow =
+    eyebrow && eyebrow.trim() && eyebrow.trim() !== "بال فيرس" ? eyebrow.trim() : null;
+
   return (
     <section
       className={cn(

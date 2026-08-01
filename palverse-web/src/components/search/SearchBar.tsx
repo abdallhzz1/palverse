@@ -217,7 +217,7 @@ export function SearchBar({ cities = [], categories = [] }: SearchBarProps) {
   return (
     <div
       ref={rootRef}
-      className={cn("relative w-full max-w-2xl", open ? "z-50" : "z-10")}
+      className={cn("relative mx-auto w-full max-w-2xl", open ? "z-50" : "z-10")}
     >      <form onSubmit={handleSubmit} className="w-full">
         <div
           className={cn(

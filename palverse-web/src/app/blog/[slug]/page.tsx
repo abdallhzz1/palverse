@@ -49,7 +49,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         title={article.title_ar}
         subtitle={article.excerpt_ar || undefined}
         size="page"
-        eyebrow="المدونة"
       />
 
       <section className="public-container max-w-3xl pb-20 pt-8">

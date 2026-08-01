@@ -79,7 +79,6 @@ export default function JoinUsPage() {
     <div className="flex flex-col bg-[#F7F9F8]">
       <PublicPageHero
         size="home"
-        align="center"
         title="أضف نشاطك التجاري وصِل إلى آلاف العملاء"
         subtitle="أرسل طلب انضمام بسيط. فريق المتابعة يتواصل معك ويحدّد الباقة المناسبة عند التفعيل."
       >
