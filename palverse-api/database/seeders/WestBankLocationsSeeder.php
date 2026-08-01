@@ -14,23 +14,87 @@ class WestBankLocationsSeeder extends Seeder
     public function run(): void
     {
         foreach ($this->locations() as $cityData) {
-            $city = City::updateOrCreate(
-                ['name_en' => $cityData['name_en']],
-                ['name_ar' => $cityData['name_ar']]
-            );
+            $city = $this->resolveCity($cityData['name_ar'], $cityData['name_en']);
 
             foreach ($cityData['zones'] as $zoneData) {
-                Zone::updateOrCreate(
-                    [
-                        'city_id' => $city->id,
-                        'name_en' => $zoneData['name_en'],
-                    ],
-                    [
-                        'name_ar' => $zoneData['name_ar'],
-                    ]
-                );
+                $this->resolveZone($city, $zoneData['name_ar'], $zoneData['name_en']);
             }
         }
+    }
+
+    /**
+     * Match existing cities by Arabic or English name to avoid unique collisions
+     * when production already has cities seeded with only one language filled.
+     */
+    private function resolveCity(string $nameAr, string $nameEn): City
+    {
+        $city = City::query()->where('name_ar', $nameAr)->first()
+            ?? City::query()->where('name_en', $nameEn)->first();
+
+        if ($city) {
+            $updates = [];
+
+            if ($city->name_ar !== $nameAr
+                && ! City::query()->where('name_ar', $nameAr)->where('id', '!=', $city->id)->exists()) {
+                $updates['name_ar'] = $nameAr;
+            }
+
+            if ($city->name_en !== $nameEn
+                && ! City::query()->where('name_en', $nameEn)->where('id', '!=', $city->id)->exists()) {
+                $updates['name_en'] = $nameEn;
+            }
+
+            if ($updates !== []) {
+                $city->fill($updates)->save();
+            }
+
+            return $city;
+        }
+
+        return City::create([
+            'name_ar' => $nameAr,
+            'name_en' => $nameEn,
+        ]);
+    }
+
+    private function resolveZone(City $city, string $nameAr, string $nameEn): Zone
+    {
+        $zone = Zone::query()
+            ->where('city_id', $city->id)
+            ->where(function ($query) use ($nameAr, $nameEn) {
+                $query->where('name_ar', $nameAr)
+                    ->orWhere('name_en', $nameEn);
+            })
+            ->first();
+
+        if ($zone) {
+            $updates = [];
+
+            if ($zone->name_ar !== $nameAr
+                && ! Zone::query()
+                    ->where('city_id', $city->id)
+                    ->where('name_ar', $nameAr)
+                    ->where('id', '!=', $zone->id)
+                    ->exists()) {
+                $updates['name_ar'] = $nameAr;
+            }
+
+            if ($zone->name_en !== $nameEn) {
+                $updates['name_en'] = $nameEn;
+            }
+
+            if ($updates !== []) {
+                $zone->fill($updates)->save();
+            }
+
+            return $zone;
+        }
+
+        return Zone::create([
+            'city_id' => $city->id,
+            'name_ar' => $nameAr,
+            'name_en' => $nameEn,
+        ]);
     }
 
     /**
