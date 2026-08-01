@@ -18,6 +18,57 @@ export function defaultAdDateRange(days = 30): { start_date: string; end_date: s
 
 export type AdScheduleStatus = "live" | "scheduled" | "expired" | "paused";
 
+export type BannerPlacementId = "home_hero" | "home_mid" | "stores_list" | "store_sidebar";
+
+export type BannerPlacementOption = {
+  id: BannerPlacementId;
+  label_ar: string;
+  aspect_ratio: string;
+  recommended_size: string;
+  ui_variant: "hero" | "inline" | "sidebar";
+  max_concurrent: number;
+};
+
+/** Canonical banner slots — keep in sync with App\Enums\AdPlacement */
+export const BANNER_PLACEMENTS: BannerPlacementOption[] = [
+  {
+    id: "home_hero",
+    label_ar: "بنر الرئيسية (تحت البحث)",
+    aspect_ratio: "21:9",
+    recommended_size: "1400×600",
+    ui_variant: "hero",
+    max_concurrent: 5,
+  },
+  {
+    id: "home_mid",
+    label_ar: "بنر وسط الرئيسية",
+    aspect_ratio: "21:8",
+    recommended_size: "1200×460",
+    ui_variant: "inline",
+    max_concurrent: 5,
+  },
+  {
+    id: "stores_list",
+    label_ar: "بنر صفحة المتاجر",
+    aspect_ratio: "21:8",
+    recommended_size: "1200×460",
+    ui_variant: "inline",
+    max_concurrent: 5,
+  },
+  {
+    id: "store_sidebar",
+    label_ar: "بنر جانبي في بروفايل المحل",
+    aspect_ratio: "4:5",
+    recommended_size: "800×1000",
+    ui_variant: "sidebar",
+    max_concurrent: 3,
+  },
+];
+
+export function getBannerPlacement(id?: string | null): BannerPlacementOption | undefined {
+  return BANNER_PLACEMENTS.find((p) => p.id === id);
+}
+
 export function getAdScheduleStatus(ad: {
   is_active?: boolean;
   start_date?: string;
@@ -49,10 +100,10 @@ export function adScheduleLabel(status: AdScheduleStatus): { label: string; clas
 }
 
 export const AD_PLACEMENT_LABELS: Record<string, string> = {
-  home_hero_banner: "بنر الرئيسية تحت البحث",
-  home_mid_banner: "بنر وسط الرئيسية",
-  stores_list_banner: "بنر صفحة المتاجر",
-  store_profile_sidebar: "شريط جانبي لبروفايل المحل",
+  home_hero: "بنر الرئيسية (تحت البحث)",
+  home_mid: "بنر وسط الرئيسية",
+  stores_list: "بنر صفحة المتاجر",
+  store_sidebar: "بنر جانبي في بروفايل المحل",
   home_featured_stores: "محلات مميزة في الرئيسية",
   stores_list_featured: "محلات مميزة في /stores",
   stores_list_sponsored_badge: "شارة ممول داخل النتائج",

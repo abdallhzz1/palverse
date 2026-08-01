@@ -139,6 +139,38 @@ class AdvertisementManagementTest extends TestCase
             ->assertJsonPath('data.public_status', 'paused');
     }
 
+    public function test_follow_up_can_create_banner_with_placement(): void
+    {
+        $this->actingAs($this->followUp, 'sanctum')
+            ->post('/api/v1/follow-up/advertisements', [
+                'store_public_id' => $this->store->public_id,
+                'ad_type' => 'banner',
+                'placement' => 'store_sidebar',
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays(7)->toDateString(),
+                'amount_paid' => 80,
+            ], [
+                // no image → should fail
+            ])
+            ->assertStatus(422);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('sidebar.jpg', 800, 1000);
+
+        $this->actingAs($this->followUp, 'sanctum')
+            ->post('/api/v1/follow-up/advertisements', [
+                'store_public_id' => $this->store->public_id,
+                'ad_type' => 'banner',
+                'placement' => 'store_sidebar',
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays(7)->toDateString(),
+                'amount_paid' => 80,
+                'image' => $file,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.placement', 'store_sidebar')
+            ->assertJsonPath('data.placement_meta.aspect_ratio', '4:5');
+    }
+
     public function test_guest_cannot_manage_advertisements(): void
     {
         $this->postJson('/api/v1/follow-up/advertisements', [])

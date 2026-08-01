@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/api/client";
 import { toast } from "sonner";
 import Image from "next/image";
-import { placementLabels } from "@/lib/ads/ad-schedule";
+import { placementLabels, BANNER_PLACEMENTS, getBannerPlacement } from "@/lib/ads/ad-schedule";
 
 function resolveBannerUrl(path?: string | null, imageUrl?: string | null) {
   if (imageUrl) return imageUrl;
@@ -39,6 +39,7 @@ export default function EditFollowUpAdvertisementPage({
   const [formData, setFormData] = useState({
     store_public_id: "",
     ad_type: "featured_store",
+    placement: "home_hero",
     start_date: "",
     end_date: "",
     amount_paid: "",
@@ -58,6 +59,7 @@ export default function EditFollowUpAdvertisementPage({
         setFormData({
           store_public_id: ad.store?.public_id || "",
           ad_type: ad.ad_type,
+          placement: ad.placement || "home_hero",
           start_date: (ad.start_date || "").slice(0, 10),
           end_date: (ad.end_date || "").slice(0, 10),
           amount_paid: String(ad.amount_paid ?? ""),
@@ -86,6 +88,9 @@ export default function EditFollowUpAdvertisementPage({
       data.append("amount_paid", formData.amount_paid);
       data.append("notes", formData.notes ?? "");
       data.append("is_active", formData.is_active ? "1" : "0");
+      if (formData.ad_type === "banner") {
+        data.append("placement", formData.placement);
+      }
       if (imageFile) data.append("image", imageFile);
 
       await apiClient.post(`/follow-up/advertisements/${publicId}`, data, { timeout: 60000 });
@@ -133,19 +138,7 @@ export default function EditFollowUpAdvertisementPage({
     );
   }
 
-  const expectedPlacements =
-    formData.ad_type === "banner"
-      ? placementLabels([
-          "home_hero_banner",
-          "home_mid_banner",
-          "stores_list_banner",
-          "store_profile_sidebar",
-        ])
-      : placementLabels([
-          "home_featured_stores",
-          "stores_list_featured",
-          "stores_list_sponsored_badge",
-        ]);
+  const selectedSlot = getBannerPlacement(formData.placement);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -159,18 +152,31 @@ export default function EditFollowUpAdvertisementPage({
         <div>
           <h1 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">تعديل الإعلان</h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
-            تحكم بالتواريخ والتفعيل والصورة ومواضع الظهور على الموقع
+            كل بنر مربوط بموضع واحد ومقاس محدد
           </p>
         </div>
       </div>
 
       <div className="rounded-2xl border border-[#EAF3EC] bg-[#EAF3EC]/50 p-4 text-sm text-[#0F3D2E]">
-        <p className="mb-2 font-bold">مواضع الظهور المتوقعة:</p>
-        <ul className="list-disc space-y-1 pe-5">
-          {expectedPlacements.map((label) => (
-            <li key={label}>{label}</li>
-          ))}
-        </ul>
+        {formData.ad_type === "banner" && selectedSlot ? (
+          <>
+            <p className="font-bold">{selectedSlot.label_ar}</p>
+            <p className="mt-1 text-xs text-[#5F7B6A]">
+              النسبة {selectedSlot.aspect_ratio} · المقاس المقترح {selectedSlot.recommended_size}
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="font-bold">إبراز المتجر</p>
+            <p className="mt-1 text-xs text-[#5F7B6A]">
+              {placementLabels([
+                "home_featured_stores",
+                "stores_list_featured",
+                "stores_list_sponsored_badge",
+              ]).join(" · ")}
+            </p>
+          </>
+        )}
       </div>
 
       <form
@@ -220,11 +226,30 @@ export default function EditFollowUpAdvertisementPage({
               />
               <div>
                 <div className="font-bold">بنر إعلاني</div>
-                <div className="text-sm text-gray-500">بنر في الرئيسية والمتاجر وبروفايل المحل</div>
+                <div className="text-sm text-gray-500">صورة بحجم موضع محدد تختاره أدناه</div>
               </div>
             </label>
           </div>
         </div>
+
+        {formData.ad_type === "banner" && (
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">موضع البنر والمقاس</label>
+            <select
+              name="placement"
+              value={formData.placement}
+              onChange={handleChange}
+              required
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+            >
+              {BANNER_PLACEMENTS.map((slot) => (
+                <option key={slot.id} value={slot.id}>
+                  {slot.label_ar} — {slot.aspect_ratio} ({slot.recommended_size})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">

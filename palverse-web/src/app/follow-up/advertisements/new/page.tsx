@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/api/client";
 import { toast } from "sonner";
 import Image from "next/image";
-import { defaultAdDateRange } from "@/lib/ads/ad-schedule";
+import { defaultAdDateRange, BANNER_PLACEMENTS, getBannerPlacement } from "@/lib/ads/ad-schedule";
 
 export default function NewAdvertisementPage() {
   const router = useRouter();
@@ -18,6 +18,7 @@ export default function NewAdvertisementPage() {
   const [formData, setFormData] = useState({
     store_public_id: "",
     ad_type: "featured_store",
+    placement: "home_hero",
     ...defaultAdDateRange(30),
     amount_paid: "",
     notes: "",
@@ -56,6 +57,7 @@ export default function NewAdvertisementPage() {
       data.append("notes", formData.notes ?? "");
 
       if (formData.ad_type === "banner" && imageFile) {
+        data.append("placement", formData.placement);
         data.append("image", imageFile);
       } else if (formData.ad_type === "banner" && !imageFile) {
         throw new Error("يجب رفع صورة للبنر الإعلاني");
@@ -107,7 +109,9 @@ export default function NewAdvertisementPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">إضافة إعلان جديد</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">إعداد حملة ممولة تظهر في مواضع الموقع حسب نوع الإعلان</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            لكل بنر موضع واحد ومقاس موصى به. إبراز المتجر لا يحتاج صورة بنر.
+          </p>
         </div>
       </div>
 
@@ -147,6 +151,29 @@ export default function NewAdvertisementPage() {
             </label>
           </div>
         </div>
+
+        {formData.ad_type === "banner" && (
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">موضع البنر والمقاس</label>
+            <select
+              name="placement"
+              value={formData.placement}
+              onChange={handleChange}
+              required
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+            >
+              {BANNER_PLACEMENTS.map((slot) => (
+                <option key={slot.id} value={slot.id}>
+                  {slot.label_ar} — {slot.aspect_ratio} ({slot.recommended_size})
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500">
+              ارفع صورة بنسبة {getBannerPlacement(formData.placement)?.aspect_ratio} تقريباً
+              (مقترح {getBannerPlacement(formData.placement)?.recommended_size}). يظهر في هذا الموضع فقط.
+            </p>
+          </div>
+        )}
 
         {/* Store Selection */}
         <div className="space-y-2">

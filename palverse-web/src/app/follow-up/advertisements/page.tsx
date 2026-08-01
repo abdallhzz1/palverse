@@ -5,7 +5,7 @@ import { Megaphone, Plus, Trash2, CheckCircle2, XCircle, Store, Pencil } from "l
 import Link from "next/link";
 import { apiClient } from "@/lib/api/client";
 import { toast } from "sonner";
-import { adScheduleLabel, getAdScheduleStatus, placementLabels } from "@/lib/ads/ad-schedule";
+import { adScheduleLabel, getAdScheduleStatus, placementLabels, getBannerPlacement } from "@/lib/ads/ad-schedule";
 
 function resolveBannerUrl(path?: string | null, imageUrl?: string | null) {
   if (imageUrl) return imageUrl;
@@ -67,8 +67,8 @@ export default function FollowUpAdvertisementsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">الإعلانات الممولة</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            تحكم كامل بالحملات من المتابعة: إنشاء، تعديل، تفعيل/إيقاف، وحذف. البنر يظهر في الرئيسية
-            وصفحة المتاجر وبروفايل المحل؛ إبراز المتجر يظهر كبطاقة/شارة ممولة.
+            البنر يُنشأ لموضع واحد بمقاسه. إبراز المتجر يظهر كبطاقة ممولة. أنشئ بنرات منفصلة لنفس
+            المتجر إذا أردته في أكثر من مكان.
           </p>
         </div>
         <Link
@@ -117,7 +117,17 @@ export default function FollowUpAdvertisementsPage() {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {advertisements.map((ad: any) => {
                   const img = resolveBannerUrl(ad.image_path, ad.image_url);
-                  const placeText = placementLabels(ad.placements).slice(0, 2).join(" · ");
+                  const placeText =
+                    ad.ad_type === "banner"
+                      ? getBannerPlacement(ad.placement)?.label_ar ||
+                        ad.placement_meta?.label_ar ||
+                        placementLabels(ad.placements).join(" · ")
+                      : placementLabels(ad.placements).slice(0, 2).join(" · ");
+                  const sizeHint =
+                    ad.ad_type === "banner"
+                      ? getBannerPlacement(ad.placement)?.recommended_size ||
+                        ad.placement_meta?.recommended_size
+                      : null;
                   return (
                     <tr key={ad.public_id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
                       <td className="px-6 py-4">
@@ -143,7 +153,10 @@ export default function FollowUpAdvertisementsPage() {
                                 {ad.ad_type === "banner" ? "بنر إعلاني" : "إبراز المتجر"}
                               </span>
                             </div>
-                            <div className="text-sm text-gray-500">{placeText || ad.notes || "لا يوجد ملاحظات"}</div>
+                            <div className="text-sm text-gray-500">
+                              {placeText || ad.notes || "لا يوجد ملاحظات"}
+                              {sizeHint ? ` · ${sizeHint}` : ""}
+                            </div>
                           </div>
                         </div>
                       </td>

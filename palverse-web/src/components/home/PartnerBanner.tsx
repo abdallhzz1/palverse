@@ -1,12 +1,13 @@
 import { AdBannerSlot } from "@/components/ads/AdBannerSlot";
 
-/** Homepage primary banner under search — only renders when campaigns are live. */
+/** Homepage primary banner under search — only home_hero campaigns. */
 export async function PartnerBanner() {
   return (
     <AdBannerSlot
+      placement="home_hero"
       variant="hero"
       title="إعلانات مميزة"
-      subtitle="مساحات ترويجية ممولة تصل لجمهورك مباشرة بعد البحث"
+      subtitle="مساحة بنر عريضة تحت البحث"
     />
   );
 }

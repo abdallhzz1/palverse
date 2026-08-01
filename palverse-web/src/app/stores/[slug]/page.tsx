@@ -228,6 +228,7 @@ export default async function StoreDetailPage({
 
             {/* Sponsored banner in sidebar (never self-promote) */}
             <AdBannerSlot
+              placement="store_sidebar"
               variant="sidebar"
               title="إعلان ممول"
               excludeStore={storePublicId}

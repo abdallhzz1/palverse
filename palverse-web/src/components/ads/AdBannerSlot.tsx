@@ -4,29 +4,34 @@ import {
   type BannerVariant,
   type PartnerBannerItem,
 } from "@/components/home/PartnerBannerSlider";
+import {
+  getBannerPlacement,
+  type BannerPlacementId,
+} from "@/lib/ads/ad-schedule";
 
 type AdBannerSlotProps = {
+  /** Required public slot — only ads created for this placement are shown. */
+  placement: BannerPlacementId;
   variant?: BannerVariant;
-  /** Compact heading above the slider. */
   title?: string;
   subtitle?: string;
-  /** Hide the whole slot when no active banners (default). */
   showWhenEmpty?: boolean;
-  /** Exclude a store so profile pages do not promote themselves. */
   excludeStore?: string;
   className?: string;
-  /**
-   * Render only the slider (no section/container).
-   * Use inside an existing public-container (e.g. /stores).
-   */
   embedded?: boolean;
 };
 
-async function fetchBanners(excludeStore?: string): Promise<PartnerBannerItem[]> {
+async function fetchBanners(
+  placement: BannerPlacementId,
+  excludeStore?: string
+): Promise<PartnerBannerItem[]> {
   try {
     const res = await serverFetch<{ data: PartnerBannerItem[] }>("/advertisements/banners", {
       cache: "no-store",
-      params: excludeStore ? { exclude_store: excludeStore } : undefined,
+      params: {
+        placement,
+        ...(excludeStore ? { exclude_store: excludeStore } : {}),
+      },
     });
     return Array.isArray(res?.data)
       ? res.data.filter((b) => b?.image_url || b?.image_path)
@@ -38,7 +43,8 @@ async function fetchBanners(excludeStore?: string): Promise<PartnerBannerItem[]>
 }
 
 export async function AdBannerSlot({
-  variant = "hero",
+  placement,
+  variant,
   title,
   subtitle,
   showWhenEmpty = false,
@@ -46,7 +52,9 @@ export async function AdBannerSlot({
   className = "",
   embedded = false,
 }: AdBannerSlotProps) {
-  const banners = await fetchBanners(excludeStore);
+  const meta = getBannerPlacement(placement);
+  const resolvedVariant = variant || meta?.ui_variant || "inline";
+  const banners = await fetchBanners(placement, excludeStore);
 
   if (!showWhenEmpty && banners.length === 0) {
     return null;
@@ -58,7 +66,7 @@ export async function AdBannerSlot({
         {title ? (
           <h2
             className={`font-heading font-extrabold text-[#0F3D2E] ${
-              variant === "sidebar" ? "text-sm" : "text-xl md:text-2xl"
+              resolvedVariant === "sidebar" ? "text-sm" : "text-xl md:text-2xl"
             }`}
           >
             {title}
@@ -69,9 +77,11 @@ export async function AdBannerSlot({
     ) : null;
 
   const slider =
-    banners.length > 0 ? <PartnerBannerSlider banners={banners} variant={variant} /> : null;
+    banners.length > 0 ? (
+      <PartnerBannerSlider banners={banners} variant={resolvedVariant} />
+    ) : null;
 
-  if (variant === "sidebar" || embedded) {
+  if (resolvedVariant === "sidebar" || embedded) {
     if (!slider) return null;
     return (
       <div className={className}>

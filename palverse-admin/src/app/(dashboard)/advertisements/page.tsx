@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { advertisementsService, type StoreAdvertisement } from "@/services/advertisements.service";
 import { normalizeApiError } from "@/lib/api/error";
-import { adScheduleLabel, getAdScheduleStatus, placementLabels, bannerImageUrl } from "@/lib/ads/ad-schedule";
+import { adScheduleLabel, getAdScheduleStatus, placementLabels, bannerImageUrl, getBannerPlacement } from "@/lib/ads/ad-schedule";
 
 export default function AdminAdvertisementsPage() {
   const [advertisements, setAdvertisements] = useState<StoreAdvertisement[]>([]);
@@ -58,8 +58,8 @@ export default function AdminAdvertisementsPage() {
             الإعلانات الممولة
           </h2>
           <p className="mt-1 text-muted-foreground">
-            تحكم كامل بالحملات: إنشاء، تعديل التواريخ والصورة، تفعيل/إيقاف، وحذف. البنر يظهر في
-            الرئيسية وصفحة المتاجر وبروفايل المحل؛ إبراز المتجر يظهر كبطاقة/شارة ممولة.
+            البنر يُنشأ لموضع واحد بمقاسه. إبراز المتجر يظهر كبطاقة ممولة. أنشئ بنرات منفصلة إذا أردت نفس
+            المتجر في أكثر من مكان.
           </p>
         </div>
         <Button asChild className="bg-[#1E7D4E] hover:bg-[#0F3D2E]">
@@ -106,7 +106,17 @@ export default function AdminAdvertisementsPage() {
               <tbody className="divide-y divide-border dark:divide-slate-800">
                 {advertisements.map((ad) => {
                   const img = bannerImageUrl(ad.image_path, ad.image_url);
-                  const placeText = placementLabels(ad.placements).slice(0, 2).join(" · ");
+                  const placeText =
+                    ad.ad_type === "banner"
+                      ? getBannerPlacement(ad.placement)?.label_ar ||
+                        ad.placement_meta?.label_ar ||
+                        placementLabels(ad.placements).join(" · ")
+                      : placementLabels(ad.placements).slice(0, 2).join(" · ");
+                  const sizeHint =
+                    ad.ad_type === "banner"
+                      ? getBannerPlacement(ad.placement)?.recommended_size ||
+                        ad.placement_meta?.recommended_size
+                      : null;
                   return (
                     <tr key={ad.public_id} className="hover:bg-muted/30">
                       <td className="px-6 py-4">
@@ -138,6 +148,7 @@ export default function AdminAdvertisementsPage() {
                             </div>
                             <div className="text-sm text-muted-foreground">
                               {placeText || ad.notes || "لا يوجد ملاحظات"}
+                              {sizeHint ? ` · ${sizeHint}` : ""}
                             </div>
                           </div>
                         </div>

@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { advertisementsService } from "@/services/advertisements.service";
 import { apiClient } from "@/lib/api/client";
 import { normalizeApiError } from "@/lib/api/error";
-import { bannerImageUrl, placementLabels } from "@/lib/ads/ad-schedule";
+import { bannerImageUrl, placementLabels, BANNER_PLACEMENTS, getBannerPlacement } from "@/lib/ads/ad-schedule";
 
 export default function EditAdminAdvertisementPage({
   params,
@@ -34,6 +34,7 @@ export default function EditAdminAdvertisementPage({
   const [formData, setFormData] = useState({
     store_public_id: "",
     ad_type: "featured_store",
+    placement: "home_hero",
     start_date: "",
     end_date: "",
     amount_paid: "",
@@ -42,7 +43,6 @@ export default function EditAdminAdvertisementPage({
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [placements, setPlacements] = useState<string[]>([]);
 
   useEffect(() => {
     Promise.all([
@@ -54,6 +54,7 @@ export default function EditAdminAdvertisementPage({
         setFormData({
           store_public_id: ad.store?.public_id || "",
           ad_type: ad.ad_type,
+          placement: ad.placement || "home_hero",
           start_date: (ad.start_date || "").slice(0, 10),
           end_date: (ad.end_date || "").slice(0, 10),
           amount_paid: String(ad.amount_paid ?? ""),
@@ -61,7 +62,6 @@ export default function EditAdminAdvertisementPage({
           is_active: Boolean(ad.is_active),
         });
         setImagePreview(bannerImageUrl(ad.image_path, ad.image_url));
-        setPlacements(ad.placements || []);
         setStores(
           (storesRes as { data?: { public_id: string; name_ar?: string; name_en?: string }[] }).data ||
             []
@@ -86,6 +86,9 @@ export default function EditAdminAdvertisementPage({
       data.append("amount_paid", formData.amount_paid);
       data.append("notes", formData.notes ?? "");
       data.append("is_active", formData.is_active ? "1" : "0");
+      if (formData.ad_type === "banner") {
+        data.append("placement", formData.placement);
+      }
       if (imageFile) data.append("image", imageFile);
 
       await advertisementsService.update(publicId, data);
@@ -133,19 +136,7 @@ export default function EditAdminAdvertisementPage({
     );
   }
 
-  const expectedPlacements =
-    formData.ad_type === "banner"
-      ? placementLabels([
-          "home_hero_banner",
-          "home_mid_banner",
-          "stores_list_banner",
-          "store_profile_sidebar",
-        ])
-      : placementLabels([
-          "home_featured_stores",
-          "stores_list_featured",
-          "stores_list_sponsored_badge",
-        ]);
+  const selectedSlot = getBannerPlacement(formData.placement);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -158,24 +149,30 @@ export default function EditAdminAdvertisementPage({
         <div>
           <h2 className="text-2xl font-bold tracking-tight">تعديل الإعلان</h2>
           <p className="mt-1 text-muted-foreground">
-            تحكم بالتواريخ والتفعيل والصورة والمواضع على الموقع العام
+            كل بنر مربوط بموضع واحد ومقاس محدد — لا يُعرض في مواضع أخرى
           </p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#EAF3EC] bg-[#EAF3EC]/40 p-4 text-sm text-[#0F3D2E]">
-        <p className="mb-2 font-bold">مواضع الظهور المتوقعة لهذا النوع:</p>
-        <ul className="list-disc space-y-1 pe-5">
-          {expectedPlacements.map((label) => (
-            <li key={label}>{label}</li>
-          ))}
-        </ul>
-        {placements.length > 0 ? (
-          <p className="mt-3 text-xs text-[#5F7B6A]">
-            الحالة الحالية على الموقع تعتمد على التفعيل وتواريخ الحملة وحالة المتجر.
+      {formData.ad_type === "banner" && selectedSlot ? (
+        <div className="rounded-2xl border border-[#EAF3EC] bg-[#EAF3EC]/40 p-4 text-sm text-[#0F3D2E]">
+          <p className="font-bold">{selectedSlot.label_ar}</p>
+          <p className="mt-1 text-xs text-[#5F7B6A]">
+            النسبة {selectedSlot.aspect_ratio} · المقاس المقترح {selectedSlot.recommended_size}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-[#EAF3EC] bg-[#EAF3EC]/40 p-4 text-sm text-[#0F3D2E]">
+          <p className="font-bold">إبراز المتجر</p>
+          <p className="mt-1 text-xs text-[#5F7B6A]">
+            {placementLabels([
+              "home_featured_stores",
+              "stores_list_featured",
+              "stores_list_sponsored_badge",
+            ]).join(" · ")}
+          </p>
+        </div>
+      )}
 
       <form
         onSubmit={handleSubmit}
@@ -197,7 +194,7 @@ export default function EditAdminAdvertisementPage({
                 {
                   value: "banner",
                   title: "بنر إعلاني",
-                  desc: "بنر في الرئيسية والمتاجر وبروفايل المحل",
+                  desc: "صورة بحجم موضع محدد تختاره أدناه",
                 },
               ] as const
             ).map((option) => (
@@ -225,6 +222,25 @@ export default function EditAdminAdvertisementPage({
             ))}
           </div>
         </div>
+
+        {formData.ad_type === "banner" && (
+          <div className="space-y-2">
+            <label className="text-sm font-bold">موضع البنر والمقاس</label>
+            <select
+              name="placement"
+              value={formData.placement}
+              onChange={handleChange}
+              required
+              className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 outline-none focus:border-[#1E7D4E]"
+            >
+              {BANNER_PLACEMENTS.map((slot) => (
+                <option key={slot.id} value={slot.id}>
+                  {slot.label_ar} — {slot.aspect_ratio} ({slot.recommended_size})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-bold">

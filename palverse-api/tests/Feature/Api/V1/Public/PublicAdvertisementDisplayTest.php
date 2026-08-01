@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1\Public;
 
+use App\Enums\AdPlacement;
 use App\Models\Store;
 use App\Models\StoreAdvertisement;
 use App\Models\SubscriptionPlan;
@@ -51,11 +52,12 @@ class PublicAdvertisementDisplayTest extends TestCase
         ]);
     }
 
-    public function test_public_banners_endpoint_returns_active_banner_ads(): void
+    public function test_public_banners_endpoint_requires_placement_and_filters_by_it(): void
     {
         StoreAdvertisement::create([
             'store_id' => $this->store->id,
             'ad_type' => 'banner',
+            'placement' => AdPlacement::HOME_HERO,
             'image_path' => 'advertisements/demo-banner.jpg',
             'start_date' => now()->toDateString(),
             'end_date' => now()->addDays(5)->toDateString(),
@@ -65,7 +67,18 @@ class PublicAdvertisementDisplayTest extends TestCase
             'is_active' => true,
         ]);
 
-        // Featured ads should not appear in banners
+        StoreAdvertisement::create([
+            'store_id' => $this->store->id,
+            'ad_type' => 'banner',
+            'placement' => AdPlacement::STORE_SIDEBAR,
+            'image_path' => 'advertisements/sidebar.jpg',
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addDays(5)->toDateString(),
+            'amount_paid' => 90,
+            'created_by' => $this->creator->id,
+            'is_active' => true,
+        ]);
+
         StoreAdvertisement::create([
             'store_id' => $this->store->id,
             'ad_type' => 'featured_store',
@@ -79,10 +92,20 @@ class PublicAdvertisementDisplayTest extends TestCase
         ]);
 
         $this->getJson('/api/v1/advertisements/banners')
+            ->assertStatus(422);
+
+        $this->getJson('/api/v1/advertisements/banners?placement=home_hero')
             ->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.store.slug', 'test-ad-store');
+            ->assertJsonPath('data.0.store.slug', 'test-ad-store')
+            ->assertJsonPath('data.0.placement', 'home_hero')
+            ->assertJsonPath('meta.placement_meta.recommended_size', '1400×600');
+
+        $this->getJson('/api/v1/advertisements/banners?placement=store_sidebar')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.placement', 'store_sidebar');
     }
 
     public function test_store_search_is_featured_returns_only_featured_store_ads(): void
@@ -129,6 +152,7 @@ class PublicAdvertisementDisplayTest extends TestCase
         StoreAdvertisement::create([
             'store_id' => $this->store->id,
             'ad_type' => 'banner',
+            'placement' => AdPlacement::STORE_SIDEBAR,
             'image_path' => 'advertisements/self.jpg',
             'start_date' => now()->toDateString(),
             'end_date' => now()->addDays(5)->toDateString(),
@@ -139,6 +163,7 @@ class PublicAdvertisementDisplayTest extends TestCase
         StoreAdvertisement::create([
             'store_id' => $other->id,
             'ad_type' => 'banner',
+            'placement' => AdPlacement::STORE_SIDEBAR,
             'image_path' => 'advertisements/other.jpg',
             'start_date' => now()->toDateString(),
             'end_date' => now()->addDays(5)->toDateString(),
@@ -147,7 +172,7 @@ class PublicAdvertisementDisplayTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->getJson('/api/v1/advertisements/banners?exclude_store='.$this->store->public_id)
+        $this->getJson('/api/v1/advertisements/banners?placement=store_sidebar&exclude_store='.$this->store->public_id)
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.store.slug', 'other-ad-store');

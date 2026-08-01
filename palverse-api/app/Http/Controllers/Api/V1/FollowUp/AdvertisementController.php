@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\FollowUp;
 
+use App\Enums\AdPlacement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\FollowUp\StoreAdvertisementRequest;
 use App\Http\Requests\Api\V1\FollowUp\UpdateAdvertisementRequest;
@@ -36,6 +37,7 @@ class AdvertisementController extends Controller
                 'last_page' => $advertisements->lastPage(),
                 'total' => $advertisements->total(),
                 'business_timezone' => config('palverse.business_timezone'),
+                'banner_placements' => AdPlacement::catalog(),
             ],
         ]);
     }
@@ -51,6 +53,9 @@ class AdvertisementController extends Controller
         return response()->json([
             'success' => true,
             'data' => $this->serialize($advertisement),
+            'meta' => [
+                'banner_placements' => AdPlacement::catalog(),
+            ],
         ]);
     }
 
@@ -61,8 +66,11 @@ class AdvertisementController extends Controller
         $validated = $request->validated();
         $store = $this->resolveEligibleStore($validated['store_public_id']);
 
+        $placement = null;
         if ($validated['ad_type'] === 'banner') {
+            $placement = AdPlacement::from($validated['placement']);
             $this->assertBannerCapacity(
+                $placement,
                 $validated['start_date'],
                 $validated['end_date']
             );
@@ -76,6 +84,7 @@ class AdvertisementController extends Controller
         $advertisement = StoreAdvertisement::create([
             'store_id' => $store->id,
             'ad_type' => $validated['ad_type'],
+            'placement' => $placement,
             'image_path' => $imagePath,
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
@@ -113,6 +122,23 @@ class AdvertisementController extends Controller
             $advertisement->ad_type = $validated['ad_type'];
         }
 
+        if ($advertisement->ad_type === 'featured_store') {
+            $advertisement->placement = null;
+        } elseif (array_key_exists('placement', $validated)) {
+            if (blank($validated['placement'])) {
+                throw ValidationException::withMessages([
+                    'placement' => ['اختر موضع البنر على الموقع.'],
+                ]);
+            }
+            $advertisement->placement = AdPlacement::from($validated['placement']);
+        }
+
+        if ($advertisement->ad_type === 'banner' && blank($advertisement->placement)) {
+            throw ValidationException::withMessages([
+                'placement' => ['اختر موضع البنر على الموقع والمقاس المناسب له.'],
+            ]);
+        }
+
         if (isset($validated['start_date'])) {
             $advertisement->start_date = $validated['start_date'];
         }
@@ -133,12 +159,20 @@ class AdvertisementController extends Controller
             $advertisement->is_active = (bool) $validated['is_active'];
         }
 
-        $effectiveType = $advertisement->ad_type;
         $effectiveStart = optional($advertisement->start_date)->toDateString();
         $effectiveEnd = optional($advertisement->end_date)->toDateString();
+        $placement = $advertisement->placement instanceof AdPlacement
+            ? $advertisement->placement
+            : null;
 
-        if ($effectiveType === 'banner' && $effectiveStart && $effectiveEnd && $advertisement->is_active) {
-            $this->assertBannerCapacity($effectiveStart, $effectiveEnd, $advertisement->id);
+        if (
+            $advertisement->ad_type === 'banner'
+            && $placement
+            && $effectiveStart
+            && $effectiveEnd
+            && $advertisement->is_active
+        ) {
+            $this->assertBannerCapacity($placement, $effectiveStart, $effectiveEnd, $advertisement->id);
         }
 
         if ($request->hasFile('image')) {
@@ -202,10 +236,15 @@ class AdvertisementController extends Controller
         return $store;
     }
 
-    private function assertBannerCapacity(string $startDate, string $endDate, ?int $ignoreId = null): void
-    {
+    private function assertBannerCapacity(
+        AdPlacement $placement,
+        string $startDate,
+        string $endDate,
+        ?int $ignoreId = null
+    ): void {
         $query = StoreAdvertisement::query()
             ->where('ad_type', 'banner')
+            ->where('placement', $placement->value)
             ->where('is_active', true)
             ->whereDate('start_date', '<=', $endDate)
             ->whereDate('end_date', '>=', $startDate);
@@ -214,9 +253,13 @@ class AdvertisementController extends Controller
             $query->where('id', '!=', $ignoreId);
         }
 
-        if ($query->count() >= 5) {
+        $max = $placement->maxConcurrent();
+
+        if ($query->count() >= $max) {
             throw ValidationException::withMessages([
-                'start_date' => ['تم الوصول للحد الأقصى للبنرات الإعلانية (5 بنرات) في هذه الفترة الزمنية. يرجى اختيار تواريخ أخرى.'],
+                'placement' => [
+                    "تم الوصول للحد الأقصى ({$max}) لبنرات الموضع «{$placement->labelAr()}» في هذه الفترة. اختر موضعاً أو تواريخ أخرى.",
+                ],
             ]);
         }
     }
@@ -227,8 +270,10 @@ class AdvertisementController extends Controller
     private function serialize(StoreAdvertisement $ad): array
     {
         $visibility = $ad->homepageVisibility();
+        $payload = $ad->toArray();
+        $payload['placement'] = $visibility['placement'];
 
-        return array_merge($ad->toArray(), [
+        return array_merge($payload, [
             'image_url' => PublicStorageUrl::fromPath($ad->image_path),
             'shows_on_homepage' => $visibility['shows_on_homepage'],
             'shows_publicly' => $visibility['shows_publicly'],
@@ -237,6 +282,7 @@ class AdvertisementController extends Controller
             'homepage_reasons' => $visibility['reasons'],
             'public_reasons' => $visibility['reasons'],
             'placements' => $visibility['placements'],
+            'placement_meta' => $visibility['placement_meta'],
             'business_today' => $visibility['business_today'],
         ]);
     }

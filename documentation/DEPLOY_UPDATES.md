@@ -192,7 +192,7 @@ API_BASE_URL=https://api.alfajrhealth.com/api/v1
 
 تحقق سريع:
 ```bash
-curl -s https://api.alfajrhealth.com/api/v1/advertisements/banners
+curl -s "https://api.alfajrhealth.com/api/v1/advertisements/banners?placement=home_hero"
 ```
 
 ### ثانياً: تشخيص على cPanel
@@ -264,19 +264,21 @@ Redeploy لـ **palverse-web** على Vercel فقط (لا migration).
 3. **بروفايل المحل**: بنر جانبي (مع استثناء المحل الحالي عبر `exclude_store`)
 
 ### تحسينات API
-- `GET /advertisements/banners?exclude_store=`
+- `GET /advertisements/banners?placement=` (مطلوب) + `exclude_store`
 - حقل `is_featured` في قائمة المتاجر
-- رفع حد البنرات المتزامنة من 3 إلى **5**
+- حقل `placement` لكل بنر + كتالوج مواضع/مقاسات
+- رفع حد البنرات **لكل موضع** (وليس عاماً لكل المواقع)
 
 ### تحكم الأدمن / المتابعة
-- عرض حالة الظهور على الموقع + مواضع الحملة
-- تعديل كامل: تواريخ، مبلغ، ملاحظات، نوع، صورة البنر، تفعيل
-- صفحات تعديل: `/advertisements/[id]/edit` و `/follow-up/advertisements/[id]/edit`
+- عند إنشاء/تعديل بنر: اختيار الموضع + المقاس الموصى به
+- إبراز المتجر بدون موضع بنر
+- بنرات قديمة بلا موضع تُنقل تلقائياً إلى `home_hero` عند الـ migrate
 
 ### النشر
 ```bash
 cd ~/repositories/palverse && git pull origin master
-# لا migration
+cd ~/repositories/palverse/palverse-api
+php artisan migrate --force
 ```
 ثم Redeploy لـ **API** + **palverse-web** + **palverse-admin**.
 

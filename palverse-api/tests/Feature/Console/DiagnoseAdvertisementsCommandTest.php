@@ -27,6 +27,7 @@ class DiagnoseAdvertisementsCommandTest extends TestCase
         StoreAdvertisement::query()->create([
             'store_id' => $store->id,
             'ad_type' => 'banner',
+            'placement' => 'home_hero',
             'is_active' => true,
             'start_date' => BusinessDate::now()->subDays(10)->toDateString(),
             'end_date' => BusinessDate::now()->subDays(2)->toDateString(),

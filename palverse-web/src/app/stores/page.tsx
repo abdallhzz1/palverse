@@ -73,7 +73,7 @@ export default async function StoresPage(props: {
         </Suspense>
 
         <div className="mb-8">
-          <AdBannerSlot variant="inline" embedded />
+          <AdBannerSlot placement="stores_list" variant="inline" embedded />
         </div>
 
         {isFirstPage ? (
@@ -134,12 +134,6 @@ export default async function StoresPage(props: {
                   />
                 ))}
               </div>
-
-              {isFirstPage && stores.length >= 4 ? (
-                <div className="my-10">
-                  <AdBannerSlot variant="inline" embedded />
-                </div>
-              ) : null}
 
               {meta.last_page > 1 && (
                 <div className="mt-16 flex justify-center items-center gap-3 flex-wrap">

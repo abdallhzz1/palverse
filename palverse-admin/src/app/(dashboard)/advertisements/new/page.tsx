@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { advertisementsService } from "@/services/advertisements.service";
 import { apiClient } from "@/lib/api/client";
 import { normalizeApiError } from "@/lib/api/error";
-import { defaultAdDateRange } from "@/lib/ads/ad-schedule";
+import { defaultAdDateRange, BANNER_PLACEMENTS, getBannerPlacement } from "@/lib/ads/ad-schedule";
 
 export default function NewAdminAdvertisementPage() {
   const router = useRouter();
@@ -29,6 +29,7 @@ export default function NewAdminAdvertisementPage() {
   const [formData, setFormData] = useState({
     store_public_id: "",
     ad_type: "featured_store",
+    placement: "home_hero",
     ...defaultAdDateRange(30),
     amount_paid: "",
     notes: "",
@@ -59,6 +60,8 @@ export default function NewAdminAdvertisementPage() {
       data.append("notes", formData.notes ?? "");
 
       if (formData.ad_type === "banner") {
+        if (!formData.placement) throw new Error("اختر موضع البنر");
+        data.append("placement", formData.placement);
         if (!imageFile) throw new Error("يجب رفع صورة للبنر الإعلاني");
         data.append("image", imageFile);
       }
@@ -106,7 +109,9 @@ export default function NewAdminAdvertisementPage() {
         </Button>
         <div>
           <h2 className="text-2xl font-bold tracking-tight">إضافة إعلان جديد</h2>
-          <p className="mt-1 text-muted-foreground">إعداد حملة ممولة تظهر في مواضع الموقع حسب نوع الإعلان</p>
+          <p className="mt-1 text-muted-foreground">
+            لكل بنر موضع واحد ومقاس موصى به. لإبراز المتجر لا حاجة لصورة بنر.
+          </p>
         </div>
       </div>
 
@@ -158,6 +163,38 @@ export default function NewAdminAdvertisementPage() {
             ))}
           </div>
         </div>
+
+        {formData.ad_type === "banner" && (
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-bold">موضع البنر والمقاس</label>
+            <select
+              name="placement"
+              value={formData.placement}
+              onChange={handleChange}
+              required
+              className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 outline-none focus:border-[#1E7D4E]"
+            >
+              {BANNER_PLACEMENTS.map((slot) => (
+                <option key={slot.id} value={slot.id}>
+                  {slot.label_ar} — {slot.aspect_ratio} ({slot.recommended_size})
+                </option>
+              ))}
+            </select>
+            {getBannerPlacement(formData.placement) ? (
+              <p className="text-xs text-muted-foreground">
+                ارفع صورة بنسبة{" "}
+                <span className="font-bold text-[#1E7D4E]">
+                  {getBannerPlacement(formData.placement)?.aspect_ratio}
+                </span>{" "}
+                تقريباً، المقاس المقترح{" "}
+                <span className="font-bold">
+                  {getBannerPlacement(formData.placement)?.recommended_size}
+                </span>
+                . هذا البنر يظهر في هذا الموضع فقط.
+              </p>
+            ) : null}
+          </div>
+        )}
 
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-bold">
@@ -218,7 +255,9 @@ export default function NewAdminAdvertisementPage() {
                       <ImageIcon className="h-6 w-6" />
                     </div>
                     <span className="font-medium text-[#1E7D4E]">اضغط هنا لاختيار صورة</span>
-                    <span className="text-xs text-muted-foreground">يفضل 16:9 وبحد أقصى 10MB</span>
+                    <span className="text-xs text-muted-foreground">
+                      نسبة {getBannerPlacement(formData.placement)?.aspect_ratio || "الموضع"} — بحد أقصى 10MB
+                    </span>
                   </label>
                 </>
               )}

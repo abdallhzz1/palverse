@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AdPlacement;
 use App\Models\Concerns\HasPublicId;
 use App\Support\BusinessDate;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,6 +18,7 @@ class StoreAdvertisement extends Model
     protected $fillable = [
         'store_id',
         'ad_type',
+        'placement',
         'image_path',
         'start_date',
         'end_date',
@@ -27,6 +29,7 @@ class StoreAdvertisement extends Model
     ];
 
     protected $casts = [
+        'placement' => AdPlacement::class,
         'start_date' => 'date',
         'end_date' => 'date',
         'is_active' => 'boolean',
@@ -53,6 +56,13 @@ class StoreAdvertisement extends Model
             ->whereDate('end_date', '>=', $today);
     }
 
+    public function scopeForPlacement(Builder $query, AdPlacement|string $placement): Builder
+    {
+        $value = $placement instanceof AdPlacement ? $placement->value : $placement;
+
+        return $query->where('placement', $value);
+    }
+
     /**
      * @return array{
      *   shows_on_homepage: bool,
@@ -60,6 +70,8 @@ class StoreAdvertisement extends Model
      *   status: string,
      *   reasons: list<string>,
      *   placements: list<string>,
+     *   placement: string|null,
+     *   placement_meta: array<string, mixed>|null,
      *   business_today: string
      * }
      */
@@ -94,6 +106,10 @@ class StoreAdvertisement extends Model
             $reasons[] = 'missing_banner_image';
         }
 
+        if ($this->ad_type === 'banner' && blank($this->placement)) {
+            $reasons[] = 'missing_placement';
+        }
+
         $shows = $reasons === [];
 
         $status = match (true) {
@@ -104,16 +120,15 @@ class StoreAdvertisement extends Model
             default => 'hidden',
         };
 
+        $placementEnum = $this->placement instanceof AdPlacement
+            ? $this->placement
+            : (is_string($this->placement) ? AdPlacement::tryFrom($this->placement) : null);
+
         $placements = [];
         if ($shows) {
-            if ($this->ad_type === 'banner') {
-                $placements = [
-                    'home_hero_banner',
-                    'home_mid_banner',
-                    'stores_list_banner',
-                    'store_profile_sidebar',
-                ];
-            } else {
+            if ($this->ad_type === 'banner' && $placementEnum) {
+                $placements = [$placementEnum->value];
+            } elseif ($this->ad_type === 'featured_store') {
                 $placements = [
                     'home_featured_stores',
                     'stores_list_featured',
@@ -122,12 +137,28 @@ class StoreAdvertisement extends Model
             }
         }
 
+        $placementMeta = null;
+        if ($placementEnum) {
+            $placementMeta = [
+                'id' => $placementEnum->value,
+                'label_ar' => $placementEnum->labelAr(),
+                'aspect_ratio' => $placementEnum->aspectRatio(),
+                'recommended_size' => $placementEnum->recommendedSize(),
+                'ui_variant' => $placementEnum->uiVariant(),
+            ];
+        }
+
         return [
-            'shows_on_homepage' => $shows,
+            'shows_on_homepage' => $shows && (
+                $this->ad_type === 'featured_store'
+                || in_array($placementEnum?->value, [AdPlacement::HOME_HERO->value, AdPlacement::HOME_MID->value], true)
+            ),
             'shows_publicly' => $shows,
             'status' => $status,
             'reasons' => $reasons,
             'placements' => $placements,
+            'placement' => $placementEnum?->value,
+            'placement_meta' => $placementMeta,
             'business_today' => $today,
         ];
     }

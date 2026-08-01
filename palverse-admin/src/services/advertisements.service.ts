@@ -13,6 +13,14 @@ export interface StoreAdvertisementStore {
 export interface StoreAdvertisement {
   public_id: string;
   ad_type: AdvertisementAdType;
+  placement?: string | null;
+  placement_meta?: {
+    id: string;
+    label_ar: string;
+    aspect_ratio: string;
+    recommended_size: string;
+    ui_variant?: string;
+  } | null;
   image_path?: string | null;
   image_url?: string | null;
   start_date: string;

@@ -25,6 +25,7 @@ export default function Home() {
       />
       {/* 3) Mid-page second banner impression */}
       <AdBannerSlot
+        placement="home_mid"
         variant="inline"
         title="عروض الشركاء"
         className="bg-white"
