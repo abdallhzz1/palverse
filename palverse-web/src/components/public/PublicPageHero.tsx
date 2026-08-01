@@ -12,7 +12,7 @@ interface PublicPageHeroProps {
   align?: "center" | "start";
   className?: string;
   priority?: boolean;
-  eyebrow?: string;
+  eyebrow?: string | null;
 }
 
 /**
@@ -25,10 +25,10 @@ export function PublicPageHero({
   size = "page",
   align = "start",
   className,
-  eyebrow = "بال فيرس",
+  eyebrow,
 }: PublicPageHeroProps) {
   const isHome = size === "home";
-
+  const resolvedEyebrow = eyebrow === undefined ? (isHome ? null : "بال فيرس") : eyebrow;
   return (
     <section
       className={cn(
@@ -51,8 +51,8 @@ export function PublicPageHero({
             align === "center" ? "items-center" : "items-start"
           )}
         >
-          {eyebrow ? (
-            <p className="text-xs font-bold tracking-wide text-[#6B8578] md:text-sm">{eyebrow}</p>
+          {resolvedEyebrow ? (
+            <p className="text-xs font-bold tracking-wide text-[#6B8578] md:text-sm">{resolvedEyebrow}</p>
           ) : null}
 
           <h1
