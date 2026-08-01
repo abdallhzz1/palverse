@@ -10,7 +10,7 @@ import { publicService } from "@/services/public.service";
 interface SearchBarProps {
   cities?: { public_id: string; name_ar: string; name_en: string }[];
   categories?: { slug: string; name_ar: string; name_en: string }[];
-  variant?: "default" | "onHero";
+  variant?: "default" | "onHero" | "home";
 }
 
 export function SearchBar({ cities = [], categories = [], variant = "default" }: SearchBarProps) {
@@ -61,27 +61,28 @@ export function SearchBar({ cities = [], categories = [], variant = "default" }:
   };
 
   const onHero = variant === "onHero";
+  const isHome = variant === "home" || onHero;
 
   return (
     <form
       onSubmit={handleSubmit}
       className={cn(
         "flex w-full flex-col gap-2 overflow-hidden p-2 sm:p-1.5",
-        onHero
-          ? "rounded-2xl border border-white/25 bg-white/95 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.45)] backdrop-blur-md"
-          : "rounded-2xl border border-[#EAF3EC] bg-white shadow-[0_8px_30px_-12px_rgba(15,61,46,0.12)]"
+        isHome
+          ? "rounded-xl border border-[#E2EAE5] bg-white"
+          : "rounded-xl border border-[#E2EAE5] bg-white"
       )}
     >
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="flex items-center rounded-xl bg-[#F5F7F6]/80 px-4 py-3">
-          <MapPin className="ml-3 h-5 w-5 shrink-0 text-[#7FA789]" />
+        <div className="flex items-center rounded-lg bg-[#F7F9F8] px-4 py-3">
+          <MapPin className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
           <select
             value={city}
             onChange={(e) => {
               setCity(e.target.value);
               setZone("");
             }}
-            className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#0F3D2E] outline-none"
+            className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#1A3D32] outline-none"
           >
             <option value="">{dict.common.allCities}</option>
             {cities.map((c) => (
@@ -92,13 +93,13 @@ export function SearchBar({ cities = [], categories = [], variant = "default" }:
           </select>
         </div>
 
-        <div className="flex items-center rounded-xl bg-[#F5F7F6]/80 px-4 py-3">
-          <MapPin className="ml-3 h-5 w-5 shrink-0 text-[#7FA789]" />
+        <div className="flex items-center rounded-lg bg-[#F7F9F8] px-4 py-3">
+          <MapPin className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
           <select
             value={zone}
             onChange={(e) => setZone(e.target.value)}
             disabled={!city || zones.length === 0}
-            className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#0F3D2E] outline-none disabled:opacity-50"
+            className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#1A3D32] outline-none disabled:opacity-50"
           >
             <option value="">كل المناطق / الأحياء</option>
             {zones.map((z) => (
@@ -109,12 +110,12 @@ export function SearchBar({ cities = [], categories = [], variant = "default" }:
           </select>
         </div>
 
-        <div className="flex items-center rounded-xl bg-[#F5F7F6]/80 px-4 py-3">
-          <Tag className="ml-3 h-5 w-5 shrink-0 text-[#7FA789]" />
+        <div className="flex items-center rounded-lg bg-[#F7F9F8] px-4 py-3">
+          <Tag className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#0F3D2E] outline-none"
+            className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#1A3D32] outline-none"
           >
             <option value="">كل الفئات</option>
             {categories.map((c) => (
@@ -125,21 +126,21 @@ export function SearchBar({ cities = [], categories = [], variant = "default" }:
           </select>
         </div>
 
-        <div className="flex items-center rounded-xl bg-[#F5F7F6]/80 px-4 py-3">
-          <Search className="ml-3 h-5 w-5 shrink-0 text-[#7FA789]" />
+        <div className="flex items-center rounded-lg bg-[#F7F9F8] px-4 py-3">
+          <Search className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ابحث عن مطعم، خدمة، أو اسم نشاط"
-            className="w-full border-none bg-transparent font-medium text-[#0F3D2E] outline-none placeholder:text-[#7FA789]"
+            className="w-full border-none bg-transparent font-medium text-[#1A3D32] outline-none placeholder:text-[#6B8578]"
           />
         </div>
       </div>
 
       <button
         type="submit"
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1E7D4E] py-3 font-bold text-white transition-colors hover:bg-[#0F3D2E]"
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2F6B4F] py-3.5 text-base font-bold text-white transition-colors hover:bg-[#1A3D32]"
       >
         <Search className="h-5 w-5" />
         بحث

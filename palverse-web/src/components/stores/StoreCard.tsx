@@ -58,45 +58,42 @@ export function StoreCard({
   return (
     <Link
       href={`/stores/${hrefSlug}`}
-      className={cn(
-        "public-card group flex flex-col",
-        "hover:-translate-y-1"
-      )}
+      className={cn("public-card group flex flex-col")}
     >
-      <div className="relative h-36 w-full overflow-hidden bg-[#EAF3EC] md:h-48">
+      <div className="relative h-36 w-full overflow-hidden bg-[#E8EEEA] md:h-44">
         <Image
           src={cleanCover}
           alt={name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           unoptimized
-          className="object-cover duration-700 group-hover:scale-105"
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/55 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1A3D32]/45 via-transparent to-transparent" />
 
         <div className="absolute top-2 end-2 flex flex-col items-end gap-1">
           {verified ? (
-            <div className="inline-flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-bold text-[#1E7D4E] shadow-sm md:text-xs">
+            <div className="inline-flex items-center gap-1 rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-bold text-[#2F6B4F] md:text-xs">
               <BadgeCheck className="h-3 w-3" />
               موثّق
             </div>
           ) : null}
           {sponsored ? (
-            <div className="rounded-lg bg-[#1E7D4E] px-2 py-0.5 text-[10px] font-bold text-white shadow-sm md:text-xs">
-              مميز
+            <div className="rounded-md bg-[#2F6B4F] px-2 py-0.5 text-[10px] font-bold text-white md:text-xs">
+              إعلان
             </div>
           ) : null}
         </div>
 
         <div className="absolute bottom-2 start-2">
           {averageRating !== undefined && ratingsCount !== undefined && ratingsCount > 0 ? (
-            <div className="flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-bold text-[#0F3D2E] shadow-sm md:text-xs">
+            <div className="flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-bold text-[#1A3D32] md:text-xs">
               <span dir="ltr">{Number(averageRating).toFixed(1)}</span>
               <span className="text-amber-400">★</span>
-              <span className="text-[9px] font-normal text-[#7FA789] md:text-[10px]">({ratingsCount})</span>
+              <span className="text-[9px] font-normal text-[#6B8578] md:text-[10px]">({ratingsCount})</span>
             </div>
           ) : (
-            <div className="rounded-lg bg-white/95 px-2 py-0.5 text-[9px] font-bold text-[#7FA789] shadow-sm md:text-[10px]">
+            <div className="rounded-lg bg-white/95 px-2 py-0.5 text-[9px] font-bold text-[#6B8578] md:text-[10px]">
               جديد
             </div>
           )}
@@ -104,17 +101,17 @@ export function StoreCard({
       </div>
 
       <div className="relative flex flex-col gap-1.5 p-3 pt-7 md:gap-2 md:p-5 md:pt-9">
-        <div className="absolute -top-6 end-3 z-10 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-[3px] border-white bg-white shadow-md md:-top-8 md:end-5 md:h-14 md:w-14">
+        <div className="absolute -top-6 end-3 z-10 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-white md:-top-8 md:end-5 md:h-14 md:w-14">
           {cleanLogo ? (
             <Image src={cleanLogo} alt="" fill unoptimized className="object-cover" />
           ) : (
-            <span className="text-base font-extrabold text-[#1E7D4E] md:text-lg">
+            <span className="text-base font-extrabold text-[#2F6B4F] md:text-lg">
               {(name || "U").charAt(0)}
             </span>
           )}
         </div>
 
-        <h3 className="line-clamp-1 font-heading text-sm font-bold text-[#0F3D2E] transition-colors group-hover:text-[#1E7D4E] md:text-lg">
+        <h3 className="line-clamp-1 font-heading text-sm font-bold text-[#1A3D32] transition-colors group-hover:text-[#2F6B4F] md:text-lg">
           {name}
         </h3>
 
@@ -123,7 +120,7 @@ export function StoreCard({
             {specialtyTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-md bg-[#EAF3EC] px-1.5 py-0.5 text-[9px] font-semibold text-[#1E7D4E] md:text-[10px]"
+                className="rounded-md bg-[#E8EEEA] px-1.5 py-0.5 text-[9px] font-semibold text-[#2F6B4F] md:text-[10px]"
               >
                 {tag}
               </span>
@@ -132,7 +129,7 @@ export function StoreCard({
         ) : null}
 
         {locationLabel ? (
-          <div className="flex items-center gap-1 text-[10px] font-medium text-[#7FA789] md:text-xs">
+          <div className="flex items-center gap-1 text-[10px] font-medium text-[#6B8578] md:text-xs">
             <MapPin className="h-3 w-3 shrink-0" />
             <span className="line-clamp-1">{locationLabel}</span>
           </div>

@@ -25,12 +25,6 @@ const VARIANT_ASPECT: Record<BannerVariant, string> = {
   sidebar: "aspect-[4/5]",
 };
 
-const VARIANT_RADIUS: Record<BannerVariant, string> = {
-  hero: "rounded-[1.75rem]",
-  inline: "rounded-2xl",
-  sidebar: "rounded-2xl",
-};
-
 export function PartnerBannerSlider({
   banners,
   variant = "hero",
@@ -51,9 +45,7 @@ export function PartnerBannerSlider({
   if (banners.length === 0) return null;
 
   return (
-    <div
-      className={`relative w-full overflow-hidden border border-[#EAF3EC] bg-[#0F3D2E] shadow-[0_20px_50px_-24px_rgba(15,61,46,0.35)] ${VARIANT_RADIUS[variant]}`}
-    >
+    <div className="relative w-full overflow-hidden rounded-xl border border-[#E2EAE5] bg-[#1A3D32]">
       <div className={`relative w-full ${VARIANT_ASPECT[variant]}`}>
         {banners.map((banner, index) => {
           const src =
@@ -67,7 +59,7 @@ export function PartnerBannerSlider({
           return (
             <div
               key={banner.public_id}
-              className={`absolute inset-0 transition-opacity duration-700 ease-out ${
+              className={`absolute inset-0 transition-opacity duration-500 ease-out ${
                 active ? "z-10 opacity-100" : "pointer-events-none z-0 opacity-0"
               }`}
             >
@@ -83,34 +75,34 @@ export function PartnerBannerSlider({
                         ? "(max-width: 1024px) 100vw, 360px"
                         : "(max-width: 1024px) 100vw, 1152px"
                     }
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                    className="object-cover"
                     priority={variant === "hero" && index === 0}
                   />
                 ) : (
-                  <div className="h-full w-full bg-[#0F3D2E]" />
+                  <div className="h-full w-full bg-[#1A3D32]" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/85 via-[#0F3D2E]/15 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1A3D32]/75 via-transparent to-transparent" />
                 <div
-                  className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 ${
+                  className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1.5 ${
                     variant === "sidebar"
                       ? "p-4"
-                      : "p-5 md:flex-row md:items-end md:justify-between md:p-8"
+                      : "p-4 md:flex-row md:items-end md:justify-between md:p-6"
                   }`}
                 >
                   <div>
-                    <span className="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white backdrop-blur-md">
-                      إعلان ممول
+                    <span className="mb-1.5 inline-flex rounded-md bg-black/35 px-2 py-0.5 text-[11px] font-bold text-white">
+                      إعلان
                     </span>
                     <h3
                       className={`font-heading font-extrabold text-white ${
-                        variant === "sidebar" ? "text-lg" : "text-xl md:text-3xl"
+                        variant === "sidebar" ? "text-base" : "text-lg md:text-2xl"
                       }`}
                     >
                       {storeName}
                     </h3>
                   </div>
                   {variant !== "sidebar" ? (
-                    <span className="inline-flex w-fit items-center rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#0F3D2E] transition-colors group-hover:bg-[#EAF3EC]">
+                    <span className="inline-flex w-fit items-center rounded-lg bg-white px-4 py-2 text-sm font-bold text-[#1A3D32] transition-colors group-hover:bg-[#E8EEEA]">
                       زيارة المحل
                     </span>
                   ) : null}
@@ -123,8 +115,8 @@ export function PartnerBannerSlider({
 
       {banners.length > 1 ? (
         <div
-          className={`absolute left-0 right-0 z-20 flex justify-center gap-2 ${
-            variant === "sidebar" ? "bottom-3" : "bottom-4 md:bottom-6"
+          className={`absolute left-0 right-0 z-20 flex justify-center gap-1.5 ${
+            variant === "sidebar" ? "bottom-3" : "bottom-3 md:bottom-4"
           }`}
         >
           {banners.map((banner, index) => (
@@ -132,8 +124,8 @@ export function PartnerBannerSlider({
               key={banner.public_id}
               type="button"
               onClick={() => setCurrentIndex(index)}
-              className={`h-2.5 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "w-7 bg-white" : "w-2.5 bg-white/45 hover:bg-white/80"
+              className={`h-2 rounded-full transition-all duration-300 ${
+                index === currentIndex ? "w-6 bg-white" : "w-2 bg-white/45 hover:bg-white/80"
               }`}
               aria-label={`إعلان ${index + 1}`}
             />

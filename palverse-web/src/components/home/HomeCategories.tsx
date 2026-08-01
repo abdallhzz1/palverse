@@ -21,16 +21,16 @@ export async function HomeCategories() {
   }
 
   return (
-    <section className="public-section bg-[#F5F7F6]">
+    <section className="public-section bg-[#F7F9F8]">
       <div className="public-container">
-        <div className="mb-8 flex items-end justify-between gap-4 md:mb-10">
+        <div className="mb-6 flex items-end justify-between gap-4 md:mb-8">
           <div>
-            <p className="mb-2 text-sm font-bold text-[#1E7D4E]">تصفّح حسب الاهتمام</p>
-            <h2 className="font-heading text-2xl font-extrabold text-[#0F3D2E] md:text-3xl">الفئات</h2>
+            <p className="mb-1 text-xs font-bold text-[#6B8578]">تصفّح حسب الاهتمام</p>
+            <h2 className="font-heading text-xl font-extrabold text-[#1A3D32] md:text-2xl">الفئات</h2>
           </div>
           <Link
             href="/categories"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1E7D4E] transition-colors hover:text-[#0F3D2E]"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2F6B4F] transition-colors hover:text-[#1A3D32]"
           >
             عرض الكل
             <ArrowLeft className="h-4 w-4" />
@@ -41,7 +41,7 @@ export async function HomeCategories() {
           className="overflow-x-auto pb-2"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="mx-auto flex w-max max-w-full gap-4 sm:gap-6 md:w-full md:max-w-none md:justify-between">
+          <div className="mx-auto flex w-max max-w-full gap-4 sm:gap-5 md:w-full md:max-w-none md:justify-between">
             {categories.map((cat, i) => (
               <div
                 key={(cat.publicId as string) || (cat.public_id as string) || i}

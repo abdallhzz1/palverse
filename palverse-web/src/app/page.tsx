@@ -12,23 +12,21 @@ export default function Home() {
   const dict = getDictionary("ar");
 
   return (
-    <div className="flex w-full flex-col bg-[#F5F7F6]">
+    <div className="flex w-full flex-col bg-[#F7F9F8]">
       <Hero />
-      {/* 1) Banner right under search — highest visibility */}
       <PartnerBanner />
       <HomeCategories />
-      {/* 2) Featured/sponsored store cards */}
       <FeaturedStoresStrip
         title={dict.home.featuredStores}
         subtitle="محلات مُبرَزة عبر حملات إعلانية ممولة نشطة"
         showWhenEmpty
+        bgClass="bg-white"
       />
-      {/* 3) Mid-page second banner impression */}
       <AdBannerSlot
         placement="home_mid"
         variant="inline"
         title="عروض الشركاء"
-        className="bg-white"
+        className="bg-[#F7F9F8]"
       />
       <HomeStoresList
         title={dict.home.latestStores}

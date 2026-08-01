@@ -42,18 +42,18 @@ export async function Footer() {
       : FALLBACK_LINKS;
 
   return (
-    <footer className="mt-auto border-t border-[#1E7D4E]/30 bg-[#0F3D2E] pb-28 pt-12 text-white md:pb-12 md:pt-14">
+    <footer className="mt-auto border-t border-[#2F6B4F]/25 bg-[#1A3D32] pb-28 pt-12 text-white md:pb-12 md:pt-14">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 md:grid-cols-[1.2fr_1fr_1fr]">
         <div className="space-y-4">
           <BrandLogo className="h-8 w-auto brightness-0 invert" />
-          <p className="max-w-sm text-sm font-medium leading-relaxed text-[#EAF3EC]/85">
+          <p className="max-w-sm text-sm font-medium leading-relaxed text-[#E8EEEA]/85">
             دليل الأعمال الفلسطيني — اكتشف المطاعم، المقاهي، والخدمات والمحلات في مدينتك.
           </p>
         </div>
 
         <div>
-          <h3 className="mb-4 font-heading text-sm font-bold tracking-wide text-[#7FA789]">استكشف</h3>
-          <div className="flex flex-col gap-2.5 text-sm font-semibold text-[#EAF3EC]">
+          <h3 className="mb-4 font-heading text-sm font-bold tracking-wide text-[#6B8578]">استكشف</h3>
+          <div className="flex flex-col gap-2.5 text-sm font-semibold text-[#E8EEEA]">
             <Link href="/stores" className="transition-colors hover:text-white">المحلات</Link>
             <Link href="/categories" className="transition-colors hover:text-white">الفئات</Link>
             <Link href="/offers" className="transition-colors hover:text-white">العروض</Link>
@@ -62,8 +62,8 @@ export async function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-4 font-heading text-sm font-bold tracking-wide text-[#7FA789]">المزيد</h3>
-          <div className="flex flex-col gap-2.5 text-sm font-semibold text-[#EAF3EC]">
+          <h3 className="mb-4 font-heading text-sm font-bold tracking-wide text-[#6B8578]">المزيد</h3>
+          <div className="flex flex-col gap-2.5 text-sm font-semibold text-[#E8EEEA]">
             {cmsLinks.map((page) => (
               <Link key={page.slug} href={cmsPageHref(page.slug)} className="transition-colors hover:text-white">
                 {page.title_ar}
@@ -75,7 +75,7 @@ export async function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto mt-10 flex w-full max-w-6xl items-center justify-between border-t border-white/10 px-4 pt-6 text-xs font-medium text-[#7FA789]">
+      <div className="mx-auto mt-10 flex w-full max-w-6xl items-center justify-between border-t border-white/10 px-4 pt-6 text-xs font-medium text-[#6B8578]">
         <span>© {new Date().getFullYear()} Palverse</span>
         <a href="https://www.palverse.ps" target="_blank" rel="noreferrer" className="hover:text-white">
           www.palverse.ps

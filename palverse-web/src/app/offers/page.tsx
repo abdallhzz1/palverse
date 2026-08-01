@@ -59,17 +59,14 @@ export default async function OffersPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#F5F7F6]/50 dark:bg-[#111714]">
+    <div className="min-h-screen bg-[#F7F9F8]">
       <PublicPageHero
-        imageSrc={BRAND_PHOTOS.offers}
-        imageAlt="عروض وخصومات من متاجر فلسطينية"
         title="أحدث العروض والخصومات"
         subtitle="اكتشف أفضل العروض من المتاجر المشاركة على منصة بال فيرس."
         size="page"
-        priority
       />
 
-      <section className="public-container relative z-20 -mt-10 pb-28 md:-mt-14">
+      <section className="public-container pb-28 pt-8">
         {mappedOffers.length === 0 ? (
           <EmptyStateArt
             title="لا توجد عروض عامة حالياً"
@@ -80,33 +77,33 @@ export default async function OffersPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
             {mappedOffers.map((offer) => (
               <div key={offer.publicId} className="public-card group flex flex-col">
-                <div className="relative h-44 w-full overflow-hidden bg-[#EAF3EC] md:h-48">
+                <div className="relative h-44 w-full overflow-hidden bg-[#E8EEEA] md:h-48">
                   <Image
                     src={offer.imageUrl || BRAND_PHOTOS.offers}
                     alt={offer.title}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     unoptimized
-                    className="object-cover duration-700 group-hover:scale-105"
+                    className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/50 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A3D32]/45 via-transparent to-transparent" />
                   {offer.discountPercentage && (
-                    <div className="absolute top-3 end-3 rounded-xl bg-red-500 px-3 py-1 text-sm font-bold text-white shadow-md">
+                    <div className="absolute top-3 end-3 rounded-lg bg-red-500 px-3 py-1 text-sm font-bold text-white">
                       خصم {offer.discountPercentage}
                     </div>
                   )}
                 </div>
 
                 <div className="flex flex-1 flex-col gap-2 p-5">
-                  <h4 className="line-clamp-1 font-heading text-lg font-bold text-[#0F3D2E]">{offer.title}</h4>
+                  <h4 className="line-clamp-1 font-heading text-lg font-bold text-[#1A3D32]">{offer.title}</h4>
                   {offer.description && (
-                    <p className="line-clamp-2 flex-1 text-sm text-[#7FA789]">{offer.description}</p>
+                    <p className="line-clamp-2 flex-1 text-sm text-[#6B8578]">{offer.description}</p>
                   )}
 
-                  <div className="mt-auto flex flex-col gap-3 border-t border-[#EAF3EC] pt-4">
+                  <div className="mt-auto flex flex-col gap-3 border-t border-[#E2EAE5] pt-4">
                     {offer.price && (
                       <div className="flex items-center gap-2">
-                        <span className="font-heading text-xl font-bold text-[#1E7D4E]">{offer.price}</span>
+                        <span className="font-heading text-xl font-bold text-[#2F6B4F]">{offer.price}</span>
                         {offer.oldPrice && (
                           <span className="text-sm text-gray-400 line-through">{offer.oldPrice}</span>
                         )}
@@ -122,10 +119,10 @@ export default async function OffersPage() {
                     {offer.store && offer.storeHref ? (
                       <Link
                         href={`/stores/${offer.storeHref}`}
-                        className="mt-1 flex items-center gap-2 rounded-xl bg-[#F5F7F6] p-2 transition-colors hover:bg-[#EAF3EC]"
+                        className="mt-1 flex items-center gap-2 rounded-xl bg-[#F7F9F8] p-2 transition-colors hover:bg-[#E8EEEA]"
                       >
                         {offer.store.logo?.url ? (
-                          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-[#EAF3EC] bg-white">
+                          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-[#E2EAE5] bg-white">
                             <Image
                               src={offer.store.logo.url}
                               alt={offer.store.name_ar || ""}
@@ -135,13 +132,13 @@ export default async function OffersPage() {
                             />
                           </div>
                         ) : (
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#EAF3EC] bg-white">
-                            <span className="text-xs font-bold text-[#1E7D4E]">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#E2EAE5] bg-white">
+                            <span className="text-xs font-bold text-[#2F6B4F]">
                               {offer.store.name_ar?.charAt(0) || "م"}
                             </span>
                           </div>
                         )}
-                        <span className="truncate text-sm font-semibold text-[#0F3D2E]">
+                        <span className="truncate text-sm font-semibold text-[#1A3D32]">
                           {offer.store.name_ar}
                         </span>
                       </Link>

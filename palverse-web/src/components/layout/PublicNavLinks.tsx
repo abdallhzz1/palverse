@@ -31,10 +31,10 @@ export function PublicNavLinks() {
             key={item.href}
             href={item.href}
             className={cn(
-              "rounded-full px-3 py-2 text-sm font-semibold transition-colors xl:px-3.5",
+              "rounded-lg px-3 py-2 text-sm font-semibold transition-colors xl:px-3.5",
               active
-                ? "bg-[#EAF3EC] text-[#1E7D4E]"
-                : "text-[#0F3D2E]/80 hover:bg-[#F5F7F6] hover:text-[#1E7D4E]"
+                ? "bg-[#E8EEEA] text-[#2F6B4F]"
+                : "text-[#1A3D32]/80 hover:bg-[#F7F9F8] hover:text-[#2F6B4F]"
             )}
           >
             {item.label}

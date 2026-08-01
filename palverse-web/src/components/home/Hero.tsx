@@ -1,6 +1,5 @@
 import { PublicPageHero } from "@/components/public/PublicPageHero";
 import { SearchBar } from "@/components/search/SearchBar";
-import { BRAND_PHOTOS } from "@/lib/brand-photos";
 import { serverFetch } from "@/lib/api/server";
 import { Suspense } from "react";
 
@@ -21,14 +20,11 @@ export async function Hero() {
   return (
     <PublicPageHero
       size="home"
-      priority
-      imageSrc={BRAND_PHOTOS.hero}
-      imageAlt="أجواء مقاهي وأسواق فلسطينية معاصرة"
       title="عن ماذا تبحث؟"
       subtitle="مطاعم، مقاهي، خدمات ومحلات — ابحث في مدينتك وابدأ الاستكشاف."
     >
-      <Suspense fallback={<div className="h-16 w-full animate-pulse rounded-full bg-white/20" />}>
-        <SearchBar cities={cities} categories={categories} variant="onHero" />
+      <Suspense fallback={<div className="h-16 w-full animate-pulse rounded-xl bg-white/70" />}>
+        <SearchBar cities={cities} categories={categories} variant="home" />
       </Suspense>
     </PublicPageHero>
   );

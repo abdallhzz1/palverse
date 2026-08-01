@@ -65,14 +65,14 @@ export async function AdBannerSlot({
       <div className={embedded ? "mb-4" : undefined}>
         {title ? (
           <h2
-            className={`font-heading font-extrabold text-[#0F3D2E] ${
+            className={`font-heading font-extrabold text-[#1A3D32] ${
               resolvedVariant === "sidebar" ? "text-sm" : "text-xl md:text-2xl"
             }`}
           >
             {title}
           </h2>
         ) : null}
-        {subtitle ? <p className="mt-1 text-sm text-[#5F7B6A]">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-1 text-sm text-[#6B8578]">{subtitle}</p> : null}
       </div>
     ) : null;
 

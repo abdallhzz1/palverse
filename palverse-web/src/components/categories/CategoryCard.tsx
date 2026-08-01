@@ -11,23 +11,16 @@ interface CategoryCardProps {
 export function CategoryCard({ name, slug, iconName }: CategoryCardProps) {
   return (
     <Link
-      href={`/categories/${slug}`}
+      href={`/stores?category=${slug}`}
       className={cn(
-        "flex flex-col items-center justify-center p-4 aspect-square",
-        "bg-white dark:bg-[#1F2522] rounded-xl",
-        "border border-[#EAF3EC] dark:border-[#0F3D2E]",
-        "hover:border-[#1E7D4E] hover:shadow-md transition-all group"
+        "group flex aspect-square flex-col items-center justify-center rounded-xl border border-[#E2EAE5] bg-white p-4 transition-colors",
+        "hover:border-[#2F6B4F]/40"
       )}
     >
-      <div className="w-12 h-12 rounded-full bg-[#EAF3EC] dark:bg-[#0F3D2E]/50 flex items-center justify-center mb-3 group-hover:bg-[#1E7D4E] transition-colors">
-        <LucideIconByName
-          name={iconName}
-          className="w-6 h-6 text-[#1E7D4E] group-hover:text-white transition-colors"
-        />
+      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] text-[#2F6B4F] transition-colors group-hover:border-[#2F6B4F]/35 group-hover:bg-[#E8EEEA]">
+        <LucideIconByName name={iconName} className="h-6 w-6" />
       </div>
-      <span className="text-[#0F3D2E] dark:text-[#EAF3EC] font-semibold text-sm text-center">
-        {name}
-      </span>
+      <span className="text-center text-sm font-semibold text-[#1A3D32]">{name}</span>
     </Link>
   );
 }

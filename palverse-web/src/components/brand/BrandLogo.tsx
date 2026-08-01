@@ -15,10 +15,10 @@ export function BrandLogo({ className }: { className?: string }) {
         />
       </div>
       <div className="flex flex-col justify-center text-start">
-        <span className="font-bold text-xl md:text-2xl tracking-wider text-[#0F3D2E] leading-none mb-1 uppercase">
+        <span className="mb-1 font-bold text-xl uppercase leading-none tracking-wider text-[#1A3D32] md:text-2xl">
           Palverse
         </span>
-        <span className="text-[10px] md:text-[11px] text-[#7FA789] font-medium leading-none">
+        <span className="text-[10px] font-medium leading-none text-[#6B8578] md:text-[11px]">
           دليل فلسطين التجاري
         </span>
       </div>

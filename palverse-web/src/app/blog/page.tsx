@@ -41,46 +41,43 @@ export default async function BlogPage() {
   const articles = await getArticles();
 
   return (
-    <div className="min-h-screen bg-[#F5F7F6]">
+    <div className="min-h-screen bg-[#F7F9F8]">
       <PublicPageHero
         title="مدونة بالفيرس"
-        subtitle="أحدث المقالات والنصائح والأخبار التي تهم أصحاب الأعمال والباحثين عن أفضل الخدمات في فلسطين."
-        imageSrc={BRAND_PHOTOS.blog}
-        imageAlt=""
+        subtitle="مقالات ونصائح وأخبار لأصحاب الأعمال والباحثين عن خدمات في فلسطين."
         size="page"
-        priority
       />
 
-      <section className="public-container relative z-20 -mt-8 pb-20 md:-mt-10">
+      <section className="public-container pb-20 pt-8">
         {articles.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
             {articles.map((article) => (
               <article key={article.public_id} className="public-card group flex flex-col">
-                <div className="relative h-48 w-full overflow-hidden bg-[#EAF3EC] md:h-56">
+                <div className="relative h-48 w-full overflow-hidden bg-[#E8EEEA] md:h-56">
                   <Image
                     src={article.cover_image || BRAND_PHOTOS.blog}
                     alt={article.title_ar}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     unoptimized={!!article.cover_image}
-                    className="object-cover duration-700 group-hover:scale-105"
+                    className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/45 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A3D32]/40 via-transparent to-transparent" />
                 </div>
 
                 <div className="flex flex-1 flex-col p-6">
-                  <h2 className="mb-3 line-clamp-2 font-heading text-xl font-bold text-[#0F3D2E]">
+                  <h2 className="mb-3 line-clamp-2 font-heading text-xl font-bold text-[#1A3D32]">
                     {article.title_ar}
                   </h2>
                   {article.excerpt_ar ? (
-                    <p className="mb-6 line-clamp-3 flex-1 text-sm text-[#7FA789]">
+                    <p className="mb-6 line-clamp-3 flex-1 text-sm text-[#6B8578]">
                       {article.excerpt_ar}
                     </p>
                   ) : (
                     <div className="flex-1" />
                   )}
 
-                  <div className="mb-6 flex items-center justify-between border-b border-[#EAF3EC] pb-4 text-xs text-[#7FA789]">
+                  <div className="mb-6 flex items-center justify-between border-b border-[#E2EAE5] pb-4 text-xs text-[#6B8578]">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-4 w-4" />
                       <span>
@@ -97,7 +94,7 @@ export default async function BlogPage() {
 
                   <Link
                     href={`/blog/${article.slug}`}
-                    className="inline-flex items-center gap-2 font-bold text-[#1E7D4E] transition-colors hover:text-[#0F3D2E]"
+                    className="inline-flex items-center gap-2 font-bold text-[#2F6B4F] transition-colors hover:text-[#1A3D32]"
                   >
                     اقرأ المزيد
                     <ArrowLeft className="h-4 w-4" />

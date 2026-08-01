@@ -56,34 +56,34 @@ export function StoreProfileCard({
 
   return (
     <>
-      <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-4 flex flex-col gap-3">
+      <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between gap-2 md:gap-4 overflow-x-auto no-scrollbar">
           {phone && (
-            <a href={`tel:${phone}`} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#1E7D4E] hover:text-white transition-colors group">
+            <a href={`tel:${phone}`} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
               <Phone className="w-5 h-5 shrink-0" />
               <span className="text-xs md:text-sm font-bold">اتصال</span>
             </a>
           )}
           {whatsapp && (
-            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#1E7D4E] hover:text-white transition-colors group">
+            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
               <MessageCircle className="w-5 h-5 shrink-0" />
               <span className="text-xs md:text-sm font-bold">مراسلة</span>
             </a>
           )}
           {storeUrl && (
-            <button onClick={() => setShowQr(true)} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#1E7D4E] hover:text-white transition-colors group">
+            <button onClick={() => setShowQr(true)} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
               <QrCode className="w-5 h-5 shrink-0" />
               <span className="text-xs md:text-sm font-bold">الباركود</span>
             </button>
           )}
-          <button onClick={handleShare} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 text-[#0F3D2E] dark:text-[#EAF3EC] hover:bg-[#1E7D4E] hover:text-white transition-colors group">
+          <button onClick={handleShare} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
             <Share2 className="w-5 h-5 shrink-0" />
             <span className="text-xs md:text-sm font-bold">مشاركة</span>
           </button>
         </div>
 
         {safeSocialLinks.length > 0 ? (
-          <div className="flex items-center justify-center gap-2 border-t border-[#EAF3EC] dark:border-[#0F3D2E] pt-3 flex-wrap">
+          <div className="flex items-center justify-center gap-2 border-t border-[#E8EEEA] dark:border-[#1A3D32] pt-3 flex-wrap">
             <span className="text-xs font-bold text-[#7FA789] me-1">سوشيال:</span>
             {safeSocialLinks.map((link) => (
               <a
@@ -93,7 +93,7 @@ export function StoreProfileCard({
                 rel="noreferrer"
                 title={socialPlatformLabel(link.platform)}
                 aria-label={socialPlatformLabel(link.platform)}
-                className="w-10 h-10 rounded-full bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center text-[#1E7D4E] hover:bg-[#1E7D4E] hover:text-white transition-all shadow-sm"
+                className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center text-[#2F6B4F] hover:bg-[#2F6B4F] hover:text-white transition-all shadow-sm"
               >
                 <SocialPlatformIcon platform={link.platform} />
               </a>
@@ -112,7 +112,7 @@ export function StoreProfileCard({
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-6">مسح الباركود</h3>
+            <h3 className="text-xl font-bold text-[#1A3D32] dark:text-[#E8EEEA] mb-6">مسح الباركود</h3>
 
             <div className="bg-white p-4 rounded-2xl shadow-inner border border-gray-100 mb-6 w-full max-w-[200px] aspect-square flex items-center justify-center relative">
               <QRCode value={storeUrl} size={180} />

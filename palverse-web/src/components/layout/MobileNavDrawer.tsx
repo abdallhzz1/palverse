@@ -33,11 +33,11 @@ function MerchantMobileLink({ onClose }: { onClose: () => void }) {
   if (!isMerchantRole(user.roles)) return null;
 
   return (
-    <div className="mt-auto border-t border-[#EAF3EC] p-4">
+    <div className="mt-auto border-t border-[#E2EAE5] p-4">
       <Link
         onClick={onClose}
         href="/merchant"
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0F3D2E] py-3 font-bold text-white transition-colors hover:bg-[#1E7D4E]"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1A3D32] py-3 font-bold text-white transition-colors hover:bg-[#2F6B4F]"
       >
         لوحة التاجر
       </Link>
@@ -56,14 +56,14 @@ function NavSection({
 }) {
   return (
     <div className="mb-6">
-      <p className="mb-2 px-4 text-xs font-bold tracking-wide text-[#7FA789]">{title}</p>
+      <p className="mb-2 px-4 text-xs font-bold tracking-wide text-[#6B8578]">{title}</p>
       <nav className="flex flex-col gap-1 px-3">
         {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
             onClick={onClose}
-            className="rounded-xl px-4 py-3 font-semibold text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC] hover:text-[#1E7D4E]"
+            className="rounded-xl px-4 py-3 font-semibold text-[#1A3D32] transition-colors hover:bg-[#E8EEEA] hover:text-[#2F6B4F]"
           >
             {link.label}
           </Link>
@@ -119,26 +119,26 @@ export function MobileNavDrawer() {
     isOpen ? (
       <div className="lg:hidden">
         <div
-          className="fixed inset-0 z-[200] bg-[#0F3D2E]/45 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[200] bg-[#1A3D32]/40"
           onClick={close}
           aria-hidden="true"
         />
 
         <aside
-          className="fixed inset-y-0 right-0 z-[210] flex w-[min(20rem,88vw)] flex-col bg-white shadow-[-12px_0_40px_-12px_rgba(15,61,46,0.35)]"
+          className="fixed inset-y-0 right-0 z-[210] flex w-[min(20rem,88vw)] flex-col border-s border-[#E2EAE5] bg-white"
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
         >
-          <div className="flex items-center justify-between border-b border-[#EAF3EC] px-4 py-4">
-            <span id={titleId} className="font-heading text-lg font-bold text-[#0F3D2E]">
+          <div className="flex items-center justify-between border-b border-[#E2EAE5] px-4 py-4">
+            <span id={titleId} className="font-heading text-lg font-bold text-[#1A3D32]">
               القائمة الرئيسية
             </span>
             <button
               ref={closeBtnRef}
               type="button"
               onClick={close}
-              className="rounded-full p-2 text-[#7FA789] transition-colors hover:bg-[#EAF3EC] hover:text-[#0F3D2E]"
+              className="rounded-lg p-2 text-[#6B8578] transition-colors hover:bg-[#E8EEEA] hover:text-[#1A3D32]"
               aria-label="إغلاق القائمة"
             >
               <X className="h-6 w-6" />
@@ -158,7 +158,7 @@ export function MobileNavDrawer() {
     <div className="flex items-center gap-1 lg:hidden">
       <Link
         href="/stores"
-        className="rounded-full p-2 text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC]"
+        className="rounded-lg p-2 text-[#1A3D32] transition-colors hover:bg-[#E8EEEA]"
         aria-label="بحث"
       >
         <Search className="h-6 w-6" />
@@ -168,7 +168,7 @@ export function MobileNavDrawer() {
         ref={openBtnRef}
         type="button"
         onClick={() => setIsOpen(true)}
-        className="rounded-full p-2 text-[#0F3D2E] transition-colors hover:bg-[#EAF3EC]"
+        className="rounded-lg p-2 text-[#1A3D32] transition-colors hover:bg-[#E8EEEA]"
         aria-label="فتح القائمة"
         aria-expanded={isOpen}
         aria-controls={isOpen ? titleId : undefined}

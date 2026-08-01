@@ -31,7 +31,7 @@ export function StoreHero({ name, categoryName, cleanLogo, cleanCover }: StoreHe
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/90 via-[#0F3D2E]/45 to-[#0F3D2E]/15" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1A3D32]/90 via-[#1A3D32]/45 to-[#1A3D32]/15" />
 
         <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 pb-10 pt-24 text-center md:flex-row md:items-end md:text-start">
           <div
@@ -42,12 +42,12 @@ export function StoreHero({ name, categoryName, cleanLogo, cleanCover }: StoreHe
             {cleanLogo ? (
               <Image src={cleanLogo} alt={name} fill unoptimized className="object-cover" />
             ) : (
-              <span className="text-5xl font-bold text-[#0F3D2E]">{(name || "U").charAt(0)}</span>
+              <span className="text-5xl font-bold text-[#1A3D32]">{(name || "U").charAt(0)}</span>
             )}
           </div>
           <div className="flex-1 pb-2 text-white">
             <h1 className="mb-3 font-heading text-3xl font-bold drop-shadow-md md:text-5xl">{name}</h1>
-            <span className="inline-block rounded-full border border-white/20 bg-[#1E7D4E]/85 px-4 py-1.5 text-sm font-medium backdrop-blur-md">
+            <span className="inline-block rounded-full border border-white/20 bg-[#2F6B4F]/85 px-4 py-1.5 text-sm font-medium backdrop-blur-md">
               {categoryName}
             </span>
           </div>

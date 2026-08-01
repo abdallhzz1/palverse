@@ -1,7 +1,6 @@
 import { serverFetch } from "@/lib/api/server";
 import { PublicPageHero } from "@/components/public/PublicPageHero";
 import { EmptyStateArt } from "@/components/public/EmptyStateArt";
-import { BRAND_PHOTOS } from "@/lib/brand-photos";
 import { LucideIconByName } from "@/lib/lucide-icon";
 import Link from "next/link";
 
@@ -23,25 +22,26 @@ export default async function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7F6]/50">
+    <div className="min-h-screen bg-[#F7F9F8]">
       <PublicPageHero
-        imageSrc={BRAND_PHOTOS.categories}
-        imageAlt="واجهات محلات فلسطينية متنوعة"
         title="تصفح جميع الفئات"
-        subtitle="اكتشف المتاجر، المطاعم، والخدمات المميزة الموزعة عبر الفئات المختلفة في جميع المدن الفلسطينية."
+        subtitle="اكتشف المتاجر والخدمات حسب الفئة في المدن الفلسطينية."
         size="page"
-        priority
       />
 
-      <section className="public-container relative z-20 -mt-10 pb-28 md:-mt-14">
+      <section className="public-container pb-28 pt-8">
         {error ? (
-          <div className="public-card text-center py-16 text-red-600 border-red-100 max-w-3xl mx-auto">
-            <p className="font-bold text-lg">عذراً، حدث خطأ أثناء جلب الفئات.</p>
+          <div className="public-card mx-auto max-w-3xl border-red-100 py-16 text-center text-red-600">
+            <p className="text-lg font-bold">عذراً، حدث خطأ أثناء جلب الفئات.</p>
           </div>
         ) : categories.length === 0 ? (
-          <EmptyStateArt title="لا توجد فئات حالياً" description="لم يتم إضافة أي فئات بعد في المنصة." className="max-w-2xl mx-auto" />
+          <EmptyStateArt
+            title="لا توجد فئات حالياً"
+            description="لم يتم إضافة أي فئات بعد في المنصة."
+            className="mx-auto max-w-2xl"
+          />
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5">
             {categories.map((cat, i) => {
               const name = (cat.name_ar as string) || (cat.name_en as string) || "فئة غير معروفة";
               const slug = cat.slug as string;
@@ -51,19 +51,14 @@ export default async function CategoriesPage() {
 
               return (
                 <Link
-                  href={`/stores?category=${target}`}
                   key={publicId}
-                  className="public-card group flex flex-col items-center gap-4 p-6 text-center hover:-translate-y-1"
+                  href={`/stores?category=${encodeURIComponent(target)}`}
+                  className="public-card group flex flex-col items-center gap-3 p-5 text-center"
                 >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EAF3EC] text-[#1E7D4E] transition-colors duration-300 group-hover:bg-[#1E7D4E] group-hover:text-white md:h-20 md:w-20">
-                    <LucideIconByName name={iconName} className="h-7 w-7 md:h-9 md:w-9" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] text-[#2F6B4F] transition-colors group-hover:border-[#2F6B4F]/35 group-hover:bg-[#E8EEEA]">
+                    <LucideIconByName name={iconName} className="h-6 w-6" />
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <h3 className="font-heading text-sm font-bold text-[#0F3D2E] transition-colors group-hover:text-[#1E7D4E] md:text-base">
-                      {name}
-                    </h3>
-                    <span className="text-xs font-medium text-[#7FA789]">استعرض الأعمال</span>
-                  </div>
+                  <span className="font-heading text-sm font-bold text-[#1A3D32]">{name}</span>
                 </Link>
               );
             })}

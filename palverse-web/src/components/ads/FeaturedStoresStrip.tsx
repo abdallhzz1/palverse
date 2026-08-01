@@ -20,7 +20,7 @@ export async function FeaturedStoresStrip({
   title = "محلات مميزة",
   subtitle = "محلات مُبرَزة عبر حملات إعلانية ممولة نشطة",
   limit = 4,
-  bgClass = "bg-[#F5F7F6]",
+  bgClass = "bg-[#F7F9F8]",
   showWhenEmpty = false,
   className = "",
   embedded = false,
@@ -83,20 +83,20 @@ export async function FeaturedStoresStrip({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-[#1E7D4E]/25 bg-white px-6 py-14 text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EAF3EC] text-[#1E7D4E]">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#E2EAE5] bg-white px-6 py-14 text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] text-[#2F6B4F]">
             <Megaphone className="h-7 w-7" />
           </div>
-          <h3 className="mb-2 font-heading text-lg font-bold text-[#0F3D2E]">
+          <h3 className="mb-2 font-heading text-lg font-bold text-[#1A3D32]">
             لا توجد إعلانات مميزة نشطة حالياً
           </h3>
-          <p className="mb-6 max-w-md text-sm leading-7 text-[#5F7B6A]">
+          <p className="mb-6 max-w-md text-sm leading-7 text-[#6B8578]">
             يظهر المتجر هنا فقط إذا كان إعلان «إبراز المتجر» مفعّلاً، وتاريخ اليوم ضمن فترة الحملة،
             والمتجر معتمداً ونشطاً باشتراك ساري.
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center rounded-full bg-[#1E7D4E] px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0F3D2E]"
+            className="inline-flex items-center justify-center rounded-xl bg-[#2F6B4F] px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#1A3D32]"
           >
             تواصل للإعلان
           </Link>

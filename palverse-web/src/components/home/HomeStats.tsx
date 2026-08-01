@@ -35,14 +35,14 @@ export async function HomeStats() {
   ];
 
   return (
-    <section className="py-12 bg-white border-t border-gray-100">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="flex flex-wrap justify-between items-center gap-8">
+    <section className="border-t border-[#E2EAE5] bg-white py-12">
+      <div className="container mx-auto max-w-6xl px-4">
+        <div className="flex flex-wrap items-center justify-between gap-8">
           {stats.map((stat, i) => (
-            <div key={i} className="flex flex-col items-center justify-center flex-1 min-w-[120px]">
-              <stat.icon className="w-8 h-8 text-[#7FA789] mb-4" />
-              <span className="text-3xl font-bold text-[#0F3D2E] font-heading mb-1" dir="ltr">{stat.value}</span>
-              <span className="text-sm font-medium text-[#7FA789]">{stat.label}</span>
+            <div key={i} className="flex min-w-[120px] flex-1 flex-col items-center justify-center">
+              <stat.icon className="mb-4 h-8 w-8 text-[#6B8578]" />
+              <span className="mb-1 font-heading text-3xl font-bold text-[#1A3D32]" dir="ltr">{stat.value}</span>
+              <span className="text-sm font-medium text-[#6B8578]">{stat.label}</span>
             </div>
           ))}
         </div>

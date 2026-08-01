@@ -50,23 +50,23 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
 
   const filtersBody = (
     <>
-      <div className="flex-1 flex items-center px-4 py-2 border-l border-gray-100 min-w-[180px]">
-        <Search className="w-5 h-5 text-[#7FA789] ml-3 shrink-0" />
+      <div className="flex min-w-[180px] flex-1 items-center border-l border-[#E2EAE5] px-4 py-2">
+        <Search className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
         <input
           type="text"
           placeholder="ابحث عن متجر، مطعم..."
           value={currentQuery}
           onChange={(e) => updateFilters({ query: e.target.value })}
-          className="w-full bg-transparent border-none outline-none text-[#0F3D2E] placeholder-[#7FA789] font-medium"
+          className="w-full border-none bg-transparent font-medium text-[#1A3D32] outline-none placeholder:text-[#6B8578]"
         />
       </div>
 
-      <div className="flex-[0.7] flex items-center px-4 py-2 border-l border-gray-100 min-w-[140px]">
-        <MapPin className="w-5 h-5 text-[#7FA789] ml-3 shrink-0" />
+      <div className="flex min-w-[140px] flex-[0.7] items-center border-l border-[#E2EAE5] px-4 py-2">
+        <MapPin className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
         <select
           value={currentCity}
           onChange={(e) => updateFilters({ city: e.target.value, zone: "" })}
-          className="w-full bg-transparent border-none outline-none text-[#0F3D2E] font-medium appearance-none cursor-pointer"
+          className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#1A3D32] outline-none"
         >
           <option value="">كل المدن</option>
           {cities.map((c: any) => (
@@ -75,13 +75,13 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
         </select>
       </div>
 
-      <div className="flex-[0.7] flex items-center px-4 py-2 border-l border-gray-100 min-w-[140px]">
-        <MapPin className="w-5 h-5 text-[#7FA789] ml-3 shrink-0" />
+      <div className="flex min-w-[140px] flex-[0.7] items-center border-l border-[#E2EAE5] px-4 py-2">
+        <MapPin className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
         <select
           value={currentZone}
           disabled={!currentCity}
           onChange={(e) => updateFilters({ zone: e.target.value })}
-          className="w-full bg-transparent border-none outline-none text-[#0F3D2E] font-medium appearance-none cursor-pointer disabled:opacity-50"
+          className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#1A3D32] outline-none disabled:opacity-50"
         >
           <option value="">كل الأحياء</option>
           {zones.map((z: any) => (
@@ -90,12 +90,12 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
         </select>
       </div>
 
-      <div className="flex-[0.7] flex items-center px-4 py-2 border-l border-gray-100 min-w-[140px]">
-        <Tag className="w-5 h-5 text-[#7FA789] ml-3 shrink-0" />
+      <div className="flex min-w-[140px] flex-[0.7] items-center border-l border-[#E2EAE5] px-4 py-2">
+        <Tag className="ml-3 h-5 w-5 shrink-0 text-[#6B8578]" />
         <select
           value={currentCategory}
           onChange={(e) => updateFilters({ category: e.target.value })}
-          className="w-full bg-transparent border-none outline-none text-[#0F3D2E] font-medium appearance-none cursor-pointer"
+          className="w-full cursor-pointer appearance-none border-none bg-transparent font-medium text-[#1A3D32] outline-none"
         >
           <option value="">كل الفئات</option>
           {categories.map((c: any) => (
@@ -108,27 +108,27 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
 
   return (
     <>
-      <div className="hidden lg:flex flex-wrap items-center gap-2 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 p-2 w-full max-w-6xl mx-auto mb-10">
+      <div className="mx-auto mb-10 hidden w-full max-w-6xl flex-wrap items-center gap-2 rounded-xl border border-[#E2EAE5] bg-white p-2 lg:flex">
         {filtersBody}
         {activeCount > 0 && (
           <button
             onClick={clearFilters}
-            className="px-4 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-full transition-colors shrink-0"
+            className="shrink-0 rounded-lg px-4 py-2 text-sm font-bold text-red-500 transition-colors hover:bg-red-50"
           >
             مسح
           </button>
         )}
       </div>
 
-      <div className="lg:hidden mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between lg:hidden">
         <button
           onClick={() => setIsMobileOpen(true)}
-          className="flex items-center gap-2 bg-white border border-gray-200 px-5 py-3 rounded-2xl text-[#0F3D2E] shadow-sm font-bold w-full justify-center"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2EAE5] bg-white px-5 py-3 font-bold text-[#1A3D32]"
         >
-          <SlidersHorizontal className="w-5 h-5 text-[#1E7D4E]" />
+          <SlidersHorizontal className="h-5 w-5 text-[#2F6B4F]" />
           <span>تصفية النتائج</span>
           {activeCount > 0 && (
-            <span className="bg-[#1E7D4E] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs ml-2">
+            <span className="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#2F6B4F] text-xs text-white">
               {activeCount}
             </span>
           )}
@@ -137,32 +137,32 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
 
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-[#0F3D2E]">تصفية النتائج</h2>
-              <button onClick={() => setIsMobileOpen(false)} className="p-2 bg-gray-50 rounded-full text-[#7FA789]">
-                <X className="w-5 h-5" />
+          <div className="absolute inset-0 bg-black/40" onClick={() => setIsMobileOpen(false)} />
+          <div className="absolute bottom-0 left-0 right-0 flex max-h-[85vh] flex-col rounded-t-2xl border-t border-[#E2EAE5] bg-white">
+            <div className="flex items-center justify-between border-b border-[#E2EAE5] p-6">
+              <h2 className="text-xl font-bold text-[#1A3D32]">تصفية النتائج</h2>
+              <button onClick={() => setIsMobileOpen(false)} className="rounded-lg bg-[#F7F9F8] p-2 text-[#6B8578]">
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex flex-col gap-6">
+            <div className="flex flex-col gap-6 overflow-y-auto p-6">
               <div>
-                <label className="block text-sm font-semibold text-[#0F3D2E] mb-2">كلمة البحث</label>
+                <label className="mb-2 block text-sm font-semibold text-[#1A3D32]">كلمة البحث</label>
                 <input
                   type="text"
                   value={currentQuery}
                   onChange={(e) => updateFilters({ query: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5"
+                  className="w-full rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] px-4 py-3.5"
                   placeholder="ابحث عن متجر..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#0F3D2E] mb-2">المدينة</label>
+                <label className="mb-2 block text-sm font-semibold text-[#1A3D32]">المدينة</label>
                 <select
                   value={currentCity}
                   onChange={(e) => updateFilters({ city: e.target.value, zone: "" })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5"
+                  className="w-full rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] px-4 py-3.5"
                 >
                   <option value="">كل المدن</option>
                   {cities.map((c: any) => (
@@ -171,12 +171,12 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#0F3D2E] mb-2">الحي / المنطقة</label>
+                <label className="mb-2 block text-sm font-semibold text-[#1A3D32]">الحي / المنطقة</label>
                 <select
                   value={currentZone}
                   disabled={!currentCity}
                   onChange={(e) => updateFilters({ zone: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 disabled:opacity-50"
+                  className="w-full rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] px-4 py-3.5 disabled:opacity-50"
                 >
                   <option value="">كل الأحياء</option>
                   {zones.map((z: any) => (
@@ -185,11 +185,11 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#0F3D2E] mb-2">الفئة</label>
+                <label className="mb-2 block text-sm font-semibold text-[#1A3D32]">الفئة</label>
                 <select
                   value={currentCategory}
                   onChange={(e) => updateFilters({ category: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5"
+                  className="w-full rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] px-4 py-3.5"
                 >
                   <option value="">كل الفئات</option>
                   {categories.map((c: any) => (
@@ -198,16 +198,16 @@ export function StoreListFilters({ categories, cities }: StoreListFiltersProps) 
                 </select>
               </div>
               {activeCount > 0 && (
-                <button onClick={clearFilters} className="w-full py-3 bg-red-50 text-red-600 rounded-2xl font-bold">
+                <button onClick={clearFilters} className="w-full rounded-xl bg-red-50 py-3 font-bold text-red-600">
                   مسح جميع الفلاتر
                 </button>
               )}
             </div>
 
-            <div className="p-6 border-t border-gray-100">
+            <div className="border-t border-[#E2EAE5] p-6">
               <button
                 onClick={() => setIsMobileOpen(false)}
-                className="w-full bg-[#1E7D4E] text-white py-4 rounded-2xl font-bold"
+                className="w-full rounded-xl bg-[#2F6B4F] py-4 font-bold text-white"
               >
                 تطبيق الفلاتر
               </button>

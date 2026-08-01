@@ -122,9 +122,9 @@ export default async function StoreDetailPage({
           {/* Main Content (Right side in RTL) */}
           <div className="lg:col-span-8 flex flex-col gap-8">
             {description && (
-              <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-6 md:p-8">
-                <h2 className="text-xl md:text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC] mb-6 flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center text-[#1E7D4E]">
+              <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] p-6 md:p-8">
+                <h2 className="text-xl md:text-2xl font-bold text-[#1A3D32] dark:text-[#E8EEEA] mb-6 flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-lg bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center text-[#2F6B4F]">
                     <Store className="w-4 h-4" />
                   </span>
                   نبذة عن المتجر
@@ -144,9 +144,9 @@ export default async function StoreDetailPage({
             )}
 
             {/* Ratings and Reviews Section */}
-            <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] p-6 md:p-8 flex flex-col gap-8">
-              <h2 className="text-xl md:text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC] font-heading flex items-center gap-2">
-                <span className="w-8 h-8 rounded-lg bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center text-[#1E7D4E]">
+            <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] p-6 md:p-8 flex flex-col gap-8">
+              <h2 className="text-xl md:text-2xl font-bold text-[#1A3D32] dark:text-[#E8EEEA] font-heading flex items-center gap-2">
+                <span className="w-8 h-8 rounded-lg bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center text-[#2F6B4F]">
                   <Star className="w-4 h-4" />
                 </span>
                 تقييمات المتجر
@@ -157,7 +157,7 @@ export default async function StoreDetailPage({
                 <ReviewForm storeSlug={slug} />
               </div>
 
-              <div className="border-t border-[#EAF3EC] dark:border-[#0F3D2E] pt-8">
+              <div className="border-t border-[#E8EEEA] dark:border-[#1A3D32] pt-8">
                 <ReviewList storeSlug={slug} />
               </div>
             </div>
@@ -167,56 +167,56 @@ export default async function StoreDetailPage({
           <div className="lg:col-span-4 flex flex-col gap-6 sticky top-24">
             
             {/* Unified Store Info Card */}
-            <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#EAF3EC] dark:border-[#0F3D2E] overflow-hidden">
-              <div className="p-6 border-b border-[#EAF3EC] dark:border-[#0F3D2E]">
-                <h3 className="font-bold text-lg text-[#0F3D2E] dark:text-[#EAF3EC]">معلومات المتجر</h3>
+            <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] overflow-hidden">
+              <div className="p-6 border-b border-[#E8EEEA] dark:border-[#1A3D32]">
+                <h3 className="font-bold text-lg text-[#1A3D32] dark:text-[#E8EEEA]">معلومات المتجر</h3>
               </div>
               
               {/* Contact Information */}
               <div className="p-6 space-y-5">
                 {address_ar && (
                   <div className="flex items-start gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center shrink-0">
-                      <MapPin className="w-5 h-5 text-[#1E7D4E]" />
+                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
+                      <MapPin className="w-5 h-5 text-[#2F6B4F]" />
                     </div>
                     <div className="pt-2 text-sm leading-relaxed">{address_ar}</div>
                   </div>
                 )}
                 {phone && (
                   <div className="flex items-center gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center shrink-0">
-                      <Phone className="w-5 h-5 text-[#1E7D4E]" />
+                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
+                      <Phone className="w-5 h-5 text-[#2F6B4F]" />
                     </div>
-                    <a href={`tel:${phone}`} className="text-sm hover:text-[#1E7D4E] transition-colors" dir="ltr">{phone}</a>
+                    <a href={`tel:${phone}`} className="text-sm hover:text-[#2F6B4F] transition-colors" dir="ltr">{phone}</a>
                   </div>
                 )}
                 {email && (
                   <div className="flex items-center gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center shrink-0">
-                      <Mail className="w-5 h-5 text-[#1E7D4E]" />
+                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
+                      <Mail className="w-5 h-5 text-[#2F6B4F]" />
                     </div>
-                    <a href={`mailto:${email}`} className="text-sm hover:text-[#1E7D4E] transition-colors">{email}</a>
+                    <a href={`mailto:${email}`} className="text-sm hover:text-[#2F6B4F] transition-colors">{email}</a>
                   </div>
                 )}
                 {website && (
                   <div className="flex items-center gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center shrink-0">
-                      <Globe className="w-5 h-5 text-[#1E7D4E]" />
+                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
+                      <Globe className="w-5 h-5 text-[#2F6B4F]" />
                     </div>
-                    <a href={website} target="_blank" rel="noreferrer" className="text-sm hover:text-[#1E7D4E] transition-colors line-clamp-1 break-all">{website.replace(/^https?:\/\//, '')}</a>
+                    <a href={website} target="_blank" rel="noreferrer" className="text-sm hover:text-[#2F6B4F] transition-colors line-clamp-1 break-all">{website.replace(/^https?:\/\//, '')}</a>
                   </div>
                 )}
               </div>
 
               {/* Working Hours embedded */}
               {hours.length > 0 && (
-                <div className="p-6 bg-gray-50 dark:bg-black/20 border-t border-[#EAF3EC] dark:border-[#0F3D2E]">
+                <div className="p-6 bg-gray-50 dark:bg-black/20 border-t border-[#E8EEEA] dark:border-[#1A3D32]">
                   <StoreWorkingHours hours={hours as any[]} />
                 </div>
               )}
 
               {/* Map — compact embed; social links live in the action bar above */}
-              <div className="border-t border-[#EAF3EC] dark:border-[#0F3D2E]">
+              <div className="border-t border-[#E8EEEA] dark:border-[#1A3D32]">
                 <PublicMap
                   latitude={latitude}
                   longitude={longitude}
