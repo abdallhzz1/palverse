@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CmsPageShell } from "@/components/cms/CmsPageShell";
 import { CmsContentBody } from "@/components/cms/CmsContentBody";
+import { CmsAboutLayout } from "@/components/cms/CmsAboutLayout";
 import { CmsContactPanel } from "@/components/cms/CmsContactPanel";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { serverFetch } from "@/lib/api/server";
@@ -85,13 +86,13 @@ export default async function StaticPageRoute({
       variant={variant}
     >
       {isContact ? (
-        <div className="max-w-6xl mx-auto space-y-6">
+        <div className="mx-auto max-w-6xl space-y-6">
           {page.content_ar ? (
-            <div className="bg-white rounded-[2rem] border border-[#EAF3EC] shadow-[0_1px_3px_rgba(15,61,46,0.04)] p-8 md:p-10">
+            <div className="rounded-xl border border-[#E2EAE5] bg-white p-6 md:p-8">
               <CmsContentBody html={page.content_ar} />
             </div>
           ) : null}
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
             <div className="w-full lg:w-1/3">
               <CmsContactPanel meta={page.meta} />
             </div>
@@ -104,17 +105,17 @@ export default async function StaticPageRoute({
             </div>
           </div>
         </div>
+      ) : isAbout ? (
+        <CmsAboutLayout
+          html={page.content_ar}
+          excerpt={page.excerpt_ar}
+          updatedAt={page.updated_at}
+        />
       ) : (
-        <article className="mx-auto max-w-3xl overflow-hidden rounded-[1.75rem] border border-[#EAF3EC] bg-white shadow-[0_1px_3px_rgba(15,61,46,0.04)]">
-          <div className="border-b border-[#EAF3EC] bg-gradient-to-l from-[#EAF3EC]/80 to-white px-6 py-5 md:px-10 md:py-6">
-            <p className="text-sm font-bold text-[#1E7D4E]">محتوى الصفحة</p>
-            <p className="mt-1 text-sm text-[#7FA789]">اقرأ التفاصيل التالية بوضوح وراحة</p>
-          </div>
-          <div className="px-6 py-8 md:px-12 md:py-12">
-            <CmsContentBody html={page.content_ar} />
-          </div>
+        <article className="mx-auto max-w-3xl rounded-xl border border-[#E2EAE5] bg-white p-6 md:p-10">
+          <CmsContentBody html={page.content_ar} />
           {page.updated_at ? (
-            <p className="border-t border-[#EAF3EC] px-6 py-5 text-center text-xs text-[#7FA789] md:px-12">
+            <p className="mt-8 border-t border-[#E2EAE5] pt-5 text-center text-xs text-[#6B8578]">
               آخر تحديث:{" "}
               {new Date(page.updated_at).toLocaleDateString("ar-SA", {
                 year: "numeric",
