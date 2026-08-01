@@ -22,6 +22,10 @@ function stripTags(html: string): string {
     .trim();
 }
 
+function normalizeText(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
 /** Turn CMS HTML into short readable chunks (avoids one newspaper wall). */
 function extractChunks(html: string): string[] {
   const trimmed = html.trim();
@@ -69,6 +73,15 @@ function extractChunks(html: string): string[] {
   return chunks;
 }
 
+/** Merge story points 3 and 4 into one card. */
+function mergeStoryPoints(chunks: string[]): string[] {
+  if (chunks.length < 4) return chunks;
+  const next = [...chunks];
+  const merged = `${next[2]} ${next[3]}`.replace(/\s+/g, " ").trim();
+  next.splice(2, 2, merged);
+  return next;
+}
+
 const HIGHLIGHTS = [
   {
     icon: Compass,
@@ -89,8 +102,21 @@ const HIGHLIGHTS = [
 
 export function CmsAboutLayout({ html, excerpt, updatedAt }: CmsAboutLayoutProps) {
   const chunks = html ? extractChunks(sanitizeHtmlContent(html)) : [];
-  const lead = excerpt?.trim() || chunks[0] || "";
-  const body = excerpt?.trim() ? chunks : chunks.slice(1);
+  const excerptText = normalizeText(excerpt || "");
+
+  // Hero already shows excerpt once — never repeat it as a second lead line.
+  const lead = excerptText ? null : chunks[0] || null;
+
+  let body = excerptText
+    ? chunks.filter((c) => normalizeText(c) !== excerptText)
+    : chunks.slice(1);
+
+  // If first body chunk still duplicates a short excerpt-like line, drop it
+  if (excerptText && body[0] && normalizeText(body[0]).includes(excerptText)) {
+    body = body.slice(1);
+  }
+
+  body = mergeStoryPoints(body);
 
   return (
     <div className="mx-auto max-w-5xl space-y-10 md:space-y-14">
@@ -100,19 +126,24 @@ export function CmsAboutLayout({ html, excerpt, updatedAt }: CmsAboutLayoutProps
         </p>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {HIGHLIGHTS.map((item) => (
-          <div
-            key={item.title}
-            className="rounded-2xl border border-[#E2EAE5] bg-white p-5 text-center md:p-6 md:text-start"
-          >
-            <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] text-[#2F6B4F] md:mx-0">
-              <item.icon className="h-5 w-5" />
+      <div
+        className="-mx-4 overflow-x-auto px-4 pb-1 md:mx-0 md:overflow-visible md:px-0 md:pb-0"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        <div className="flex w-max gap-3 md:grid md:w-full md:grid-cols-3 md:gap-4">
+          {HIGHLIGHTS.map((item) => (
+            <div
+              key={item.title}
+              className="w-[78vw] max-w-[280px] shrink-0 rounded-2xl border border-[#E2EAE5] bg-white p-5 text-center sm:w-[240px] md:w-auto md:max-w-none md:p-6 md:text-start"
+            >
+              <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] text-[#2F6B4F] md:mx-0">
+                <item.icon className="h-5 w-5" />
+              </div>
+              <h3 className="font-heading text-base font-bold text-[#1A3D32]">{item.title}</h3>
+              <p className="mt-2 text-sm leading-7 text-[#6B8578]">{item.text}</p>
             </div>
-            <h3 className="font-heading text-base font-bold text-[#1A3D32]">{item.title}</h3>
-            <p className="mt-2 text-sm leading-7 text-[#6B8578]">{item.text}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {body.length > 0 ? (
@@ -121,7 +152,9 @@ export function CmsAboutLayout({ html, excerpt, updatedAt }: CmsAboutLayoutProps
             <h2 className="font-heading text-xl font-extrabold text-[#1A3D32] md:text-2xl">
               قصتنا باختصار
             </h2>
-            <p className="mt-2 text-sm text-[#6B8578]">نقاط أساسية عن بال فيرس — بدون صفحات طويلة مزدحمة.</p>
+            <p className="mt-2 text-sm text-[#6B8578]">
+              نقاط أساسية عن بال فيرس — بدون صفحات طويلة مزدحمة.
+            </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">

@@ -2,25 +2,30 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Store, Plus, LayoutGrid, Headset } from "lucide-react";
+import { Home, Store, Plus, LayoutGrid, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CMS_PAGE_SLUGS, cmsPageHref } from "@/lib/cms-pages";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const aboutHref = cmsPageHref(CMS_PAGE_SLUGS.about);
 
   const navItems = [
     { name: "الرئيسية", href: "/", icon: Home },
     { name: "المحلات", href: "/stores", icon: Store },
     { isAction: true, href: "/join-us", icon: Plus, name: "أضف" },
     { name: "الفئات", href: "/categories", icon: LayoutGrid },
-    { name: "تواصل", href: "/contact", icon: Headset },
+    { name: "من نحن", href: aboutHref, icon: Users },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#E2EAE5] bg-white/95 pb-safe backdrop-blur-md md:hidden">
       <div className="relative flex h-[4.25rem] items-center justify-around px-2">
         {navItems.map((item) => {
-          const isActive = item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href);
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname === item.href || pathname?.startsWith(`${item.href}/`);
           const Icon = item.icon;
 
           if (item.isAction) {
