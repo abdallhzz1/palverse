@@ -2,19 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Megaphone, Plus, Trash2, CheckCircle2, XCircle, Store } from "lucide-react";
+import { Megaphone, Plus, Trash2, CheckCircle2, XCircle, Store, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { advertisementsService, type StoreAdvertisement } from "@/services/advertisements.service";
 import { normalizeApiError } from "@/lib/api/error";
-import { adScheduleLabel, getAdScheduleStatus } from "@/lib/ads/ad-schedule";
-
-function bannerImageUrl(path?: string | null) {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/api\/v1\/?$/, "") || "";
-  return `${base}/storage/${path}`;
-}
+import { adScheduleLabel, getAdScheduleStatus, placementLabels, bannerImageUrl } from "@/lib/ads/ad-schedule";
 
 export default function AdminAdvertisementsPage() {
   const [advertisements, setAdvertisements] = useState<StoreAdvertisement[]>([]);
@@ -65,7 +58,8 @@ export default function AdminAdvertisementsPage() {
             الإعلانات الممولة
           </h2>
           <p className="mt-1 text-muted-foreground">
-            يظهر الإعلان على الرئيسية فقط إذا كان مفعّلاً وتاريخ اليوم ضمن فترة البداية والنهاية.
+            تحكم كامل بالحملات: إنشاء، تعديل التواريخ والصورة، تفعيل/إيقاف، وحذف. البنر يظهر في
+            الرئيسية وصفحة المتاجر وبروفايل المحل؛ إبراز المتجر يظهر كبطاقة/شارة ممولة.
           </p>
         </div>
         <Button asChild className="bg-[#1E7D4E] hover:bg-[#0F3D2E]">
@@ -111,7 +105,8 @@ export default function AdminAdvertisementsPage() {
               </thead>
               <tbody className="divide-y divide-border dark:divide-slate-800">
                 {advertisements.map((ad) => {
-                  const img = bannerImageUrl(ad.image_path);
+                  const img = bannerImageUrl(ad.image_path, ad.image_url);
+                  const placeText = placementLabels(ad.placements).slice(0, 2).join(" · ");
                   return (
                     <tr key={ad.public_id} className="hover:bg-muted/30">
                       <td className="px-6 py-4">
@@ -141,7 +136,9 @@ export default function AdminAdvertisementsPage() {
                                 {ad.ad_type === "banner" ? "بنر إعلاني" : "إبراز المتجر"}
                               </span>
                             </div>
-                            <div className="text-sm text-muted-foreground">{ad.notes || "لا يوجد ملاحظات"}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {placeText || ad.notes || "لا يوجد ملاحظات"}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -163,11 +160,12 @@ export default function AdminAdvertisementsPage() {
                       <td className="px-6 py-4">
                         {(() => {
                           const status =
-                            (ad as StoreAdvertisement & { homepage_status?: string }).homepage_status ||
+                            ad.public_status ||
+                            ad.homepage_status ||
                             getAdScheduleStatus(ad);
                           const meta =
                             status === "hidden"
-                              ? { label: "مخفي عن الرئيسية", className: "bg-orange-100 text-orange-700" }
+                              ? { label: "مخفي عن الموقع", className: "bg-orange-100 text-orange-700" }
                               : adScheduleLabel(
                                   status === "live" ||
                                     status === "scheduled" ||
@@ -176,8 +174,7 @@ export default function AdminAdvertisementsPage() {
                                     ? status
                                     : "paused"
                                 );
-                          const reasons = (ad as StoreAdvertisement & { homepage_reasons?: string[] })
-                            .homepage_reasons;
+                          const reasons = ad.public_reasons || ad.homepage_reasons;
                           return (
                             <span
                               title={Array.isArray(reasons) ? reasons.join(", ") : undefined}
@@ -212,14 +209,23 @@ export default function AdminAdvertisementsPage() {
                         </button>
                       </td>
                       <td className="px-6 py-4">
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(ad.public_id)}
-                          className="rounded-lg p-2 text-red-600 hover:bg-red-50"
-                          title="حذف"
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <Link
+                            href={`/advertisements/${ad.public_id}/edit`}
+                            className="rounded-lg p-2 text-[#1E7D4E] hover:bg-[#EAF3EC]"
+                            title="تعديل"
+                          >
+                            <Pencil className="h-5 w-5" />
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(ad.public_id)}
+                            className="rounded-lg p-2 text-red-600 hover:bg-red-50"
+                            title="حذف"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

@@ -54,7 +54,14 @@ class StoreAdvertisement extends Model
     }
 
     /**
-     * @return array{shows_on_homepage: bool, status: string, reasons: list<string>}
+     * @return array{
+     *   shows_on_homepage: bool,
+     *   shows_publicly: bool,
+     *   status: string,
+     *   reasons: list<string>,
+     *   placements: list<string>,
+     *   business_today: string
+     * }
      */
     public function homepageVisibility(): array
     {
@@ -97,10 +104,30 @@ class StoreAdvertisement extends Model
             default => 'hidden',
         };
 
+        $placements = [];
+        if ($shows) {
+            if ($this->ad_type === 'banner') {
+                $placements = [
+                    'home_hero_banner',
+                    'home_mid_banner',
+                    'stores_list_banner',
+                    'store_profile_sidebar',
+                ];
+            } else {
+                $placements = [
+                    'home_featured_stores',
+                    'stores_list_featured',
+                    'stores_list_sponsored_badge',
+                ];
+            }
+        }
+
         return [
             'shows_on_homepage' => $shows,
+            'shows_publicly' => $shows,
             'status' => $status,
             'reasons' => $reasons,
+            'placements' => $placements,
             'business_today' => $today,
         ];
     }

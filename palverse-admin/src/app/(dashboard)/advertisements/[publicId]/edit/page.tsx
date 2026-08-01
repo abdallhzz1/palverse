@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,32 +19,60 @@ import { Button } from "@/components/ui/button";
 import { advertisementsService } from "@/services/advertisements.service";
 import { apiClient } from "@/lib/api/client";
 import { normalizeApiError } from "@/lib/api/error";
-import { defaultAdDateRange } from "@/lib/ads/ad-schedule";
+import { bannerImageUrl, placementLabels } from "@/lib/ads/ad-schedule";
 
-export default function NewAdminAdvertisementPage() {
+export default function EditAdminAdvertisementPage({
+  params,
+}: {
+  params: Promise<{ publicId: string }>;
+}) {
+  const { publicId } = use(params);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stores, setStores] = useState<{ public_id: string; name_ar?: string; name_en?: string }[]>([]);
-  const [isLoadingStores, setIsLoadingStores] = useState(true);
   const [formData, setFormData] = useState({
     store_public_id: "",
     ad_type: "featured_store",
-    ...defaultAdDateRange(30),
+    start_date: "",
+    end_date: "",
     amount_paid: "",
     notes: "",
+    is_active: true,
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [placements, setPlacements] = useState<string[]>([]);
 
   useEffect(() => {
-    apiClient
-      .get("/stores", { params: { per_page: 100 } })
-      .then((res: { data?: { public_id: string; name_ar?: string; name_en?: string }[] }) => {
-        setStores(res.data || []);
+    Promise.all([
+      advertisementsService.show(publicId),
+      apiClient.get("/stores", { params: { per_page: 100 } }),
+    ])
+      .then(([adRes, storesRes]) => {
+        const ad = adRes.data;
+        setFormData({
+          store_public_id: ad.store?.public_id || "",
+          ad_type: ad.ad_type,
+          start_date: (ad.start_date || "").slice(0, 10),
+          end_date: (ad.end_date || "").slice(0, 10),
+          amount_paid: String(ad.amount_paid ?? ""),
+          notes: ad.notes || "",
+          is_active: Boolean(ad.is_active),
+        });
+        setImagePreview(bannerImageUrl(ad.image_path, ad.image_url));
+        setPlacements(ad.placements || []);
+        setStores(
+          (storesRes as { data?: { public_id: string; name_ar?: string; name_en?: string }[] }).data ||
+            []
+        );
       })
-      .catch(() => toast.error("حدث خطأ أثناء تحميل قائمة المتاجر"))
-      .finally(() => setIsLoadingStores(false));
-  }, []);
+      .catch((error) => {
+        toast.error(normalizeApiError(error).message || "تعذر تحميل الإعلان");
+        router.push("/advertisements");
+      })
+      .finally(() => setIsLoading(false));
+  }, [publicId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,23 +85,19 @@ export default function NewAdminAdvertisementPage() {
       data.append("end_date", formData.end_date);
       data.append("amount_paid", formData.amount_paid);
       data.append("notes", formData.notes ?? "");
+      data.append("is_active", formData.is_active ? "1" : "0");
+      if (imageFile) data.append("image", imageFile);
 
-      if (formData.ad_type === "banner") {
-        if (!imageFile) throw new Error("يجب رفع صورة للبنر الإعلاني");
-        data.append("image", imageFile);
-      }
-
-      await advertisementsService.create(data);
-      toast.success("تم إنشاء الإعلان وتفعيله بنجاح");
+      await advertisementsService.update(publicId, data);
+      toast.success("تم تحديث الإعلان بنجاح");
       router.push("/advertisements");
       router.refresh();
     } catch (error) {
       const normalized = normalizeApiError(error);
       if (normalized.details && Object.keys(normalized.details).length > 0) {
-        const messages = Object.values(normalized.details).flat().join(" | ");
-        toast.error(`خطأ في البيانات: ${messages}`);
+        toast.error(`خطأ في البيانات: ${Object.values(normalized.details).flat().join(" | ")}`);
       } else {
-        toast.error(normalized.message || (error as Error).message || "حدث خطأ أثناء حفظ الإعلان");
+        toast.error(normalized.message || "حدث خطأ أثناء حفظ الإعلان");
       }
     } finally {
       setIsSubmitting(false);
@@ -83,7 +107,12 @@ export default function NewAdminAdvertisementPage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    const target = e.target;
+    const { name, value } = target;
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [name]: target.checked }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -96,6 +125,28 @@ export default function NewAdminAdvertisementPage() {
     reader.readAsDataURL(file);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1E7D4E] border-t-transparent" />
+      </div>
+    );
+  }
+
+  const expectedPlacements =
+    formData.ad_type === "banner"
+      ? placementLabels([
+          "home_hero_banner",
+          "home_mid_banner",
+          "stores_list_banner",
+          "store_profile_sidebar",
+        ])
+      : placementLabels([
+          "home_featured_stores",
+          "stores_list_featured",
+          "stores_list_sponsored_badge",
+        ]);
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
@@ -105,9 +156,25 @@ export default function NewAdminAdvertisementPage() {
           </Link>
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">إضافة إعلان جديد</h2>
-          <p className="mt-1 text-muted-foreground">إعداد حملة ممولة تظهر في مواضع الموقع حسب نوع الإعلان</p>
+          <h2 className="text-2xl font-bold tracking-tight">تعديل الإعلان</h2>
+          <p className="mt-1 text-muted-foreground">
+            تحكم بالتواريخ والتفعيل والصورة والمواضع على الموقع العام
+          </p>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-[#EAF3EC] bg-[#EAF3EC]/40 p-4 text-sm text-[#0F3D2E]">
+        <p className="mb-2 font-bold">مواضع الظهور المتوقعة لهذا النوع:</p>
+        <ul className="list-disc space-y-1 pe-5">
+          {expectedPlacements.map((label) => (
+            <li key={label}>{label}</li>
+          ))}
+        </ul>
+        {placements.length > 0 ? (
+          <p className="mt-3 text-xs text-[#5F7B6A]">
+            الحالة الحالية على الموقع تعتمد على التفعيل وتواريخ الحملة وحالة المتجر.
+          </p>
+        ) : null}
       </div>
 
       <form
@@ -125,12 +192,12 @@ export default function NewAdminAdvertisementPage() {
                 {
                   value: "featured_store",
                   title: "إبراز المتجر",
-                  desc: "بطاقة مميزة في الرئيسية وصفحة المتاجر + شارة ممول",
+                  desc: "بطاقة مميزة في الرئيسية وصفحة المتاجر",
                 },
                 {
                   value: "banner",
-                  title: "بنر إعلاني تصويري",
-                  desc: "بنر في الرئيسية والمتاجر وشريط بروفايل المحل",
+                  title: "بنر إعلاني",
+                  desc: "بنر في الرئيسية والمتاجر وبروفايل المحل",
                 },
               ] as const
             ).map((option) => (
@@ -169,8 +236,7 @@ export default function NewAdminAdvertisementPage() {
             value={formData.store_public_id}
             onChange={handleChange}
             required
-            disabled={isLoadingStores}
-            className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 outline-none focus:border-[#1E7D4E] focus:ring-2 focus:ring-[#1E7D4E]/20"
+            className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 outline-none focus:border-[#1E7D4E]"
           >
             <option value="">اختر المتجر</option>
             {stores.map((store) => (
@@ -185,40 +251,36 @@ export default function NewAdminAdvertisementPage() {
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-bold">
               <ImageIcon className="h-4 w-4 text-[#1E7D4E]" />
-              صورة الإعلان (البنر)
+              صورة البنر
             </label>
             <div className="rounded-2xl border-2 border-dashed border-border p-6 text-center">
               {imagePreview ? (
                 <div className="space-y-4">
                   <div className="relative h-48 w-full overflow-hidden rounded-xl bg-muted md:h-64">
-                    <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+                    <Image src={imagePreview} alt="Preview" fill unoptimized className="object-cover" />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setImageFile(null);
-                      setImagePreview(null);
-                    }}
-                    className="text-sm font-bold text-red-500 hover:underline"
-                  >
-                    حذف الصورة واختيار أخرى
-                  </button>
+                  <label htmlFor="banner-image-edit" className="cursor-pointer text-sm font-bold text-[#1E7D4E] hover:underline">
+                    استبدال الصورة
+                  </label>
+                  <input
+                    type="file"
+                    id="banner-image-edit"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
                 </div>
               ) : (
                 <>
                   <input
                     type="file"
-                    id="banner-image"
+                    id="banner-image-edit"
                     accept="image/*"
                     onChange={handleImageChange}
                     className="hidden"
                   />
-                  <label htmlFor="banner-image" className="flex cursor-pointer flex-col items-center gap-2">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EAF3EC] text-[#1E7D4E]">
-                      <ImageIcon className="h-6 w-6" />
-                    </div>
-                    <span className="font-medium text-[#1E7D4E]">اضغط هنا لاختيار صورة</span>
-                    <span className="text-xs text-muted-foreground">يفضل 16:9 وبحد أقصى 10MB</span>
+                  <label htmlFor="banner-image-edit" className="flex cursor-pointer flex-col items-center gap-2">
+                    <span className="font-medium text-[#1E7D4E]">اختر صورة البنر</span>
                   </label>
                 </>
               )}
@@ -278,16 +340,27 @@ export default function NewAdminAdvertisementPage() {
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-bold">
             <FileText className="h-4 w-4 text-[#1E7D4E]" />
-            ملاحظات (اختياري)
+            ملاحظات
           </label>
           <textarea
             name="notes"
             value={formData.notes}
             onChange={handleChange}
-            rows={4}
+            rows={3}
             className="w-full resize-none rounded-xl border border-border bg-muted/30 px-4 py-3 outline-none focus:border-[#1E7D4E]"
           />
         </div>
+
+        <label className="flex items-center gap-3 rounded-xl border border-border p-4">
+          <input
+            type="checkbox"
+            name="is_active"
+            checked={formData.is_active}
+            onChange={handleChange}
+            className="h-4 w-4 rounded border-gray-300 text-[#1E7D4E] focus:ring-[#1E7D4E]"
+          />
+          <span className="text-sm font-bold">الإعلان مفعّل ويعرض على الموقع عند حلول الفترة</span>
+        </label>
 
         <div className="flex items-center justify-end gap-3 border-t border-border pt-6">
           <Button asChild variant="ghost">
@@ -299,7 +372,7 @@ export default function NewAdminAdvertisementPage() {
             ) : (
               <Save className="ml-2 h-4 w-4" />
             )}
-            حفظ وتفعيل
+            حفظ التعديلات
           </Button>
         </div>
       </form>

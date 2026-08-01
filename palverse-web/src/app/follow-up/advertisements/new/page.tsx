@@ -107,7 +107,7 @@ export default function NewAdvertisementPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">إضافة إعلان جديد</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">إعداد إعلان ممول لمتجر ليعرض في الصفحة الرئيسية</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">إعداد حملة ممولة تظهر في مواضع الموقع حسب نوع الإعلان</p>
         </div>
       </div>
 
@@ -125,7 +125,7 @@ export default function NewAdvertisementPage() {
               <div className="flex items-center justify-between w-full">
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white">إبراز المتجر</div>
-                  <div className="text-sm text-gray-500">يظهر كبطاقة متجر مميزة في الرئيسية</div>
+                  <div className="text-sm text-gray-500">بطاقة مميزة في الرئيسية وصفحة المتاجر + شارة ممول</div>
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.ad_type === 'featured_store' ? 'border-[#1E7D4E]' : 'border-gray-300'}`}>
                   {formData.ad_type === 'featured_store' && <div className="w-2.5 h-2.5 bg-[#1E7D4E] rounded-full"></div>}
@@ -138,7 +138,7 @@ export default function NewAdvertisementPage() {
               <div className="flex items-center justify-between w-full">
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white">بنر إعلاني تصويري</div>
-                  <div className="text-sm text-gray-500">تصميم يظهر في مساحة الشريك المميز</div>
+                  <div className="text-sm text-gray-500">بنر في الرئيسية والمتاجر وشريط بروفايل المحل</div>
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.ad_type === 'banner' ? 'border-[#1E7D4E]' : 'border-gray-300'}`}>
                   {formData.ad_type === 'banner' && <div className="w-2.5 h-2.5 bg-[#1E7D4E] rounded-full"></div>}

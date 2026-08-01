@@ -37,7 +37,7 @@ export function getAdScheduleStatus(ad: {
 export function adScheduleLabel(status: AdScheduleStatus): { label: string; className: string } {
   switch (status) {
     case "live":
-      return { label: "على الرئيسية", className: "bg-emerald-100 text-emerald-700" };
+      return { label: "منشور على الموقع", className: "bg-emerald-100 text-emerald-700" };
     case "scheduled":
       return { label: "مجدول", className: "bg-amber-100 text-amber-700" };
     case "expired":
@@ -46,4 +46,19 @@ export function adScheduleLabel(status: AdScheduleStatus): { label: string; clas
     default:
       return { label: "متوقف", className: "bg-gray-100 text-gray-600" };
   }
+}
+
+export const AD_PLACEMENT_LABELS: Record<string, string> = {
+  home_hero_banner: "بنر الرئيسية تحت البحث",
+  home_mid_banner: "بنر وسط الرئيسية",
+  stores_list_banner: "بنر صفحة المتاجر",
+  store_profile_sidebar: "شريط جانبي لبروفايل المحل",
+  home_featured_stores: "محلات مميزة في الرئيسية",
+  stores_list_featured: "محلات مميزة في /stores",
+  stores_list_sponsored_badge: "شارة ممول داخل النتائج",
+};
+
+export function placementLabels(placements?: string[] | null): string[] {
+  if (!Array.isArray(placements) || placements.length === 0) return [];
+  return placements.map((key) => AD_PLACEMENT_LABELS[key] || key);
 }

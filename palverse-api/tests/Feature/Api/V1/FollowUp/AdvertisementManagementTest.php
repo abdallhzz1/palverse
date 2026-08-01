@@ -97,6 +97,48 @@ class AdvertisementManagementTest extends TestCase
         $this->assertDatabaseCount('store_advertisements', 1);
     }
 
+    public function test_follow_up_can_show_and_update_advertisement(): void
+    {
+        $create = $this->actingAs($this->followUp, 'sanctum')
+            ->postJson('/api/v1/follow-up/advertisements', [
+                'store_public_id' => $this->store->public_id,
+                'ad_type' => 'featured_store',
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays(7)->toDateString(),
+                'amount_paid' => 100,
+            ])
+            ->assertCreated();
+
+        $publicId = $create->json('data.public_id');
+
+        $this->actingAs($this->followUp, 'sanctum')
+            ->getJson('/api/v1/follow-up/advertisements/'.$publicId)
+            ->assertOk()
+            ->assertJsonPath('data.public_id', $publicId)
+            ->assertJsonPath('data.public_status', 'live')
+            ->assertJsonStructure(['data' => ['placements']]);
+
+        $this->actingAs($this->followUp, 'sanctum')
+            ->putJson('/api/v1/follow-up/advertisements/'.$publicId, [
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays(14)->toDateString(),
+                'amount_paid' => 150,
+                'notes' => 'تم التمديد',
+                'is_active' => true,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.amount_paid', '150.00')
+            ->assertJsonPath('data.notes', 'تم التمديد');
+
+        $this->actingAs($this->admin, 'sanctum')
+            ->putJson('/api/v1/admin/advertisements/'.$publicId, [
+                'is_active' => false,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', false)
+            ->assertJsonPath('data.public_status', 'paused');
+    }
+
     public function test_guest_cannot_manage_advertisements(): void
     {
         $this->postJson('/api/v1/follow-up/advertisements', [])

@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Api\V1\FollowUp;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\FollowUp\StoreAdvertisementRequest;
+use App\Http\Requests\Api\V1\FollowUp\UpdateAdvertisementRequest;
 use App\Models\Store;
 use App\Models\StoreAdvertisement;
+use App\Support\PublicStorageUrl;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class AdvertisementController extends Controller
 {
@@ -19,16 +24,9 @@ class AdvertisementController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        $data = collect($advertisements->items())->map(function (StoreAdvertisement $ad) {
-            $visibility = $ad->homepageVisibility();
-
-            return array_merge($ad->toArray(), [
-                'shows_on_homepage' => $visibility['shows_on_homepage'],
-                'homepage_status' => $visibility['status'],
-                'homepage_reasons' => $visibility['reasons'],
-                'business_today' => $visibility['business_today'],
-            ]);
-        })->values();
+        $data = collect($advertisements->items())
+            ->map(fn (StoreAdvertisement $ad) => $this->serialize($ad))
+            ->values();
 
         return response()->json([
             'success' => true,
@@ -42,40 +40,32 @@ class AdvertisementController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function show(string $public_id): JsonResponse
     {
         Gate::authorize('manage-advertisements');
 
-        $validated = $request->validate([
-            'store_public_id' => 'required|string|exists:stores,public_id',
-            'ad_type' => 'required|in:featured_store,banner',
-            'image' => 'nullable|image|max:10240|required_if:ad_type,banner',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'amount_paid' => 'required|numeric|min:0',
-            'notes' => 'nullable|string',
+        $advertisement = StoreAdvertisement::with('store')
+            ->where('public_id', $public_id)
+            ->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->serialize($advertisement),
         ]);
+    }
 
-        $store = Store::publicVisible()->where('public_id', $validated['store_public_id'])->first();
+    public function store(StoreAdvertisementRequest $request): JsonResponse
+    {
+        Gate::authorize('manage-advertisements');
 
-        if (!$store) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'store_public_id' => ['المتجر المختار غير متاح أو اشتراكه منتهي. يجب أن يكون المتجر معتمداً ولديه اشتراك فعّال.']
-            ]);
-        }
+        $validated = $request->validated();
+        $store = $this->resolveEligibleStore($validated['store_public_id']);
 
         if ($validated['ad_type'] === 'banner') {
-            $overlappingCount = StoreAdvertisement::where('ad_type', 'banner')
-                ->where('is_active', true)
-                ->where('start_date', '<=', $validated['end_date'])
-                ->where('end_date', '>=', $validated['start_date'])
-                ->count();
-
-            if ($overlappingCount >= 5) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'start_date' => ['تم الوصول للحد الأقصى للبنرات الإعلانية (5 بنرات) في هذه الفترة الزمنية. يرجى اختيار تواريخ أخرى.']
-                ]);
-            }
+            $this->assertBannerCapacity(
+                $validated['start_date'],
+                $validated['end_date']
+            );
         }
 
         $imagePath = null;
@@ -92,35 +82,92 @@ class AdvertisementController extends Controller
             'amount_paid' => $validated['amount_paid'],
             'notes' => $validated['notes'] ?? null,
             'created_by' => $request->user()->id,
-            'is_active' => true,
+            'is_active' => array_key_exists('is_active', $validated)
+                ? (bool) $validated['is_active']
+                : true,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'تم إنشاء الإعلان وتفعيله بنجاح',
-            'data' => $advertisement->load('store'),
+            'data' => $this->serialize($advertisement->load('store')),
         ], 201);
     }
 
-    public function update(Request $request, string $public_id): JsonResponse
+    public function update(UpdateAdvertisementRequest $request, string $public_id): JsonResponse
     {
         Gate::authorize('manage-advertisements');
 
-        $advertisement = StoreAdvertisement::where('public_id', $public_id)->firstOrFail();
+        $advertisement = StoreAdvertisement::with('store')
+            ->where('public_id', $public_id)
+            ->firstOrFail();
 
-        $validated = $request->validate([
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        if (isset($validated['is_active'])) {
-            $advertisement->is_active = $validated['is_active'];
-            $advertisement->save();
+        if (isset($validated['store_public_id'])) {
+            $store = $this->resolveEligibleStore($validated['store_public_id']);
+            $advertisement->store_id = $store->id;
         }
+
+        if (isset($validated['ad_type'])) {
+            $advertisement->ad_type = $validated['ad_type'];
+        }
+
+        if (isset($validated['start_date'])) {
+            $advertisement->start_date = $validated['start_date'];
+        }
+
+        if (isset($validated['end_date'])) {
+            $advertisement->end_date = $validated['end_date'];
+        }
+
+        if (array_key_exists('amount_paid', $validated)) {
+            $advertisement->amount_paid = $validated['amount_paid'];
+        }
+
+        if (array_key_exists('notes', $validated)) {
+            $advertisement->notes = $validated['notes'];
+        }
+
+        if (array_key_exists('is_active', $validated)) {
+            $advertisement->is_active = (bool) $validated['is_active'];
+        }
+
+        $effectiveType = $advertisement->ad_type;
+        $effectiveStart = optional($advertisement->start_date)->toDateString();
+        $effectiveEnd = optional($advertisement->end_date)->toDateString();
+
+        if ($effectiveType === 'banner' && $effectiveStart && $effectiveEnd && $advertisement->is_active) {
+            $this->assertBannerCapacity($effectiveStart, $effectiveEnd, $advertisement->id);
+        }
+
+        if ($request->hasFile('image')) {
+            if ($advertisement->image_path) {
+                Storage::disk('public')->delete($advertisement->image_path);
+            }
+            $advertisement->image_path = $request->file('image')->store('advertisements', 'public');
+        } elseif (
+            isset($validated['ad_type'])
+            && $validated['ad_type'] === 'featured_store'
+            && $advertisement->image_path
+        ) {
+            Storage::disk('public')->delete($advertisement->image_path);
+            $advertisement->image_path = null;
+        }
+
+        if ($advertisement->ad_type === 'banner' && blank($advertisement->image_path)) {
+            throw ValidationException::withMessages([
+                'image' => ['يجب رفع صورة للبنر الإعلاني.'],
+            ]);
+        }
+
+        $advertisement->save();
+        $advertisement->load('store');
 
         return response()->json([
             'success' => true,
-            'message' => 'Advertisement updated successfully',
-            'data' => $advertisement,
+            'message' => 'تم تحديث الإعلان بنجاح',
+            'data' => $this->serialize($advertisement),
         ]);
     }
 
@@ -129,11 +176,68 @@ class AdvertisementController extends Controller
         Gate::authorize('manage-advertisements');
 
         $advertisement = StoreAdvertisement::where('public_id', $public_id)->firstOrFail();
+
+        if ($advertisement->image_path) {
+            Storage::disk('public')->delete($advertisement->image_path);
+        }
+
         $advertisement->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Advertisement deleted successfully',
+            'message' => 'تم حذف الإعلان بنجاح',
+        ]);
+    }
+
+    private function resolveEligibleStore(string $publicId): Store
+    {
+        $store = Store::publicVisible()->where('public_id', $publicId)->first();
+
+        if (! $store) {
+            throw ValidationException::withMessages([
+                'store_public_id' => ['المتجر المختار غير متاح أو اشتراكه منتهي. يجب أن يكون المتجر معتمداً ولديه اشتراك فعّال.'],
+            ]);
+        }
+
+        return $store;
+    }
+
+    private function assertBannerCapacity(string $startDate, string $endDate, ?int $ignoreId = null): void
+    {
+        $query = StoreAdvertisement::query()
+            ->where('ad_type', 'banner')
+            ->where('is_active', true)
+            ->whereDate('start_date', '<=', $endDate)
+            ->whereDate('end_date', '>=', $startDate);
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        if ($query->count() >= 5) {
+            throw ValidationException::withMessages([
+                'start_date' => ['تم الوصول للحد الأقصى للبنرات الإعلانية (5 بنرات) في هذه الفترة الزمنية. يرجى اختيار تواريخ أخرى.'],
+            ]);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serialize(StoreAdvertisement $ad): array
+    {
+        $visibility = $ad->homepageVisibility();
+
+        return array_merge($ad->toArray(), [
+            'image_url' => PublicStorageUrl::fromPath($ad->image_path),
+            'shows_on_homepage' => $visibility['shows_on_homepage'],
+            'shows_publicly' => $visibility['shows_publicly'],
+            'homepage_status' => $visibility['status'],
+            'public_status' => $visibility['status'],
+            'homepage_reasons' => $visibility['reasons'],
+            'public_reasons' => $visibility['reasons'],
+            'placements' => $visibility['placements'],
+            'business_today' => $visibility['business_today'],
         ]);
     }
 }

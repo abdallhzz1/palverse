@@ -360,7 +360,8 @@ Route::prefix('v1')->group(function (): void {
             Route::prefix('advertisements')->group(function (): void {
                 Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'store']);
-                Route::put('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'update']);
+                Route::get('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'show']);
+                Route::match(['put', 'post'], '/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'update']);
                 Route::delete('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'destroy']);
             });
 
@@ -555,7 +556,8 @@ Route::prefix('v1')->group(function (): void {
             Route::prefix('advertisements')->group(function (): void {
                 Route::get('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'store']);
-                Route::put('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'update']);
+                Route::get('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'show']);
+                Route::match(['put', 'post'], '/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'update']);
                 Route::delete('/{public_id}', [\App\Http\Controllers\Api\V1\FollowUp\AdvertisementController::class, 'destroy']);
             });
 

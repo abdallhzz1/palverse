@@ -268,12 +268,17 @@ Redeploy لـ **palverse-web** على Vercel فقط (لا migration).
 - حقل `is_featured` في قائمة المتاجر
 - رفع حد البنرات المتزامنة من 3 إلى **5**
 
+### تحكم الأدمن / المتابعة
+- عرض حالة الظهور على الموقع + مواضع الحملة
+- تعديل كامل: تواريخ، مبلغ، ملاحظات، نوع، صورة البنر، تفعيل
+- صفحات تعديل: `/advertisements/[id]/edit` و `/follow-up/advertisements/[id]/edit`
+
 ### النشر
 ```bash
 cd ~/repositories/palverse && git pull origin master
 # لا migration
 ```
-ثم Redeploy لـ **palverse-web** (وأعد نشر API إن لزم لـ exclude_store / is_featured).
+ثم Redeploy لـ **API** + **palverse-web** + **palverse-admin**.
 
 ---
 
