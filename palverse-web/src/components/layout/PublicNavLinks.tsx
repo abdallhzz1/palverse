@@ -11,7 +11,6 @@ const NAV = [
   { href: "/stores", label: "المحلات" },
   { href: "/offers", label: "العروض" },
   { href: "/join-us", label: "أضف نشاطك" },
-  { href: "/blog", label: "المدونة" },
   { href: `/pages/${CMS_PAGE_SLUGS.about}`, label: "من نحن" },
   { href: "/contact", label: "تواصل معنا" },
 ] as const;

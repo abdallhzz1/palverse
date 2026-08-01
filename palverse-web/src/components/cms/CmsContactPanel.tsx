@@ -1,4 +1,4 @@
-import { MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 export type CmsContactMeta = {
   info_card_title_ar?: string | null;
@@ -21,6 +21,9 @@ const DEFAULTS = {
   phone: "+972 59-388-3932",
   phone_label_ar: "رقم الهاتف",
   phone_hint_ar: "متاحون من 8 صباحاً حتى 5 مساءً",
+  email: "info@palverse.ps",
+  email_label_ar: "البريد الإلكتروني",
+  email_hint_ar: "نرد على رسائلكم خلال 24 ساعة",
   address_ar: "فلسطين، الخليل",
   address_line2_ar: "دائرة السير",
   address_label_ar: "العنوان",
@@ -42,6 +45,9 @@ export function CmsContactPanel({ meta }: CmsContactPanelProps) {
     phone: pick(meta?.phone, DEFAULTS.phone),
     phone_label_ar: pick(meta?.phone_label_ar, DEFAULTS.phone_label_ar),
     phone_hint_ar: pick(meta?.phone_hint_ar, DEFAULTS.phone_hint_ar),
+    email: pick(meta?.email, DEFAULTS.email),
+    email_label_ar: pick(meta?.email_label_ar, DEFAULTS.email_label_ar),
+    email_hint_ar: pick(meta?.email_hint_ar, DEFAULTS.email_hint_ar),
     address_ar: pick(meta?.address_ar, DEFAULTS.address_ar),
     address_line2_ar: pick(meta?.address_line2_ar, DEFAULTS.address_line2_ar),
     address_label_ar: pick(meta?.address_label_ar, DEFAULTS.address_label_ar),
@@ -55,34 +61,47 @@ export function CmsContactPanel({ meta }: CmsContactPanelProps) {
     `https://maps.google.com/maps?q=${encodeURIComponent(`${data.map_lat},${data.map_lng}`)}&z=16&output=embed`;
 
   return (
-    <div className="bg-white rounded-[2rem] border border-[#EAF3EC] shadow-[0_1px_3px_rgba(15,61,46,0.04)] p-8 flex flex-col gap-7 h-full">
-      <h3 className="text-2xl font-bold text-[#0F3D2E] mb-1">
-        {data.info_card_title_ar}
-      </h3>
+    <div className="flex h-full flex-col gap-7 rounded-[2rem] border border-[#E2EAE5] bg-white p-8 shadow-[0_1px_3px_rgba(26,61,50,0.04)]">
+      <h3 className="mb-1 text-2xl font-bold text-[#1A3D32]">{data.info_card_title_ar}</h3>
 
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-[#F4FAF6] rounded-2xl flex items-center justify-center shrink-0 text-[#1E7D4E]">
-          <Phone className="w-5 h-5" />
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F7F9F8] text-[#2F6B4F]">
+          <Phone className="h-5 w-5" />
         </div>
         <div>
-          <h4 className="font-bold text-[#0F3D2E] mb-1">{data.phone_label_ar}</h4>
-          <p className="text-[#7FA789] dir-ltr text-right">{data.phone}</p>
-          {data.phone_hint_ar ? <p className="text-[#7FA789] text-sm mt-1">{data.phone_hint_ar}</p> : null}
+          <h4 className="mb-1 font-bold text-[#1A3D32]">{data.phone_label_ar}</h4>
+          <a href={`tel:${data.phone.replace(/\s/g, "")}`} className="text-right text-[#6B8578]" dir="ltr">
+            {data.phone}
+          </a>
+          {data.phone_hint_ar ? <p className="mt-1 text-sm text-[#6B8578]">{data.phone_hint_ar}</p> : null}
         </div>
       </div>
 
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-[#F4FAF6] rounded-2xl flex items-center justify-center shrink-0 text-[#1E7D4E]">
-          <MapPin className="w-5 h-5" />
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F7F9F8] text-[#2F6B4F]">
+          <Mail className="h-5 w-5" />
         </div>
         <div>
-          <h4 className="font-bold text-[#0F3D2E] mb-1">{data.address_label_ar}</h4>
-          <p className="text-[#7FA789]">{data.address_ar}</p>
-          {data.address_line2_ar ? <p className="text-[#7FA789] text-sm mt-1">{data.address_line2_ar}</p> : null}
+          <h4 className="mb-1 font-bold text-[#1A3D32]">{data.email_label_ar}</h4>
+          <a href={`mailto:${data.email}`} className="break-all text-[#6B8578]">
+            {data.email}
+          </a>
+          {data.email_hint_ar ? <p className="mt-1 text-sm text-[#6B8578]">{data.email_hint_ar}</p> : null}
         </div>
       </div>
 
-      <div className="w-full h-48 bg-[#F4FAF6] border border-[#EAF3EC] rounded-2xl mt-auto overflow-hidden relative">
+      <div className="flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F7F9F8] text-[#2F6B4F]">
+          <MapPin className="h-5 w-5" />
+        </div>
+        <div>
+          <h4 className="mb-1 font-bold text-[#1A3D32]">{data.address_label_ar}</h4>
+          <p className="text-[#6B8578]">{data.address_ar}</p>
+          {data.address_line2_ar ? <p className="mt-1 text-sm text-[#6B8578]">{data.address_line2_ar}</p> : null}
+        </div>
+      </div>
+
+      <div className="relative mt-auto h-48 w-full overflow-hidden rounded-2xl border border-[#E2EAE5] bg-[#F7F9F8]">
         <iframe
           src={mapSrc}
           width="100%"
@@ -91,7 +110,7 @@ export function CmsContactPanel({ meta }: CmsContactPanelProps) {
           allowFullScreen={true}
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          className="absolute inset-0 grayscale hover:grayscale-0 transition-all duration-500"
+          className="absolute inset-0 grayscale transition-all duration-500 hover:grayscale-0"
         />
       </div>
     </div>

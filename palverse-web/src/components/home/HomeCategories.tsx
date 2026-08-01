@@ -10,7 +10,7 @@ export async function HomeCategories() {
   try {
     const data = await serverFetch<{ data: unknown[] }>("/categories");
     const items = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
-    categories = items.slice(0, 6);
+    categories = items.slice(0, 10);
   } catch (err) {
     console.error("Failed to load categories server-side:", err);
     error = true;
@@ -21,7 +21,7 @@ export async function HomeCategories() {
   }
 
   return (
-    <section className="public-section bg-[#F7F9F8]">
+    <section className="public-section bg-white">
       <div className="public-container">
         <div className="mb-6 flex items-end justify-between gap-4 md:mb-8">
           <div>
@@ -38,14 +38,14 @@ export async function HomeCategories() {
         </div>
 
         <div
-          className="overflow-x-auto pb-2"
+          className="overflow-x-auto pb-2 md:overflow-visible md:pb-0"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="mx-auto flex w-max max-w-full gap-4 sm:gap-5 md:w-full md:max-w-none md:justify-between">
+          <div className="flex w-max gap-3 sm:gap-4 md:grid md:w-full md:grid-cols-8 md:gap-3 lg:grid-cols-10">
             {categories.map((cat, i) => (
               <div
                 key={(cat.publicId as string) || (cat.public_id as string) || i}
-                className="w-[76px] flex-none sm:w-[96px]"
+                className="w-[76px] flex-none sm:w-[88px] md:w-auto"
               >
                 <CategoryCard
                   name={(cat.name_ar as string) || (cat.name_en as string) || "فئة غير معروفة"}

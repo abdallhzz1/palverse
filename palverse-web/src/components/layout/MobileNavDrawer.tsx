@@ -14,7 +14,6 @@ const EXPLORE_LINKS = [
   { href: "/stores", label: "المحلات" },
   { href: "/offers", label: "العروض" },
   { href: "/join-us", label: "أضف نشاطك" },
-  { href: "/blog", label: "المدونة" },
 ] as const;
 
 const INFO_LINKS = [
