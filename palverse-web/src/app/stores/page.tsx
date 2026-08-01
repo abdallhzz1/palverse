@@ -4,6 +4,8 @@ import { StoreCard } from "@/components/stores/StoreCard";
 import { serverFetch } from "@/lib/api/server";
 import { PublicPageHero } from "@/components/public/PublicPageHero";
 import { EmptyStateArt } from "@/components/public/EmptyStateArt";
+import { AdBannerSlot } from "@/components/ads/AdBannerSlot";
+import { FeaturedStoresStrip } from "@/components/ads/FeaturedStoresStrip";
 import { BRAND_PHOTOS } from "@/lib/brand-photos";
 import Link from "next/link";
 
@@ -46,11 +48,11 @@ export default async function StoresPage(props: {
   const cities     = bootstrapData?.data?.cities     || [];
 
   const hasActiveFilters = !!(query || category || city || zone);
+  const isFirstPage = String(page) === "1";
 
   return (
     <div className="min-h-screen bg-[#F5F7F6]/50 dark:bg-[#111714]">
 
-      {/* ── Hero ── */}
       <PublicPageHero
         imageSrc={BRAND_PHOTOS.stores}
         imageAlt="شارع تجاري فلسطيني بواجهات متاجر متنوعة"
@@ -60,10 +62,8 @@ export default async function StoresPage(props: {
         priority
       />
 
-      {/* ── Main Content ── */}
       <section className="public-container relative z-20 -mt-10 pb-28 md:-mt-14">
 
-        {/* Filter Bar */}
         <Suspense
           fallback={
             <div className="w-full h-16 bg-white dark:bg-[#1F2522] shadow-md rounded-2xl animate-pulse mb-10 max-w-5xl mx-auto" />
@@ -72,7 +72,21 @@ export default async function StoresPage(props: {
           <StoreListFilters categories={categories} cities={cities} />
         </Suspense>
 
-        {/* Active Filters Summary */}
+        <div className="mb-8">
+          <AdBannerSlot variant="inline" embedded />
+        </div>
+
+        {isFirstPage ? (
+          <div className="mb-10">
+            <FeaturedStoresStrip
+              title="محلات مميزة"
+              subtitle="إعلانات ممولة تظهر أولاً في نتائج التصفح"
+              limit={4}
+              embedded
+            />
+          </div>
+        ) : null}
+
         {hasActiveFilters && (
           <div className="flex items-center gap-2 mb-6 flex-wrap">
             <span className="text-sm text-[#7FA789] font-medium">نتائج البحث:</span>
@@ -86,7 +100,6 @@ export default async function StoresPage(props: {
           </div>
         )}
 
-        {/* Grid / Empty / Error */}
         <div className="w-full">
           {error ? (
             <div className="public-card text-center py-24 text-red-600 border-red-100 dark:border-red-900/30 max-w-3xl mx-auto">
@@ -101,7 +114,6 @@ export default async function StoresPage(props: {
             />
           ) : (
             <>
-              {/* ✦ 2-col on mobile, 3 on md, 4 on xl */}
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                 {stores.map((store: any) => (
                   <StoreCard
@@ -118,11 +130,17 @@ export default async function StoresPage(props: {
                     verified={Boolean(store.is_verified)}
                     averageRating={store.published_reviews_avg_rating ? Number(store.published_reviews_avg_rating) : undefined}
                     ratingsCount={store.published_reviews_count ? Number(store.published_reviews_count) : undefined}
+                    sponsored={Boolean(store.is_featured)}
                   />
                 ))}
               </div>
 
-              {/* Pagination */}
+              {isFirstPage && stores.length >= 4 ? (
+                <div className="my-10">
+                  <AdBannerSlot variant="inline" embedded />
+                </div>
+              ) : null}
+
               {meta.last_page > 1 && (
                 <div className="mt-16 flex justify-center items-center gap-3 flex-wrap">
                   {meta.current_page > 1 && (

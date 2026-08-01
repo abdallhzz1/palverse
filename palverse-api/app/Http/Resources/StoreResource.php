@@ -38,6 +38,7 @@ class StoreResource extends JsonResource
             'is_active' => $this->is_active,
             'is_verified' => (bool) $this->is_verified,
             'verified_at' => $this->verified_at,
+            'is_featured' => (bool) ($this->is_featured ?? false),
             'has_active_subscription' => $this->relationLoaded('currentSubscription')
                 ? $this->currentSubscription !== null
                 : $this->currentSubscription()->exists(),

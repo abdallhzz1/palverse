@@ -2,6 +2,8 @@ import { Hero } from "@/components/home/Hero";
 import { HomeCategories } from "@/components/home/HomeCategories";
 import { HomeStoresList } from "@/components/home/HomeStoresList";
 import { PartnerBanner } from "@/components/home/PartnerBanner";
+import { AdBannerSlot } from "@/components/ads/AdBannerSlot";
+import { FeaturedStoresStrip } from "@/components/ads/FeaturedStoresStrip";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
@@ -12,15 +14,20 @@ export default function Home() {
   return (
     <div className="flex w-full flex-col bg-[#F5F7F6]">
       <Hero />
-      {/* Paid ads stay above browse sections so campaigns are visible without scrolling past categories */}
+      {/* 1) Banner right under search — highest visibility */}
       <PartnerBanner />
       <HomeCategories />
-      <HomeStoresList
+      {/* 2) Featured/sponsored store cards */}
+      <FeaturedStoresStrip
         title={dict.home.featuredStores}
         subtitle="محلات مُبرَزة عبر حملات إعلانية ممولة نشطة"
-        sort="featured"
-        bgClass="bg-[#F5F7F6]"
         showWhenEmpty
+      />
+      {/* 3) Mid-page second banner impression */}
+      <AdBannerSlot
+        variant="inline"
+        title="عروض الشركاء"
+        className="bg-white"
       />
       <HomeStoresList
         title={dict.home.latestStores}

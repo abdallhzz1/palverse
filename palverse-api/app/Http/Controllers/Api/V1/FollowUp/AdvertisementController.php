@@ -71,9 +71,9 @@ class AdvertisementController extends Controller
                 ->where('end_date', '>=', $validated['start_date'])
                 ->count();
 
-            if ($overlappingCount >= 3) {
+            if ($overlappingCount >= 5) {
                 throw \Illuminate\Validation\ValidationException::withMessages([
-                    'start_date' => ['تم الوصول للحد الأقصى للبنرات الإعلانية (3 بنرات) في هذه الفترة الزمنية. يرجى اختيار تواريخ أخرى.']
+                    'start_date' => ['تم الوصول للحد الأقصى للبنرات الإعلانية (5 بنرات) في هذه الفترة الزمنية. يرجى اختيار تواريخ أخرى.']
                 ]);
             }
         }

@@ -20,6 +20,14 @@ class StoreSearchService
             ->with(['category', 'categories', 'city', 'zone', 'logo', 'cover'])
             ->withCount('activeOffers');
 
+        $today = \App\Support\BusinessDate::today();
+        $query->withExists([
+            'advertisements as is_featured' => function ($q) use ($today) {
+                $q->where('ad_type', 'featured_store')
+                    ->currentlyScheduled($today);
+            },
+        ]);
+
         // 1. Text Search
         if (! empty($filters['query'])) {
             $textQuery = preg_replace('/\s+/', ' ', trim($filters['query']));

@@ -13,6 +13,7 @@ import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { ReviewList } from "@/components/reviews/ReviewList";
 import { sanitizeExternalUrl } from "@/lib/security/urls";
 import { BRAND_PHOTOS } from "@/lib/brand-photos";
+import { AdBannerSlot } from "@/components/ads/AdBannerSlot";
 
 export default async function StoreDetailPage({
   params,
@@ -91,6 +92,7 @@ export default async function StoreDetailPage({
     closeTime: h.periods?.[0]?.closes_at || undefined,
   }));
   const socialLinks = Array.isArray(storeData.social_links) ? storeData.social_links as Record<string, any>[] : [];
+  const storePublicId = (storeData.public_id as string) || slug;
 
   return (
     <div className="flex flex-col w-full pb-12">
@@ -223,6 +225,13 @@ export default async function StoreDetailPage({
                 />
               </div>
             </div>
+
+            {/* Sponsored banner in sidebar (never self-promote) */}
+            <AdBannerSlot
+              variant="sidebar"
+              title="إعلان ممول"
+              excludeStore={storePublicId}
+            />
           </div>
           
         </div>

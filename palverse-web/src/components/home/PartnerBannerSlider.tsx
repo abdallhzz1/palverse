@@ -10,13 +10,34 @@ export type PartnerBannerItem = {
   image_url?: string | null;
   image_path?: string | null;
   store?: {
+    public_id?: string | null;
     slug?: string | null;
     name_ar?: string | null;
     name_en?: string | null;
   } | null;
 };
 
-export function PartnerBannerSlider({ banners }: { banners: PartnerBannerItem[] }) {
+export type BannerVariant = "hero" | "inline" | "sidebar";
+
+const VARIANT_ASPECT: Record<BannerVariant, string> = {
+  hero: "aspect-[16/10] sm:aspect-[21/9] lg:aspect-[24/9]",
+  inline: "aspect-[16/9] sm:aspect-[21/8]",
+  sidebar: "aspect-[4/5]",
+};
+
+const VARIANT_RADIUS: Record<BannerVariant, string> = {
+  hero: "rounded-[1.75rem]",
+  inline: "rounded-2xl",
+  sidebar: "rounded-2xl",
+};
+
+export function PartnerBannerSlider({
+  banners,
+  variant = "hero",
+}: {
+  banners: PartnerBannerItem[];
+  variant?: BannerVariant;
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -30,8 +51,10 @@ export function PartnerBannerSlider({ banners }: { banners: PartnerBannerItem[] 
   if (banners.length === 0) return null;
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[1.75rem] border border-[#EAF3EC] bg-[#0F3D2E] shadow-[0_20px_50px_-24px_rgba(15,61,46,0.35)]">
-      <div className="relative aspect-[16/10] w-full sm:aspect-[21/9] lg:aspect-[24/9]">
+    <div
+      className={`relative w-full overflow-hidden border border-[#EAF3EC] bg-[#0F3D2E] shadow-[0_20px_50px_-24px_rgba(15,61,46,0.35)] ${VARIANT_RADIUS[variant]}`}
+    >
+      <div className={`relative w-full ${VARIANT_ASPECT[variant]}`}>
         {banners.map((banner, index) => {
           const src =
             resolveStorageUrl(banner.image_url) ||
@@ -55,26 +78,42 @@ export function PartnerBannerSlider({ banners }: { banners: PartnerBannerItem[] 
                     alt={storeName}
                     fill
                     unoptimized
-                    sizes="(max-width: 1024px) 100vw, 1152px"
+                    sizes={
+                      variant === "sidebar"
+                        ? "(max-width: 1024px) 100vw, 360px"
+                        : "(max-width: 1024px) 100vw, 1152px"
+                    }
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-                    priority={index === 0}
+                    priority={variant === "hero" && index === 0}
                   />
                 ) : (
                   <div className="h-full w-full bg-[#0F3D2E]" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0F3D2E]/85 via-[#0F3D2E]/15 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 p-5 md:flex-row md:items-end md:justify-between md:p-8">
+                <div
+                  className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 ${
+                    variant === "sidebar"
+                      ? "p-4"
+                      : "p-5 md:flex-row md:items-end md:justify-between md:p-8"
+                  }`}
+                >
                   <div>
                     <span className="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white backdrop-blur-md">
                       إعلان ممول
                     </span>
-                    <h3 className="font-heading text-xl font-extrabold text-white md:text-3xl">
+                    <h3
+                      className={`font-heading font-extrabold text-white ${
+                        variant === "sidebar" ? "text-lg" : "text-xl md:text-3xl"
+                      }`}
+                    >
                       {storeName}
                     </h3>
                   </div>
-                  <span className="inline-flex w-fit items-center rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#0F3D2E] transition-colors group-hover:bg-[#EAF3EC]">
-                    زيارة المحل
-                  </span>
+                  {variant !== "sidebar" ? (
+                    <span className="inline-flex w-fit items-center rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#0F3D2E] transition-colors group-hover:bg-[#EAF3EC]">
+                      زيارة المحل
+                    </span>
+                  ) : null}
                 </div>
               </Link>
             </div>
@@ -83,7 +122,11 @@ export function PartnerBannerSlider({ banners }: { banners: PartnerBannerItem[] 
       </div>
 
       {banners.length > 1 ? (
-        <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2 md:bottom-6">
+        <div
+          className={`absolute left-0 right-0 z-20 flex justify-center gap-2 ${
+            variant === "sidebar" ? "bottom-3" : "bottom-4 md:bottom-6"
+          }`}
+        >
           {banners.map((banner, index) => (
             <button
               key={banner.public_id}
