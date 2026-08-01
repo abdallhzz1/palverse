@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandSectionHeading } from "@/components/brand/BrandSectionHeading";
 import { StoreCard } from "@/components/stores/StoreCard";
+import { StoreCardsRow, StoreCardsRowItem } from "@/components/stores/StoreCardsRow";
 import { serverFetch } from "@/lib/api/server";
 import { Award, Megaphone } from "lucide-react";
 
@@ -56,32 +57,33 @@ export async function FeaturedStoresStrip({
       />
 
       {stores.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4 md:gap-6">
+        <StoreCardsRow>
           {stores.map((store) => (
-            <StoreCard
-              key={store.slug || store.public_id}
-              name={store.name_ar || store.name_en || ""}
-              slug={store.slug}
-              publicId={store.public_id}
-              categoryName={store.category?.name_ar || store.category?.name_en || ""}
-              tags={(store.categories || []).map((c: any) => c.name_ar || c.name_en).filter(Boolean)}
-              cityName={store.city?.name_ar || store.city?.name_en || ""}
-              zoneName={store.zone?.name_ar || store.zone?.name_en || ""}
-              coverImage={store.cover?.url}
-              logoImage={store.logo?.url}
-              verified={Boolean(store.is_verified)}
-              averageRating={
-                store.published_reviews_avg_rating
-                  ? Number(store.published_reviews_avg_rating)
-                  : undefined
-              }
-              ratingsCount={
-                store.published_reviews_count ? Number(store.published_reviews_count) : undefined
-              }
-              sponsored
-            />
+            <StoreCardsRowItem key={store.slug || store.public_id}>
+              <StoreCard
+                name={store.name_ar || store.name_en || ""}
+                slug={store.slug}
+                publicId={store.public_id}
+                categoryName={store.category?.name_ar || store.category?.name_en || ""}
+                tags={(store.categories || []).map((c: any) => c.name_ar || c.name_en).filter(Boolean)}
+                cityName={store.city?.name_ar || store.city?.name_en || ""}
+                zoneName={store.zone?.name_ar || store.zone?.name_en || ""}
+                coverImage={store.cover?.url}
+                logoImage={store.logo?.url}
+                verified={Boolean(store.is_verified)}
+                averageRating={
+                  store.published_reviews_avg_rating
+                    ? Number(store.published_reviews_avg_rating)
+                    : undefined
+                }
+                ratingsCount={
+                  store.published_reviews_count ? Number(store.published_reviews_count) : undefined
+                }
+                sponsored
+              />
+            </StoreCardsRowItem>
           ))}
-        </div>
+        </StoreCardsRow>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#E2EAE5] bg-white px-6 py-14 text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#E2EAE5] bg-[#F7F9F8] text-[#2F6B4F]">

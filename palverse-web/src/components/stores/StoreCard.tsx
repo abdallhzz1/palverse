@@ -58,7 +58,7 @@ export function StoreCard({
   return (
     <Link
       href={`/stores/${hrefSlug}`}
-      className={cn("public-card group flex flex-col")}
+      className={cn("public-card group flex h-full w-full flex-col")}
     >
       <div className="relative h-36 w-full overflow-hidden bg-[#E8EEEA] md:h-44">
         <Image
