@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { StoreListFilters } from "@/components/stores/StoreListFilters";
 import { StoreCard } from "@/components/stores/StoreCard";
+import { SearchBar } from "@/components/search/SearchBar";
 import { serverFetch } from "@/lib/api/server";
 import { PublicPageHero } from "@/components/public/PublicPageHero";
 import { EmptyStateArt } from "@/components/public/EmptyStateArt";
@@ -58,16 +58,17 @@ export default async function StoresPage(props: {
       />
 
       <section className="public-container pb-28 pt-8">
+        <div className="relative z-30 mb-10">
+          <Suspense
+            fallback={
+              <div className="mx-auto h-14 w-full max-w-2xl animate-pulse rounded-2xl border border-[#E2EAE5] bg-white" />
+            }
+          >
+            <SearchBar cities={cities} categories={categories} />
+          </Suspense>
+        </div>
 
-        <Suspense
-          fallback={
-            <div className="w-full h-16 bg-white border border-[#E2EAE5] rounded-xl animate-pulse mb-10 max-w-5xl mx-auto" />
-          }
-        >
-          <StoreListFilters categories={categories} cities={cities} />
-        </Suspense>
-
-        <div className="mb-8">
+        <div className="relative z-0 mb-8">
           <AdBannerSlot placement="stores_list" variant="inline" embedded />
         </div>
 
