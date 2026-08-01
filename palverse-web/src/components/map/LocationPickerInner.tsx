@@ -19,6 +19,8 @@ interface LocationPickerInnerProps {
   longitude: number | null;
   onChange: (lat: number | null, lng: number | null) => void;
   className?: string;
+  /** Extra classes for the map frame (override default height/radius). */
+  mapClassName?: string;
   readOnly?: boolean;
 }
 
@@ -41,6 +43,7 @@ export default function LocationPickerInner({
   longitude,
   onChange,
   className = "",
+  mapClassName = "",
   readOnly = false,
 }: LocationPickerInnerProps) {
   const [position, setPosition] = useState<L.LatLng | null>(
@@ -75,7 +78,7 @@ export default function LocationPickerInner({
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      <div className="relative w-full h-[300px] sm:h-[400px] rounded-xl overflow-hidden border border-gray-200 dark:border-[#1F2522]">
+      <div className={`relative w-full h-[300px] sm:h-[400px] rounded-xl overflow-hidden border border-gray-200 dark:border-[#1F2522] ${mapClassName}`}>
         <MapContainer
           center={position || defaultCenter}
           zoom={13}

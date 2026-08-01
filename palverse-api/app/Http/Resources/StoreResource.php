@@ -86,7 +86,9 @@ class StoreResource extends JsonResource
             'social_links' => $this->whenLoaded('socialLinks', fn () =>
                 $this->socialLinks->map(fn ($link) => [
                     'public_id' => $link->public_id,
-                    'platform'  => $link->platform,
+                    'platform'  => $link->platform instanceof \BackedEnum
+                        ? $link->platform->value
+                        : (string) $link->platform,
                     'url'       => $link->url,
                 ])->values()
             ),

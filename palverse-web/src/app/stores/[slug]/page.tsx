@@ -110,6 +110,7 @@ export default async function StoreDetailPage({
             phone={phone}
             whatsapp={whatsapp}
             storeUrl={store_url}
+            socialLinks={socialLinks}
           />
         </div>
 
@@ -212,30 +213,15 @@ export default async function StoreDetailPage({
                 </div>
               )}
 
-              {/* Map embedded */}
-              <div className="h-64 relative border-t border-[#EAF3EC] dark:border-[#0F3D2E]">
-                <PublicMap latitude={latitude} longitude={longitude} storeName={name} />
+              {/* Map — compact embed; social links live in the action bar above */}
+              <div className="border-t border-[#EAF3EC] dark:border-[#0F3D2E]">
+                <PublicMap
+                  latitude={latitude}
+                  longitude={longitude}
+                  storeName={name}
+                  compact
+                />
               </div>
-              
-              {/* Social Links as Icons */}
-              {socialLinks.length > 0 && (
-                <div className="p-6 border-t border-[#EAF3EC] dark:border-[#0F3D2E] flex justify-center gap-3 flex-wrap">
-                  {socialLinks
-                    .filter((link: any) => sanitizeExternalUrl(link.url))
-                    .map((link: any, i: number) => (
-                    <a
-                      key={i}
-                      href={sanitizeExternalUrl(link.url) || "#"}
-                      target="_blank"
-                      rel="noreferrer"
-                      title={link.platform}
-                      className="w-10 h-10 rounded-full bg-[#EAF3EC] dark:bg-[#0F3D2E]/40 flex items-center justify-center text-[#1E7D4E] hover:bg-[#1E7D4E] hover:text-white transition-all shadow-sm"
-                    >
-                      <Globe className="w-5 h-5" />
-                    </a>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
           
