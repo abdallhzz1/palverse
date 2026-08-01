@@ -21,7 +21,7 @@ export function StoreHero({ name, categoryName, cleanLogo, cleanCover }: StoreHe
 
   return (
     <>
-      <div className="relative min-h-[280px] w-full overflow-hidden md:min-h-[360px]">
+      <div className="relative h-40 w-full overflow-hidden bg-[#E8EEEA] md:h-52">
         <Image
           src={cover}
           alt=""
@@ -31,37 +31,47 @@ export function StoreHero({ name, categoryName, cleanLogo, cleanCover }: StoreHe
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A3D32]/90 via-[#1A3D32]/45 to-[#1A3D32]/15" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1A3D32]/40 via-transparent to-transparent" />
+      </div>
 
-        <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 pb-10 pt-24 text-center md:flex-row md:items-end md:text-start">
-          <div
-            className={`relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white shadow-xl md:h-36 md:w-36 ${cleanLogo ? "cursor-pointer transition-transform hover:scale-105" : ""}`}
+      <div className="public-container relative z-10">
+        <div className="-mt-10 flex items-end gap-4 md:-mt-12">
+          <button
+            type="button"
+            className={`relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-white bg-white md:h-24 md:w-24 ${
+              cleanLogo ? "cursor-pointer" : "cursor-default"
+            }`}
             onClick={() => cleanLogo && setIsPreviewOpen(true)}
-            title={cleanLogo ? "اضغط لتكبير الصورة" : ""}
+            aria-label={cleanLogo ? "تكبير شعار المتجر" : undefined}
           >
             {cleanLogo ? (
               <Image src={cleanLogo} alt={name} fill unoptimized className="object-cover" />
             ) : (
-              <span className="text-5xl font-bold text-[#1A3D32]">{(name || "U").charAt(0)}</span>
+              <span className="font-heading text-3xl font-bold text-[#1A3D32]">
+                {(name || "U").charAt(0)}
+              </span>
             )}
-          </div>
-          <div className="flex-1 pb-2 text-white">
-            <h1 className="mb-3 font-heading text-3xl font-bold drop-shadow-md md:text-5xl">{name}</h1>
-            <span className="inline-block rounded-full border border-white/20 bg-[#2F6B4F]/85 px-4 py-1.5 text-sm font-medium backdrop-blur-md">
-              {categoryName}
-            </span>
+          </button>
+
+          <div className="min-w-0 flex-1 pb-1 pt-12 md:pt-14">
+            <h1 className="font-heading text-2xl font-extrabold leading-tight text-[#1A3D32] md:text-3xl">
+              {name}
+            </h1>
+            {categoryName ? (
+              <p className="mt-1 text-sm font-medium text-[#6B8578]">{categoryName}</p>
+            ) : null}
           </div>
         </div>
       </div>
 
-      {cleanLogo && (
+      {cleanLogo ? (
         <ImagePreviewModal
           images={[cleanLogo]}
           isOpen={isPreviewOpen}
           onClose={() => setIsPreviewOpen(false)}
           altText={`شعار ${name}`}
         />
-      )}
+      ) : null}
     </>
   );
 }

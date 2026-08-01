@@ -5,6 +5,7 @@ import { useState } from "react";
 import QRCode from "react-qr-code";
 import { sanitizeExternalUrl } from "@/lib/security/urls";
 import { SocialPlatformIcon, socialPlatformLabel } from "@/components/stores/SocialPlatformIcon";
+import { cn } from "@/lib/utils";
 
 export type StoreSocialLinkItem = {
   platform?: string;
@@ -18,6 +19,37 @@ interface StoreActionBarProps {
   /** Absolute public store profile URL encoded into the QR (not the QR image endpoint). */
   storeUrl?: string;
   socialLinks?: StoreSocialLinkItem[];
+}
+
+function ActionButton({
+  href,
+  onClick,
+  children,
+  className,
+}: {
+  href?: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const classes = cn(
+    "inline-flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition-colors",
+    className
+  );
+
+  if (href) {
+    return (
+      <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className={classes}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={classes}>
+      {children}
+    </button>
+  );
 }
 
 export function StoreProfileCard({
@@ -56,35 +88,46 @@ export function StoreProfileCard({
 
   return (
     <>
-      <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] p-4 flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-2 md:gap-4 overflow-x-auto no-scrollbar">
-          {phone && (
-            <a href={`tel:${phone}`} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
-              <Phone className="w-5 h-5 shrink-0" />
-              <span className="text-xs md:text-sm font-bold">اتصال</span>
-            </a>
-          )}
-          {whatsapp && (
-            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
-              <MessageCircle className="w-5 h-5 shrink-0" />
-              <span className="text-xs md:text-sm font-bold">مراسلة</span>
-            </a>
-          )}
-          {storeUrl && (
-            <button onClick={() => setShowQr(true)} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
-              <QrCode className="w-5 h-5 shrink-0" />
-              <span className="text-xs md:text-sm font-bold">الباركود</span>
-            </button>
-          )}
-          <button onClick={handleShare} className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 min-w-[80px] py-3 rounded-xl bg-[#E8EEEA] dark:bg-[#1A3D32]/40 text-[#1A3D32] dark:text-[#E8EEEA] hover:bg-[#2F6B4F] hover:text-white transition-colors group">
-            <Share2 className="w-5 h-5 shrink-0" />
-            <span className="text-xs md:text-sm font-bold">مشاركة</span>
-          </button>
+      <div className="rounded-xl border border-[#E2EAE5] bg-white p-3 md:p-4">
+        <div className="flex flex-wrap gap-2">
+          {phone ? (
+            <ActionButton
+              href={`tel:${phone}`}
+              className="bg-[#2F6B4F] text-white hover:bg-[#1A3D32]"
+            >
+              <Phone className="h-4 w-4" />
+              اتصال
+            </ActionButton>
+          ) : null}
+          {whatsapp ? (
+            <ActionButton
+              href={`https://wa.me/${whatsapp}`}
+              className="bg-[#E8EEEA] text-[#1A3D32] hover:bg-[#2F6B4F] hover:text-white"
+            >
+              <MessageCircle className="h-4 w-4" />
+              واتساب
+            </ActionButton>
+          ) : null}
+          {storeUrl ? (
+            <ActionButton
+              onClick={() => setShowQr(true)}
+              className="bg-[#F7F9F8] text-[#1A3D32] hover:bg-[#E8EEEA]"
+            >
+              <QrCode className="h-4 w-4" />
+              QR
+            </ActionButton>
+          ) : null}
+          <ActionButton
+            onClick={handleShare}
+            className="bg-[#F7F9F8] text-[#1A3D32] hover:bg-[#E8EEEA]"
+          >
+            <Share2 className="h-4 w-4" />
+            مشاركة
+          </ActionButton>
         </div>
 
         {safeSocialLinks.length > 0 ? (
-          <div className="flex items-center justify-center gap-2 border-t border-[#E8EEEA] dark:border-[#1A3D32] pt-3 flex-wrap">
-            <span className="text-xs font-bold text-[#7FA789] me-1">سوشيال:</span>
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#E2EAE5] pt-3">
             {safeSocialLinks.map((link) => (
               <a
                 key={`${link.platform}-${link.url}`}
@@ -93,7 +136,7 @@ export function StoreProfileCard({
                 rel="noreferrer"
                 title={socialPlatformLabel(link.platform)}
                 aria-label={socialPlatformLabel(link.platform)}
-                className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center text-[#2F6B4F] hover:bg-[#2F6B4F] hover:text-white transition-all shadow-sm"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#E2EAE5] text-[#2F6B4F] transition-colors hover:border-[#2F6B4F]/40 hover:bg-[#E8EEEA]"
               >
                 <SocialPlatformIcon platform={link.platform} />
               </a>
@@ -102,28 +145,30 @@ export function StoreProfileCard({
         ) : null}
       </div>
 
-      {showQr && storeUrl && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-[#1F2522] rounded-3xl p-8 max-w-sm w-full relative shadow-2xl flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
+      {showQr && storeUrl ? (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="relative flex w-full max-w-sm flex-col items-center rounded-2xl border border-[#E2EAE5] bg-white p-8">
             <button
+              type="button"
               onClick={() => setShowQr(false)}
-              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+              className="absolute top-4 end-4 rounded-lg p-2 text-[#6B8578] transition-colors hover:bg-[#F7F9F8]"
+              aria-label="إغلاق"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
 
-            <h3 className="text-xl font-bold text-[#1A3D32] dark:text-[#E8EEEA] mb-6">مسح الباركود</h3>
+            <h3 className="mb-6 font-heading text-xl font-bold text-[#1A3D32]">مسح الباركود</h3>
 
-            <div className="bg-white p-4 rounded-2xl shadow-inner border border-gray-100 mb-6 w-full max-w-[200px] aspect-square flex items-center justify-center relative">
+            <div className="mb-6 flex aspect-square w-full max-w-[200px] items-center justify-center rounded-xl border border-[#E2EAE5] bg-white p-4">
               <QRCode value={storeUrl} size={180} />
             </div>
 
-            <p className="text-center text-[#7FA789] text-sm">
-              قم بمسح هذا الباركود للوصول المباشر إلى صفحة المتجر
+            <p className="text-center text-sm text-[#6B8578]">
+              امسح الباركود للوصول المباشر إلى صفحة المتجر
             </p>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }

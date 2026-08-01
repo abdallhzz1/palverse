@@ -38,19 +38,18 @@ export default function PublicMap({ latitude, longitude, storeName, compact = fa
   if (compact) {
     return (
       <div className="flex flex-col">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#EAF3EC] dark:border-[#0F3D2E]">
-          <h3 className="text-sm font-bold text-[#0F3D2E] dark:text-[#EAF3EC]">موقع المحل</h3>
+        <div className="flex items-center justify-between border-b border-[#E2EAE5] px-4 py-3">
+          <h3 className="text-sm font-bold text-[#1A3D32]">موقع المحل</h3>
           <button
             type="button"
             onClick={handleDirections}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1E7D4E] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2F6B4F] hover:underline"
           >
-            <MapPin className="w-3.5 h-3.5" />
+            <MapPin className="h-3.5 w-3.5" />
             الاتجاهات
           </button>
         </div>
-        <div className="h-[240px] w-full overflow-hidden">
-          <LocationPickerInner
+        <div className="h-[200px] w-full overflow-hidden">          <LocationPickerInner
             latitude={latitude}
             longitude={longitude}
             onChange={() => {}}

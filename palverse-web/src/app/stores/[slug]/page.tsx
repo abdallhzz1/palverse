@@ -1,12 +1,12 @@
-import Image from "next/image";
 import { StoreProfileCard } from "@/components/stores/StoreProfileCard";
 import { StoreGallery } from "@/components/stores/StoreGallery";
 import { StoreWorkingHours } from "@/components/stores/StoreWorkingHours";
 import { StoreOffers } from "@/components/stores/StoreOffers";
 import { StoreHero } from "@/components/stores/StoreHero";
+import { StoreSection } from "@/components/stores/StoreSection";
 import { serverFetch } from "@/lib/api/server";
 import { notFound } from "next/navigation";
-import { MapPin, Phone, Globe, Mail, Store, Star } from "lucide-react";
+import { MapPin, Phone, Globe, Mail } from "lucide-react";
 import PublicMap from "@/components/map/PublicMap";
 import { RatingSummary } from "@/components/reviews/RatingSummary";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
@@ -24,11 +24,15 @@ export default async function StoreDetailPage({
 
   let storeData: Record<string, unknown> | null = null;
   let ratingSummary: any = null;
-  
+
   try {
     const [storeRes, summaryRes] = await Promise.all([
-      serverFetch<{ data: Record<string, unknown> }>(`/stores/${encodeURIComponent(slug)}`, { cache: 'no-store' }),
-      serverFetch<{ data: any }>(`/stores/${encodeURIComponent(slug)}/reviews/summary`, { cache: 'no-store' }).catch(() => null)
+      serverFetch<{ data: Record<string, unknown> }>(`/stores/${encodeURIComponent(slug)}`, {
+        cache: "no-store",
+      }),
+      serverFetch<{ data: any }>(`/stores/${encodeURIComponent(slug)}/reviews/summary`, {
+        cache: "no-store",
+      }).catch(() => null),
     ]);
     storeData = storeRes?.data;
     ratingSummary = summaryRes || null;
@@ -41,20 +45,20 @@ export default async function StoreDetailPage({
   }
 
   const name = (storeData.name_ar as string) || (storeData.name_en as string) || "متجر غير معروف";
-  const description = (storeData.description_ar as string) || (storeData.description_en as string) || "";
+  const description =
+    (storeData.description_ar as string) || (storeData.description_en as string) || "";
   const category = storeData.category as Record<string, unknown> | undefined;
   const categoryName = (category?.name_ar as string) || (category?.name_en as string) || "فئة";
-  
+
   const fallbackCover = BRAND_PHOTOS.storeFallback;
-  
   const coverObj = storeData.cover as Record<string, any> | undefined;
   const cover = coverObj?.url as string | undefined;
-  const cleanCover = (typeof cover === "string" && cover.trim()) ? cover.trim() : fallbackCover;
-  
+  const cleanCover = typeof cover === "string" && cover.trim() ? cover.trim() : fallbackCover;
+
   const logoObj = storeData.logo as Record<string, any> | undefined;
   const logo = logoObj?.url as string | undefined;
-  const cleanLogo = (typeof logo === "string" && logo.trim()) ? logo.trim() : null;
-  
+  const cleanLogo = typeof logo === "string" && logo.trim() ? logo.trim() : null;
+
   const phone = (storeData.phone as string) || undefined;
   const whatsapp = (storeData.whatsapp as string) || undefined;
   const address_ar = (storeData.address_ar as string) || undefined;
@@ -62,179 +66,173 @@ export default async function StoreDetailPage({
   const website = sanitizeExternalUrl((storeData.website as string) || undefined) || undefined;
   const rawWebUrl = (storeData.web_url as string) || undefined;
   const store_url =
-    typeof rawWebUrl === "string" && rawWebUrl.trim()
-      ? rawWebUrl.trim()
-      : undefined;
-  
-  const latitude = typeof storeData.latitude === 'number' ? storeData.latitude : (typeof storeData.latitude === 'string' ? parseFloat(storeData.latitude) : null);
-  const longitude = typeof storeData.longitude === 'number' ? storeData.longitude : (typeof storeData.longitude === 'string' ? parseFloat(storeData.longitude) : null);
+    typeof rawWebUrl === "string" && rawWebUrl.trim() ? rawWebUrl.trim() : undefined;
 
-  const rawOffers = Array.isArray(storeData.offers) ? storeData.offers as Record<string, any>[] : [];
+  const latitude =
+    typeof storeData.latitude === "number"
+      ? storeData.latitude
+      : typeof storeData.latitude === "string"
+        ? parseFloat(storeData.latitude)
+        : null;
+  const longitude =
+    typeof storeData.longitude === "number"
+      ? storeData.longitude
+      : typeof storeData.longitude === "string"
+        ? parseFloat(storeData.longitude)
+        : null;
+
+  const rawOffers = Array.isArray(storeData.offers)
+    ? (storeData.offers as Record<string, any>[])
+    : [];
   const offers = rawOffers.map((o) => ({
     publicId: o.public_id as string,
     title: (o.title_ar as string) || (o.title_en as string) || "",
     description: (o.description_ar as string) || (o.description_en as string) || undefined,
-    price: o.price ? `${o.price} ${o.currency || 'ILS'}` : undefined,
-    oldPrice: o.old_price ? `${o.old_price} ${o.currency || 'ILS'}` : undefined,
+    price: o.price ? `${o.price} ${o.currency || "ILS"}` : undefined,
+    oldPrice: o.old_price ? `${o.old_price} ${o.currency || "ILS"}` : undefined,
     discountPercentage: o.discount_percentage ? `${o.discount_percentage}%` : undefined,
     expiresAt: o.ends_at ? new Date(o.ends_at as string).toLocaleDateString("ar-SA") : undefined,
     imageUrl: o.image_url as string | undefined,
   }));
+
   const rawGallery = Array.isArray(storeData.gallery) ? storeData.gallery : [];
   const gallery = rawGallery.map((g: any) => g?.url as string).filter(Boolean);
-  // working_hours comes as array of day objects from the API
-  const rawHours = Array.isArray(storeData.working_hours) ? storeData.working_hours as Record<string, any>[] : [];
-  // Transform to format expected by StoreWorkingHours component
+
+  const rawHours = Array.isArray(storeData.working_hours)
+    ? (storeData.working_hours as Record<string, any>[])
+    : [];
   const hours = rawHours.map((h: any) => ({
     day: h.day_label_ar || h.day_label_en || `يوم ${h.day_of_week}`,
     isOpen: !h.is_closed,
     openTime: h.periods?.[0]?.opens_at || undefined,
     closeTime: h.periods?.[0]?.closes_at || undefined,
   }));
-  const socialLinks = Array.isArray(storeData.social_links) ? storeData.social_links as Record<string, any>[] : [];
+
+  const socialLinks = Array.isArray(storeData.social_links)
+    ? (storeData.social_links as Record<string, any>[])
+    : [];
   const storePublicId = (storeData.public_id as string) || slug;
 
+  const hasContactInfo = Boolean(address_ar || phone || email || website);
+
   return (
-    <div className="flex flex-col w-full pb-12">
-      {/* Integrated Hero Section with Logo Preview */}
-      <StoreHero 
+    <div className="w-full bg-[#F7F9F8] pb-16">
+      <StoreHero
         name={name}
         categoryName={categoryName}
         cleanLogo={cleanLogo}
         cleanCover={cleanCover}
       />
 
-      <div className="container mx-auto px-4">
-        {/* Action Bar */}
-        <div className="mt-6 md:mt-8 mb-8 relative z-20">
-          <StoreProfileCard 
-            name={name}
-            phone={phone}
-            whatsapp={whatsapp}
-            storeUrl={store_url}
-            socialLinks={socialLinks}
-          />
-        </div>
+      <div className="public-container mt-4 space-y-6 md:mt-5">
+        <StoreProfileCard
+          name={name}
+          phone={phone}
+          whatsapp={whatsapp}
+          storeUrl={store_url}
+          socialLinks={socialLinks}
+        />
 
-        {/* Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Main Content (Right side in RTL) */}
-          <div className="lg:col-span-8 flex flex-col gap-8">
-            {description && (
-              <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] p-6 md:p-8">
-                <h2 className="text-xl md:text-2xl font-bold text-[#1A3D32] dark:text-[#E8EEEA] mb-6 flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center text-[#2F6B4F]">
-                    <Store className="w-4 h-4" />
-                  </span>
-                  نبذة عن المتجر
-                </h2>
-                <p className="text-[#4A6D56] dark:text-[#8BADA5] leading-relaxed text-sm md:text-base whitespace-pre-wrap">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+          <div className="flex flex-col gap-6 lg:col-span-8">
+            {description ? (
+              <StoreSection title="نبذة عن المتجر">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#3D554A] md:text-base">
                   {description}
                 </p>
-              </div>
-            )}
+              </StoreSection>
+            ) : null}
 
-            {offers.length > 0 && (
-              <StoreOffers offers={offers} />
-            )}
+            {offers.length > 0 ? (
+              <StoreSection title="العروض">
+                <StoreOffers offers={offers} />
+              </StoreSection>
+            ) : null}
 
-            {gallery.length > 0 && (
-              <StoreGallery images={gallery as string[]} />
-            )}
+            {gallery.length > 0 ? (
+              <StoreSection title="معرض الصور">
+                <StoreGallery images={gallery as string[]} />
+              </StoreSection>
+            ) : null}
 
-            {/* Ratings and Reviews Section */}
-            <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] p-6 md:p-8 flex flex-col gap-8">
-              <h2 className="text-xl md:text-2xl font-bold text-[#1A3D32] dark:text-[#E8EEEA] font-heading flex items-center gap-2">
-                <span className="w-8 h-8 rounded-lg bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center text-[#2F6B4F]">
-                  <Star className="w-4 h-4" />
-                </span>
-                تقييمات المتجر
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <StoreSection title="التقييمات">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <RatingSummary summary={ratingSummary} />
                 <ReviewForm storeSlug={slug} />
               </div>
-
-              <div className="border-t border-[#E8EEEA] dark:border-[#1A3D32] pt-8">
+              <div className="mt-6 border-t border-[#E2EAE5] pt-6">
                 <ReviewList storeSlug={slug} />
               </div>
-            </div>
+            </StoreSection>
           </div>
 
-          {/* Sidebar (Left side in RTL) */}
-          <div className="lg:col-span-4 flex flex-col gap-6 sticky top-24">
-            
-            {/* Unified Store Info Card */}
-            <div className="bg-white dark:bg-[#1F2522] rounded-2xl shadow-sm border border-[#E8EEEA] dark:border-[#1A3D32] overflow-hidden">
-              <div className="p-6 border-b border-[#E8EEEA] dark:border-[#1A3D32]">
-                <h3 className="font-bold text-lg text-[#1A3D32] dark:text-[#E8EEEA]">معلومات المتجر</h3>
-              </div>
-              
-              {/* Contact Information */}
-              <div className="p-6 space-y-5">
-                {address_ar && (
-                  <div className="flex items-start gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
-                      <MapPin className="w-5 h-5 text-[#2F6B4F]" />
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:col-span-4">
+            {hasContactInfo ? (
+              <div className="rounded-xl border border-[#E2EAE5] bg-white p-5">
+                <h3 className="mb-4 font-heading text-base font-bold text-[#1A3D32]">معلومات التواصل</h3>
+                <div className="space-y-4">
+                  {address_ar ? (
+                    <div className="flex items-start gap-3 text-sm text-[#3D554A]">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#2F6B4F]" />
+                      <span className="leading-relaxed">{address_ar}</span>
                     </div>
-                    <div className="pt-2 text-sm leading-relaxed">{address_ar}</div>
-                  </div>
-                )}
-                {phone && (
-                  <div className="flex items-center gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
-                      <Phone className="w-5 h-5 text-[#2F6B4F]" />
+                  ) : null}
+                  {phone ? (
+                    <div className="flex items-center gap-3 text-sm text-[#3D554A]">
+                      <Phone className="h-4 w-4 shrink-0 text-[#2F6B4F]" />
+                      <a href={`tel:${phone}`} className="hover:text-[#2F6B4F]" dir="ltr">
+                        {phone}
+                      </a>
                     </div>
-                    <a href={`tel:${phone}`} className="text-sm hover:text-[#2F6B4F] transition-colors" dir="ltr">{phone}</a>
-                  </div>
-                )}
-                {email && (
-                  <div className="flex items-center gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
-                      <Mail className="w-5 h-5 text-[#2F6B4F]" />
+                  ) : null}
+                  {email ? (
+                    <div className="flex items-center gap-3 text-sm text-[#3D554A]">
+                      <Mail className="h-4 w-4 shrink-0 text-[#2F6B4F]" />
+                      <a href={`mailto:${email}`} className="break-all hover:text-[#2F6B4F]">
+                        {email}
+                      </a>
                     </div>
-                    <a href={`mailto:${email}`} className="text-sm hover:text-[#2F6B4F] transition-colors">{email}</a>
-                  </div>
-                )}
-                {website && (
-                  <div className="flex items-center gap-4 text-[#4A6D56] dark:text-[#8BADA5]">
-                    <div className="w-10 h-10 rounded-full bg-[#E8EEEA] dark:bg-[#1A3D32]/40 flex items-center justify-center shrink-0">
-                      <Globe className="w-5 h-5 text-[#2F6B4F]" />
+                  ) : null}
+                  {website ? (
+                    <div className="flex items-center gap-3 text-sm text-[#3D554A]">
+                      <Globe className="h-4 w-4 shrink-0 text-[#2F6B4F]" />
+                      <a
+                        href={website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="line-clamp-1 break-all hover:text-[#2F6B4F]"
+                      >
+                        {website.replace(/^https?:\/\//, "")}
+                      </a>
                     </div>
-                    <a href={website} target="_blank" rel="noreferrer" className="text-sm hover:text-[#2F6B4F] transition-colors line-clamp-1 break-all">{website.replace(/^https?:\/\//, '')}</a>
-                  </div>
-                )}
-              </div>
-
-              {/* Working Hours embedded */}
-              {hours.length > 0 && (
-                <div className="p-6 bg-gray-50 dark:bg-black/20 border-t border-[#E8EEEA] dark:border-[#1A3D32]">
-                  <StoreWorkingHours hours={hours as any[]} />
+                  ) : null}
                 </div>
-              )}
-
-              {/* Map — compact embed; social links live in the action bar above */}
-              <div className="border-t border-[#E8EEEA] dark:border-[#1A3D32]">
-                <PublicMap
-                  latitude={latitude}
-                  longitude={longitude}
-                  storeName={name}
-                  compact
-                />
               </div>
+            ) : null}
+
+            {hours.length > 0 ? (
+              <div className="rounded-xl border border-[#E2EAE5] bg-white p-5">
+                <h3 className="mb-3 font-heading text-base font-bold text-[#1A3D32]">أوقات العمل</h3>
+                <StoreWorkingHours hours={hours as any[]} />
+              </div>
+            ) : null}
+
+            <div className="overflow-hidden rounded-xl border border-[#E2EAE5] bg-white">
+              <PublicMap
+                latitude={latitude}
+                longitude={longitude}
+                storeName={name}
+                compact
+              />
             </div>
 
-            {/* Sponsored banner in sidebar (never self-promote) */}
             <AdBannerSlot
               placement="store_sidebar"
               variant="sidebar"
               title="إعلان ممول"
               excludeStore={storePublicId}
             />
-          </div>
-          
+          </aside>
         </div>
       </div>
     </div>
