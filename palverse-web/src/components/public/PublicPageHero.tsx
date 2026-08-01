@@ -33,7 +33,7 @@ export function PublicPageHero({
     <section
       className={cn(
         "w-full border-b border-[#E2EAE5]",
-        isHome ? "bg-[#F0F4F1]" : "bg-white",
+        isHome ? "relative z-30 bg-[#F0F4F1]" : "bg-white",
         className
       )}
     >
@@ -74,11 +74,19 @@ export function PublicPageHero({
               {subtitle}
             </p>
           ) : null}
-
-          {children ? (
-            <div className={cn("w-full", isHome ? "mt-2 md:mt-4" : "mt-1")}>{children}</div>
-          ) : null}
         </div>
+
+        {children ? (
+          <div
+            className={cn(
+              "relative w-full",
+              isHome ? "z-40 mt-4 max-w-3xl md:mt-5" : "mt-3 max-w-2xl",
+              align === "center" ? "mx-auto" : ""
+            )}
+          >
+            {children}
+          </div>
+        ) : null}
       </div>
     </section>
   );

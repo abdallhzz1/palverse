@@ -215,8 +215,10 @@ export function SearchBar({ cities = [], categories = [] }: SearchBarProps) {
   const showLiveSuggestions = query.trim().length >= 2;
 
   return (
-    <div ref={rootRef} className="relative w-full max-w-2xl">
-      <form onSubmit={handleSubmit} className="w-full">
+    <div
+      ref={rootRef}
+      className={cn("relative w-full max-w-2xl", open ? "z-50" : "z-10")}
+    >      <form onSubmit={handleSubmit} className="w-full">
         <div
           className={cn(
             "flex items-center gap-2 rounded-2xl border bg-white p-1.5 transition-shadow",
@@ -317,7 +319,7 @@ export function SearchBar({ cities = [], categories = [] }: SearchBarProps) {
       {open ? (
         <div
           id={panelId}
-          className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-40 overflow-hidden rounded-2xl border border-[#E2EAE5] bg-white shadow-[0_20px_50px_-24px_rgba(26,61,50,0.45)]"
+          className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-2xl border border-[#E2EAE5] bg-white shadow-[0_20px_50px_-24px_rgba(26,61,50,0.45)]"
           role="listbox"
         >
           <div className="border-b border-[#E2EAE5] bg-[#F7F9F8] p-3">

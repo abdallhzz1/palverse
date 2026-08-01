@@ -92,7 +92,7 @@ export async function AdBannerSlot({
   }
 
   return (
-    <section className={`public-section ${className || "bg-white"}`}>
+    <section className={`public-section relative z-0 ${className || "bg-white"}`}>
       <div className="public-container space-y-5">
         {heading}
         {slider}
