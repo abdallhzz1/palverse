@@ -78,4 +78,27 @@ class UpdateMerchantStoreRequest extends FormRequest
             'longitude' => ['nullable', 'required_with:latitude', 'numeric', 'between:-180,180'],
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            $website = $this->input('website');
+            if (blank($website)) {
+                return;
+            }
+
+            $store = Store::query()
+                ->where('public_id', $this->route('publicId'))
+                ->with('currentSubscription.plan')
+                ->first();
+
+            $plan = $store?->currentSubscription?->plan;
+            if (! $plan || ! $plan->allowsWebsite()) {
+                $validator->errors()->add(
+                    'website',
+                    'ربط الموقع الإلكتروني متاح فقط مع باقة السنة المميزة (200₪).'
+                );
+            }
+        });
+    }
 }

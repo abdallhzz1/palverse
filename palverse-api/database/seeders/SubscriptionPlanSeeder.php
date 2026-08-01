@@ -12,52 +12,61 @@ class SubscriptionPlanSeeder extends Seeder
      */
     public function run(): void
     {
-        SubscriptionPlan::firstOrCreate([
-            'code' => 'FREE',
-        ], [
-            'name_ar' => 'باقة مجانية',
-            'name_en' => 'Free Plan',
-            'description_ar' => 'باقة مجانية لتجربة المنصة.',
-            'description_en' => 'Free plan to try the platform.',
-            'price' => 0,
-            'currency' => 'ILS',
-            'duration_days' => 30,
-            'max_offers' => 0,
-            'max_gallery_images' => 5,
-            'is_active' => true,
-            'sort_order' => 1,
-        ]);
+        $plans = [
+            [
+                'code' => 'MONTH_30',
+                'name_ar' => 'باقة الشهر',
+                'name_en' => 'Monthly Plan',
+                'description_ar' => 'إدخال معلومات النشاط، موقع GPS، حتى 50 صورة، وربط حسابات السوشيال ميديا.',
+                'description_en' => 'Business info, GPS location, up to 50 photos, and social media links.',
+                'price' => 30,
+                'currency' => 'ILS',
+                'duration_days' => 30,
+                'max_offers' => 2,
+                'max_gallery_images' => 50,
+                'is_active' => true,
+                'sort_order' => 1,
+            ],
+            [
+                'code' => 'YEAR_70',
+                'name_ar' => 'باقة السنة',
+                'name_en' => 'Yearly Plan',
+                'description_ar' => 'إدخال معلومات النشاط، موقع GPS، حتى 150 صورة، وربط حسابات السوشيال ميديا.',
+                'description_en' => 'Business info, GPS location, up to 150 photos, and social media links.',
+                'price' => 70,
+                'currency' => 'ILS',
+                'duration_days' => 365,
+                'max_offers' => 5,
+                'max_gallery_images' => 150,
+                'is_active' => true,
+                'sort_order' => 2,
+            ],
+            [
+                'code' => 'YEAR_200',
+                'name_ar' => 'باقة السنة المميزة',
+                'name_en' => 'Premium Yearly Plan',
+                'description_ar' => 'كل المزايا مع صور بعدد مفتوح وربط موقع إلكتروني.',
+                'description_en' => 'All features with unlimited photos and website link.',
+                'price' => 200,
+                'currency' => 'ILS',
+                'duration_days' => 365,
+                'max_offers' => 20,
+                'max_gallery_images' => null, // unlimited
+                'is_active' => true,
+                'sort_order' => 3,
+            ],
+        ];
 
-        SubscriptionPlan::firstOrCreate([
-            'code' => 'BASIC',
-        ], [
-            'name_ar' => 'باقة أساسية',
-            'name_en' => 'Basic Plan',
-            'description_ar' => 'باقة للمتاجر الصغيرة.',
-            'description_en' => 'Plan for small stores.',
-            'price' => 100,
-            'currency' => 'ILS',
-            'duration_days' => 365,
-            'max_offers' => 2,
-            'max_gallery_images' => 10,
-            'is_active' => true,
-            'sort_order' => 2,
-        ]);
+        foreach ($plans as $plan) {
+            SubscriptionPlan::updateOrCreate(
+                ['code' => $plan['code']],
+                $plan
+            );
+        }
 
-        SubscriptionPlan::firstOrCreate([
-            'code' => 'PREMIUM',
-        ], [
-            'name_ar' => 'باقة مميزة',
-            'name_en' => 'Premium Plan',
-            'description_ar' => 'باقة للمتاجر الكبيرة بجميع المزايا.',
-            'description_en' => 'Plan for large stores with all features.',
-            'price' => 250,
-            'currency' => 'ILS',
-            'duration_days' => 365,
-            'max_offers' => 10,
-            'max_gallery_images' => 50,
-            'is_active' => true,
-            'sort_order' => 3,
-        ]);
+        // Keep legacy plans inactive so existing subscriptions remain readable.
+        SubscriptionPlan::query()
+            ->whereIn('code', ['FREE', 'BASIC', 'PREMIUM'])
+            ->update(['is_active' => false]);
     }
 }

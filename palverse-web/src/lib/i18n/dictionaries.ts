@@ -10,8 +10,8 @@ export const dictionaries = {
       menu: 'القائمة',
     },
     home: {
-      heroHeading: 'اكتشف أفضل الأعمال في فلسطين',
-      heroSubheading: 'كل فلسطين في دليل واحد',
+      heroHeading: 'عن ماذا تبحث؟',
+      heroSubheading: 'مطاعم، مقاهي، خدمات ومحلات — ابحث في مدينتك وابدأ الاستكشاف.',
       featuredStores: 'أبرز الأنشطة',
       latestStores: 'أحدث المتاجر',
       partnerSpace: 'مساحة شريك مميز',

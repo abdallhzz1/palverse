@@ -68,6 +68,18 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
+    /**
+     * Phone-only accounts are treated as verified (no email to confirm).
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if (blank($this->email)) {
+            return true;
+        }
+
+        return ! is_null($this->email_verified_at);
+    }
+
     // Relationships
 
     public function suspendedBy(): BelongsTo

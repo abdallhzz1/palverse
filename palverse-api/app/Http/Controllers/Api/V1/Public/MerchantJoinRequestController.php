@@ -24,7 +24,7 @@ class MerchantJoinRequestController extends Controller
         $validated = $request->validate([
             'merchant_name' => 'required|string|max:255',
             'phone' => 'required|string|max:30',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
             'store_name' => 'required|string|max:255',
             'city_id' => 'required|exists:cities,public_id',
             'notes' => 'nullable|string',
@@ -32,6 +32,12 @@ class MerchantJoinRequestController extends Controller
 
         $city = \App\Models\City::where('public_id', $validated['city_id'])->firstOrFail();
         $validated['city_id'] = $city->id;
+        $validated['phone'] = \App\Support\LoginIdentifier::normalizePhone($validated['phone']) ?? $validated['phone'];
+        if (! empty($validated['email'])) {
+            $validated['email'] = mb_strtolower(trim($validated['email']));
+        } else {
+            $validated['email'] = null;
+        }
 
         $joinRequest = MerchantJoinRequest::create($validated);
 

@@ -44,22 +44,36 @@ class MerchantJoinRequestService
     public function approve(MerchantJoinRequest $joinRequest, array $data, User $actor): MerchantJoinRequest
     {
         $email = $this->resolveMerchantEmail($joinRequest, $data['email'] ?? null);
+        $phone = \App\Support\LoginIdentifier::normalizePhone($joinRequest->phone) ?? $joinRequest->phone;
 
-        return DB::transaction(function () use ($joinRequest, $data, $actor, $email) {
-            $this->assertEmailAvailable($email, $joinRequest->phone);
+        return DB::transaction(function () use ($joinRequest, $data, $actor, $email, $phone) {
+            if ($email) {
+                $this->assertEmailAvailable($email, $phone);
+            }
 
-            $user = User::query()->where('phone', $joinRequest->phone)->first();
+            $user = User::query()->where('phone', $phone)->first();
+            if (! $user) {
+                foreach (\App\Support\LoginIdentifier::phoneVariants($phone) as $variant) {
+                    $user = User::query()->where('phone', $variant)->first();
+                    if ($user) {
+                        break;
+                    }
+                }
+            }
 
             if ($user) {
                 $user->fill([
                     'name' => $joinRequest->merchant_name,
-                    'email' => $email,
+                    'phone' => $phone,
                     'password' => $data['password'],
                 ]);
+                if ($email) {
+                    $user->email = $email;
+                }
                 $user->save();
             } else {
                 $user = User::create([
-                    'phone' => $joinRequest->phone,
+                    'phone' => $phone,
                     'name' => $joinRequest->merchant_name,
                     'email' => $email,
                     'password' => $data['password'],
@@ -87,7 +101,7 @@ class MerchantJoinRequestService
                     'category_id' => $categoryId,
                     'description_ar' => 'تم إنشاؤه عبر طلب الانضمام',
                     'address_ar' => 'غير محدد',
-                    'phone' => $joinRequest->phone,
+                    'phone' => $phone,
                     'email' => $email,
                     'status' => StoreStatus::APPROVED->value,
                     'is_active' => true,
@@ -122,7 +136,8 @@ class MerchantJoinRequestService
             }
 
             $joinRequest->update([
-                'email' => $email,
+                'phone' => $phone,
+                'email' => $email ?? $joinRequest->email,
                 'status' => MerchantJoinRequestStatus::APPROVED->value,
                 'handled_by' => $actor->id,
             ]);
@@ -131,14 +146,12 @@ class MerchantJoinRequestService
         });
     }
 
-    public function resolveMerchantEmail(MerchantJoinRequest $joinRequest, ?string $overrideEmail): string
+    public function resolveMerchantEmail(MerchantJoinRequest $joinRequest, ?string $overrideEmail): ?string
     {
         $email = trim((string) ($overrideEmail ?: $joinRequest->email));
 
         if ($email === '') {
-            throw ValidationException::withMessages([
-                'email' => ['البريد الإلكتروني مطلوب للموافقة لأن الطلب لا يحتوي على بريد. أدخل بريداً لتسجيل دخول التاجر.'],
-            ]);
+            return null;
         }
 
         return mb_strtolower($email);

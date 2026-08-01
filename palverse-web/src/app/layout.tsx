@@ -23,9 +23,9 @@ const ibmPlex = IBM_Plex_Sans_Arabic({
 export const metadata: Metadata = {
   title: {
     template: "%s | Palverse",
-    default: "Palverse | اكتشف أفضل الأعمال في فلسطين",
+    default: "Palverse | عن ماذا تبحث؟",
   },
-  description: "كل فلسطين في دليل واحد. اكتشف أفضل المتاجر والخدمات والعروض في فلسطين.",
+  description: "كل فلسطين في دليل واحد. مطاعم، مقاهي، خدمات ومحلات — ابحث في مدينتك وابدأ الاستكشاف.",
 };
 
 import { PublicAuthProvider } from "@/contexts/AuthContext";

@@ -86,16 +86,77 @@ class AuthTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 
-    public function test_login_requires_email_and_password(): void
+    public function test_login_requires_login_identifier_and_password(): void
     {
         $response = $this->postJson('/api/v1/auth/login', []);
 
         $response
             ->assertUnprocessable()
             ->assertJsonValidationErrors([
-                'email',
+                'login',
                 'password',
             ]);
+    }
+
+    public function test_active_user_can_login_with_phone(): void
+    {
+        $user = User::factory()->create([
+            'email' => null,
+            'phone' => '0599123456',
+            'password' => 'Password@123',
+            'status' => UserStatus::Active,
+        ]);
+
+        $user->assignRole('merchant');
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'login' => '0599123456',
+            'password' => 'Password@123',
+            'device_name' => 'test-suite',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.user.phone', '0599123456')
+            ->assertJsonPath('data.user.roles.0', 'merchant');
+
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+    }
+
+    public function test_phone_login_accepts_international_variant(): void
+    {
+        $user = User::factory()->create([
+            'email' => null,
+            'phone' => '0599988776',
+            'password' => 'Password@123',
+            'status' => UserStatus::Active,
+        ]);
+        $user->assignRole('merchant');
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'login' => '+970599988776',
+            'password' => 'Password@123',
+        ]);
+
+        $response->assertOk()->assertJsonPath('success', true);
+    }
+
+    public function test_active_user_can_login_with_login_field_email(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'login-field@example.com',
+            'password' => 'Password@123',
+            'status' => UserStatus::Active,
+        ]);
+        $user->assignRole('admin');
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'login' => 'login-field@example.com',
+            'password' => 'Password@123',
+        ]);
+
+        $response->assertOk()->assertJsonPath('data.user.email', 'login-field@example.com');
     }
 
     public function test_authenticated_user_can_view_profile(): void

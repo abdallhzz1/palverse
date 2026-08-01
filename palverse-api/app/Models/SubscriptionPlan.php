@@ -74,4 +74,20 @@ class SubscriptionPlan extends Model
     {
         return $query->orderBy('sort_order', 'asc')->orderBy('created_at', 'desc');
     }
+
+    /**
+     * Website link is included only on the YEAR_200 premium yearly plan.
+     */
+    public function allowsWebsite(): bool
+    {
+        return $this->code === 'YEAR_200';
+    }
+
+    /**
+     * null max_gallery_images means unlimited gallery uploads.
+     */
+    public function hasUnlimitedGallery(): bool
+    {
+        return $this->max_gallery_images === null;
+    }
 }

@@ -5,7 +5,7 @@ import { usePublicAuth } from "@/contexts/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2, Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+import { Loader2, Eye, EyeOff, Phone, Lock, ArrowRight } from "lucide-react";
 import { getPostLoginPath } from "@/lib/auth/role-redirect";
 import { AuthPageShell } from "@/components/auth/AuthPageShell";
 
@@ -15,13 +15,12 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("redirect");
 
-  const [email, setEmail] = useState("");
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // If already authenticated, redirect away
   useEffect(() => {
     if (isAuthenticated && user) {
       const path = getPostLoginPath(user, returnUrl);
@@ -35,7 +34,11 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      const loggedInUser = await login({ email, password, device_name: "palverse-web" });
+      const loggedInUser = await login({
+        login: loginId.trim(),
+        password,
+        device_name: "palverse-web",
+      });
       const path = getPostLoginPath(loggedInUser, returnUrl);
       router.replace(path);
     } catch (err: any) {
@@ -56,22 +59,24 @@ function LoginForm() {
 
       <div className="space-y-2">
         <label className="ms-1 text-sm font-bold text-[#0F3D2E]">
-          البريد الإلكتروني
+          رقم الهاتف أو البريد الإلكتروني
         </label>
         <div className="group relative">
           <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-4 text-gray-400 transition-colors group-focus-within:text-[#1E7D4E]">
-            <Mail className="h-5 w-5" />
+            <Phone className="h-5 w-5" />
           </div>
           <input
-            type="email"
+            type="text"
             required
             dir="ltr"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+            value={loginId}
+            onChange={(e) => setLoginId(e.target.value)}
             className="w-full rounded-2xl border border-[#EAF3EC] bg-[#F9FBF9] py-3.5 ps-11 pe-4 text-left font-medium text-[#0F3D2E] outline-none transition-all focus:border-[#1E7D4E] focus:ring-4 focus:ring-[#1E7D4E]/10"
-            placeholder="name@example.com"
+            placeholder="0590000000 أو name@example.com"
           />
         </div>
+        <p className="ms-1 text-xs text-[#7FA789]">الاعتماد الأساسي على رقم الهاتف؛ البريد اختياري إن وُجد.</p>
       </div>
 
       <div className="space-y-2">
@@ -118,7 +123,6 @@ function LoginForm() {
         </span>
       </button>
 
-      {/* Join us link instead of generic sign up */}
       <p className="pt-4 text-center text-sm text-[#6C8478]">
         ليس لديك حساب تاجر؟{" "}
         <Link href="/join-us" className="inline-flex items-center gap-1 font-bold text-[#1E7D4E] hover:underline">
@@ -147,7 +151,7 @@ export default function LoginPage() {
             دخول شركاء النجاح
           </h1>
           <p className="text-[#6C8478]">
-            مرحباً بعودتك! سجل دخولك لإدارة نشاطك التجاري وعروضك.
+            سجّل دخولك برقم الهاتف أو البريد الإلكتروني.
           </p>
         </div>
 

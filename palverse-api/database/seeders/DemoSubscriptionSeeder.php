@@ -16,57 +16,12 @@ class DemoSubscriptionSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Plans
-        $basic = SubscriptionPlan::updateOrCreate(
-            ['code' => 'BASIC'],
-            [
-                'name_ar' => 'الخطة الأساسية',
-                'name_en' => 'Basic',
-                'description_ar' => 'ظهور في الدليل، معلومات التواصل، ساعات العمل، صورة شعار وصورة غلاف',
-                'description_en' => 'Directory listing, contact info, working hours, logo and cover image',
-                'price' => 49.00,
-                'currency' => 'ILS',
-                'duration_days' => 30,
-                'max_offers' => 0,
-                'max_gallery_images' => 5,
-                'is_active' => true,
-                'sort_order' => 1,
-            ]
-        );
+        // Keep demo assignments on the live product plans.
+        $this->call(SubscriptionPlanSeeder::class);
 
-        $pro = SubscriptionPlan::updateOrCreate(
-            ['code' => 'PROFESSIONAL'],
-            [
-                'name_ar' => 'الخطة الاحترافية',
-                'name_en' => 'Professional',
-                'description_ar' => 'جميع مزايا الخطة الأساسية، معرض صور، نشر عروض، أولوية في نتائج البحث',
-                'description_en' => 'All basic features, gallery, publish offers, priority search',
-                'price' => 99.00,
-                'currency' => 'ILS',
-                'duration_days' => 30,
-                'max_offers' => 5,
-                'max_gallery_images' => 10,
-                'is_active' => true,
-                'sort_order' => 2,
-            ]
-        );
-
-        $premium = SubscriptionPlan::updateOrCreate(
-            ['code' => 'PREMIUM'],
-            [
-                'name_ar' => 'الخطة المميزة',
-                'name_en' => 'Premium',
-                'description_ar' => 'جميع مزايا الخطة الاحترافية، ظهور مميز، مساحة ترويجية',
-                'description_en' => 'All professional features, featured listing, promotional space',
-                'price' => 179.00,
-                'currency' => 'ILS',
-                'duration_days' => 30,
-                'max_offers' => 15,
-                'max_gallery_images' => 30,
-                'is_active' => true,
-                'sort_order' => 3,
-            ]
-        );
+        $month = SubscriptionPlan::query()->where('code', 'MONTH_30')->firstOrFail();
+        $year = SubscriptionPlan::query()->where('code', 'YEAR_70')->firstOrFail();
+        $premium = SubscriptionPlan::query()->where('code', 'YEAR_200')->firstOrFail();
 
         // 2. Assign Subscriptions to Stores
         $approvedStores = Store::where('status', StoreStatus::APPROVED->value)->get();
@@ -86,17 +41,17 @@ class DemoSubscriptionSeeder extends Seeder
 
         // Active
         for ($i = 0; $i < $activeCount && $currentIndex < $approvedStores->count(); $i++) {
-            $this->assignSubscription($approvedStores[$currentIndex++], $pro, SubscriptionStatus::ACTIVE, now()->subDays(10), now()->addDays(20), $admin);
+            $this->assignSubscription($approvedStores[$currentIndex++], $year, SubscriptionStatus::ACTIVE, now()->subDays(10), now()->addDays(20), $admin);
         }
 
         // Expiring Soon
         for ($i = 0; $i < $expiringCount && $currentIndex < $approvedStores->count(); $i++) {
-            $this->assignSubscription($approvedStores[$currentIndex++], $basic, SubscriptionStatus::ACTIVE, now()->subDays(25), now()->addDays(5), $admin);
+            $this->assignSubscription($approvedStores[$currentIndex++], $month, SubscriptionStatus::ACTIVE, now()->subDays(25), now()->addDays(5), $admin);
         }
 
         // Expired
         for ($i = 0; $i < $expiredCount && $currentIndex < $approvedStores->count(); $i++) {
-            $this->assignSubscription($approvedStores[$currentIndex++], $basic, SubscriptionStatus::EXPIRED, now()->subDays(40), now()->subDays(10), $admin);
+            $this->assignSubscription($approvedStores[$currentIndex++], $month, SubscriptionStatus::EXPIRED, now()->subDays(40), now()->subDays(10), $admin);
         }
 
         // Cancelled

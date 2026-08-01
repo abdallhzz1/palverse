@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
 
 export type CmsContactMeta = {
   info_card_title_ar?: string | null;
@@ -21,9 +21,6 @@ const DEFAULTS = {
   phone: "+972 59-388-3932",
   phone_label_ar: "رقم الهاتف",
   phone_hint_ar: "متاحون من 8 صباحاً حتى 5 مساءً",
-  email: "info@palverse.ps",
-  email_label_ar: "البريد الإلكتروني",
-  email_hint_ar: "نرد على رسائلكم خلال 24 ساعة",
   address_ar: "فلسطين، الخليل",
   address_line2_ar: "دائرة السير",
   address_label_ar: "العنوان",
@@ -45,9 +42,6 @@ export function CmsContactPanel({ meta }: CmsContactPanelProps) {
     phone: pick(meta?.phone, DEFAULTS.phone),
     phone_label_ar: pick(meta?.phone_label_ar, DEFAULTS.phone_label_ar),
     phone_hint_ar: pick(meta?.phone_hint_ar, DEFAULTS.phone_hint_ar),
-    email: pick(meta?.email, DEFAULTS.email),
-    email_label_ar: pick(meta?.email_label_ar, DEFAULTS.email_label_ar),
-    email_hint_ar: pick(meta?.email_hint_ar, DEFAULTS.email_hint_ar),
     address_ar: pick(meta?.address_ar, DEFAULTS.address_ar),
     address_line2_ar: pick(meta?.address_line2_ar, DEFAULTS.address_line2_ar),
     address_label_ar: pick(meta?.address_label_ar, DEFAULTS.address_label_ar),
@@ -74,17 +68,6 @@ export function CmsContactPanel({ meta }: CmsContactPanelProps) {
           <h4 className="font-bold text-[#0F3D2E] mb-1">{data.phone_label_ar}</h4>
           <p className="text-[#7FA789] dir-ltr text-right">{data.phone}</p>
           {data.phone_hint_ar ? <p className="text-[#7FA789] text-sm mt-1">{data.phone_hint_ar}</p> : null}
-        </div>
-      </div>
-
-      <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-[#F4FAF6] rounded-2xl flex items-center justify-center shrink-0 text-[#1E7D4E]">
-          <Mail className="w-5 h-5" />
-        </div>
-        <div>
-          <h4 className="font-bold text-[#0F3D2E] mb-1">{data.email_label_ar}</h4>
-          <p className="text-[#7FA789]">{data.email}</p>
-          {data.email_hint_ar ? <p className="text-[#7FA789] text-sm mt-1">{data.email_hint_ar}</p> : null}
         </div>
       </div>
 

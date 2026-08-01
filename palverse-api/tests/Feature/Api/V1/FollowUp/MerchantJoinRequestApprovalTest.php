@@ -49,7 +49,7 @@ class MerchantJoinRequestApprovalTest extends TestCase
         ]);
     }
 
-    public function test_approve_without_email_returns_validation_error(): void
+    public function test_approve_without_email_creates_phone_only_merchant_account(): void
     {
         $joinRequest = $this->createJoinRequest(null);
 
@@ -60,11 +60,19 @@ class MerchantJoinRequestApprovalTest extends TestCase
                 'subscription_plan_id' => $this->plan->public_id,
             ]);
 
-        $response->assertUnprocessable()
-            ->assertJsonValidationErrors(['email']);
+        $response->assertOk()->assertJsonPath('success', true);
 
-        $this->assertDatabaseMissing('users', ['phone' => '0599333444']);
-        $this->assertSame(MerchantJoinRequestStatus::NEW, $joinRequest->fresh()->status);
+        $this->assertDatabaseHas('users', [
+            'phone' => '0599333444',
+            'email' => null,
+            'name' => 'غازي',
+        ]);
+
+        $user = User::query()->where('phone', '0599333444')->first();
+        $this->assertNotNull($user);
+        $this->assertTrue($user->hasRole('merchant'));
+        $this->assertTrue($user->hasVerifiedEmail());
+        $this->assertSame(MerchantJoinRequestStatus::APPROVED, $joinRequest->fresh()->status);
     }
 
     public function test_approve_with_email_override_creates_merchant_account(): void

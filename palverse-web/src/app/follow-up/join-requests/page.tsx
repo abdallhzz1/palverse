@@ -94,8 +94,8 @@ export default function FollowUpJoinRequestsPage() {
     e.preventDefault();
     if (!selectedRequest) return;
 
-    if (!selectedRequest.email && !approveForm.email.trim()) {
-      setApproveError("البريد الإلكتروني مطلوب لإنشاء حساب التاجر.");
+    if (!approveForm.password.trim() || !approveForm.subscription_plan_id) {
+      setApproveError("كلمة المرور واختيار الباقة مطلوبان عند الموافقة.");
       return;
     }
     
@@ -282,7 +282,7 @@ export default function FollowUpJoinRequestsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  البريد الإلكتروني للتاجر {!selectedRequest.email ? "*" : "(اختياري للتعديل)"}
+                  البريد الإلكتروني للتاجر <span className="font-normal text-gray-500">(اختياري)</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -290,18 +290,15 @@ export default function FollowUpJoinRequestsPage() {
                   </div>
                   <input
                     type="email"
-                    required={!selectedRequest.email}
                     value={approveForm.email}
                     onChange={(e) => setApproveForm({ ...approveForm, email: e.target.value })}
                     className="block w-full pr-10 pl-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1E7D4E] dir-ltr text-right"
-                    placeholder={selectedRequest.email ? "يمكن تركه كما هو أو تعديله" : "مطلوب لأن الطلب بلا بريد"}
+                    placeholder="اختياري — الدخول يعتمد على رقم الهاتف"
                   />
                 </div>
-                {!selectedRequest.email && (
-                  <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
-                    الطلب بلا بريد — أدخل بريداً لتسجيل دخول التاجر.
-                  </p>
-                )}
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  التاجر يسجّل الدخول برقم الهاتف. البريد اختياري إن وُجد.
+                </p>
               </div>
 
               <div>

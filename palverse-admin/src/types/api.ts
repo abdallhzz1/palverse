@@ -56,7 +56,8 @@ export interface AuthUser {
 }
 
 export interface LoginRequest {
-  email: string;
+  login?: string;
+  email?: string;
   password: string;
   device_name?: string;
 }

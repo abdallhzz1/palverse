@@ -15,18 +15,18 @@ export function ContactForm({
   submitLabel,
 }: ContactFormProps) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  const phone = (whatsappNumber || "972593883932").replace(/[^\d]/g, "");
+  const destination = (whatsappNumber || "972593883932").replace(/[^\d]/g, "");
   const title = formTitle || "أرسل لنا رسالة";
   const buttonLabel = submitLabel || "إرسال عبر واتساب";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `الاسم: ${name}\nالبريد: ${email}\nالموضوع: ${subject}\n\nالرسالة:\n${message}`;
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    const text = `الاسم: ${name}\nالهاتف: ${phone}\nالموضوع: ${subject}\n\nالرسالة:\n${message}`;
+    const url = `https://wa.me/${destination}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
   };
 
@@ -52,16 +52,16 @@ export function ContactForm({
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-sm font-semibold text-[#0F3D2E]">
-              البريد الإلكتروني
+            <label htmlFor="phone" className="text-sm font-semibold text-[#0F3D2E]">
+              رقم الهاتف
             </label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="tel"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
-              placeholder="example@mail.com"
+              placeholder="0590000000"
               className="w-full bg-[#F9FBF9] border border-[#EAF3EC] rounded-xl px-4 py-3 outline-none focus:border-[#1E7D4E] transition-colors dir-ltr text-right"
             />
           </div>

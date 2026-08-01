@@ -17,7 +17,7 @@ import { NormalizedApiError, getFieldErrors } from "@/lib/api/error";
 import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "البريد الإلكتروني غير صالح" }),
+  login: z.string().min(3, { message: "أدخل البريد الإلكتروني أو رقم الهاتف" }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" }),
 });
 
@@ -33,7 +33,7 @@ export default function LoginPage() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      login: "",
       password: "",
     },
   });
@@ -42,7 +42,8 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const response = await authService.login({
-        ...values,
+        login: values.login.trim(),
+        password: values.password,
         device_name: "Admin Dashboard",
       });
 
@@ -62,19 +63,18 @@ export default function LoginPage() {
       login(response.user);
       toast.success("تم تسجيل الدخول بنجاح");
       
-      // Explicit deterministic redirect
       router.replace("/dashboard");
     } catch (error) {
       const apiError = error as NormalizedApiError;
       
       if (apiError.code === "VALIDATION_ERROR") {
-        const emailErrors = getFieldErrors(apiError, "email");
+        const loginErrors = getFieldErrors(apiError, "login") || getFieldErrors(apiError, "email");
         const passwordErrors = getFieldErrors(apiError, "password");
         
-        if (emailErrors) form.setError("email", { message: emailErrors[0] });
+        if (loginErrors) form.setError("login", { message: loginErrors[0] });
         if (passwordErrors) form.setError("password", { message: passwordErrors[0] });
         
-        if (!emailErrors && !passwordErrors) {
+        if (!loginErrors && !passwordErrors) {
           toast.error(apiError.message);
         }
       } else {
@@ -101,23 +101,24 @@ export default function LoginPage() {
           </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl">تسجيل الدخول</CardTitle>
-            <CardDescription>إدارة منصة Palverse</CardDescription>
+            <CardDescription>إدارة منصة Palverse — بالهاتف أو البريد</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2 text-right">
-              <Label htmlFor="email">البريد الإلكتروني</Label>
+              <Label htmlFor="login">رقم الهاتف أو البريد الإلكتروني</Label>
               <Input
-                id="email"
-                type="email"
+                id="login"
+                type="text"
                 dir="ltr"
+                autoComplete="username"
                 disabled={isLoading}
-                {...form.register("email")}
-                className={form.formState.errors.email ? "border-danger" : ""}
+                {...form.register("login")}
+                className={form.formState.errors.login ? "border-danger" : ""}
               />
-              {form.formState.errors.email && (
-                <p className="text-sm text-danger">{form.formState.errors.email.message}</p>
+              {form.formState.errors.login && (
+                <p className="text-sm text-danger">{form.formState.errors.login.message}</p>
               )}
             </div>
 

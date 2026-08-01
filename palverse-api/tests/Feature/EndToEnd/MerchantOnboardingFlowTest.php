@@ -48,7 +48,7 @@ class MerchantOnboardingFlowTest extends EndToEndTestCase
         Notification::assertSentTo($followUp, NewJoinRequestNotification::class);
     }
 
-    public function test_join_request_requires_email(): void
+    public function test_join_request_allows_missing_email(): void
     {
         $city = City::factory()->create();
 
@@ -59,7 +59,11 @@ class MerchantOnboardingFlowTest extends EndToEndTestCase
             'city_id' => $city->public_id,
         ]);
 
-        $response->assertUnprocessable()
-            ->assertJsonValidationErrors(['email']);
+        $response->assertCreated();
+        $this->assertDatabaseHas('merchant_join_requests', [
+            'phone' => '0599000222',
+            'email' => null,
+            'store_name' => 'محل بدون بريد',
+        ]);
     }
 }

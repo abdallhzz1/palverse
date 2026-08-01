@@ -22,7 +22,7 @@ export async function Hero() {
       priority
       imageSrc={BRAND_PHOTOS.hero}
       imageAlt="أجواء مقاهي وأسواق فلسطينية معاصرة"
-      title="اكتشف أفضل الأعمال في فلسطين"
+      title="عن ماذا تبحث؟"
       subtitle="مطاعم، مقاهي، خدمات ومحلات — ابحث في مدينتك وابدأ الاستكشاف."
     >
       <Suspense fallback={<div className="h-16 w-full animate-pulse rounded-full bg-white/20" />}>

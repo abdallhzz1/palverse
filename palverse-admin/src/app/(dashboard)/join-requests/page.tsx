@@ -97,8 +97,8 @@ export default function JoinRequestsPage() {
     e.preventDefault();
     if (!selectedRequest) return;
 
-    if (!selectedRequest.email && !approveForm.email.trim()) {
-      setApproveError("البريد الإلكتروني مطلوب لإنشاء حساب التاجر.");
+    if (!approveForm.password.trim() || !approveForm.subscription_plan_id) {
+      setApproveError("كلمة المرور واختيار الباقة مطلوبان عند الموافقة.");
       return;
     }
     
@@ -296,7 +296,7 @@ export default function JoinRequestsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-2">
-                  البريد الإلكتروني للتاجر {!selectedRequest.email ? "*" : "(اختياري للتعديل)"}
+                  البريد الإلكتروني للتاجر <span className="font-normal text-muted-foreground">(اختياري)</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -304,18 +304,15 @@ export default function JoinRequestsPage() {
                   </div>
                   <input
                     type="email"
-                    required={!selectedRequest.email}
                     value={approveForm.email}
                     onChange={(e) => setApproveForm({ ...approveForm, email: e.target.value })}
                     className="block w-full pr-10 pl-3 py-2.5 border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary dir-ltr text-right"
-                    placeholder={selectedRequest.email ? "يمكن تركه كما هو أو تعديله" : "مطلوب لأن الطلب بلا بريد"}
+                    placeholder="اختياري — الدخول يعتمد على رقم الهاتف"
                   />
                 </div>
-                {!selectedRequest.email && (
-                  <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
-                    الطلب بلا بريد — أدخل بريداً لتسجيل دخول التاجر.
-                  </p>
-                )}
+                <p className="mt-1 text-xs text-muted-foreground">
+                  التاجر يسجّل الدخول برقم الهاتف. البريد اختياري إن وُجد.
+                </p>
               </div>
 
               <div>

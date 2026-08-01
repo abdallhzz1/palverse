@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             AdminUserSeeder::class,
             SubscriptionPlanSeeder::class,
+            WestBankLocationsSeeder::class,
             SystemSettingSeeder::class,
             StaticPageSeeder::class,
         ]);

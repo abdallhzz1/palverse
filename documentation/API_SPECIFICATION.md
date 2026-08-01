@@ -266,7 +266,7 @@ This document details the API endpoints, validation inputs, and JSON payloads fo
       "password": "secure_password"
     }
     ```
-*   **Validation Rules**: Email must be valid email format, password required.
+*   **Validation Rules**: `login` (email or phone) **or** legacy `email`, plus `password` required. Phone-only accounts are supported.
 *   **Success Response (HTTP 200)**:
     ```json
     {

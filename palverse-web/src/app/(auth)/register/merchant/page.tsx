@@ -44,7 +44,11 @@ export default function MerchantRegisterPage() {
     setIsLoading(true);
 
     try {
-      await apiClient.post('/merchant-join-requests', formData);
+      const payload = {
+        ...formData,
+        email: formData.email.trim() || null,
+      };
+      await apiClient.post('/merchant-join-requests', payload);
       setIsSuccess(true);
     } catch (err: any) {
       if (err.data?.errors) {
@@ -105,7 +109,7 @@ export default function MerchantRegisterPage() {
               طلب انضمام للمنصة
             </h1>
             <p className="mt-2 text-[#6C8478]">
-              أدخل تفاصيل محلك وسيقوم فريقنا بالتواصل معك لتفعيل حسابك
+              أدخل بيانات النشاط ورقم الهاتف. فريق المتابعة يتواصل معك ويحدّد الباقة المناسبة عند التفعيل.
             </p>
 
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -170,16 +174,17 @@ export default function MerchantRegisterPage() {
                   </div>
                 </div>
 
-                {/* Email */}
+                {/* Email (optional) */}
                 <div className="col-span-1">
-                  <label className="mb-2 block text-sm font-medium text-[#0F3D2E]">البريد الإلكتروني *</label>
+                  <label className="mb-2 block text-sm font-medium text-[#0F3D2E]">
+                    البريد الإلكتروني <span className="font-normal text-[#7FA789]">(اختياري)</span>
+                  </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pe-3">
                       <Mail className="h-5 w-5 text-[#7FA789]" />
                     </div>
                     <input
                       type="email"
-                      required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className={`${inputClass} dir-ltr text-right`}

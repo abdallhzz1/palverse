@@ -208,3 +208,32 @@ php artisan ads:diagnose --extend=30
 تواريخ الإعلانات تُقارن الآن حسب توقيت فلسطين (`Asia/Hebron`) حتى لا تختفي الحملات بعد منتصف الليل المحلي بسبب UTC على السيرفر.
 
 في قائمة الأدمن/المتابعة عمود **الظهور** يعرض: على الرئيسية / مجدول / منتهي / متوقف / مخفي عن الرئيسية.
+
+---
+
+## تحديث منتجي (آب 2026): الهاتف أولاً + الباقات + المدن
+
+### قرارات المنتج
+- عنوان الرئيسية: **«عن ماذا تبحث؟»**
+- نموذج التواصل: **هاتف** بدل البريد
+- صفحة الانضمام: نموذج عادي بدون بطاقات باقات؛ المتابعة تختار الباقة عند الموافقة
+- الباقات:
+  - `MONTH_30`: 30₪ / شهر — حتى 50 صورة
+  - `YEAR_70`: 70₪ / سنة — حتى 150 صورة
+  - `YEAR_200`: 200₪ / سنة — **صور بلا حد** (`max_gallery_images = null`) + موقع إلكتروني
+- المدن: محافظات الضفة + القرى/المناطق كـ zones عبر `WestBankLocationsSeeder`
+- الدخول: حقل `login` (هاتف أو بريد). البريد اختياري في الطلبات والحسابات؛ الاعتماد على الهاتف
+
+### أوامر السيرفر بعد السحب
+```bash
+cd ~/repositories/palverse && git pull origin master
+cd ~/repositories/palverse/palverse-api
+php artisan migrate --force
+php artisan db:seed --class=SubscriptionPlanSeeder --force
+php artisan db:seed --class=WestBankLocationsSeeder --force
+php artisan config:clear
+php artisan route:clear
+php artisan cache:clear
+```
+
+ثم Redeploy لـ **palverse-web** و **palverse-admin** على Vercel.

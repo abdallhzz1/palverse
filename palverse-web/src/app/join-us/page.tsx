@@ -58,20 +58,20 @@ const steps = [
   {
     num: "01",
     icon: <Shield className="h-6 w-6" />,
-    title: "سجّل حسابك",
-    desc: "أدخل معلوماتك الأساسية لإنشاء حساب تاجر في أقل من دقيقتين.",
+    title: "أرسل طلب الانضمام",
+    desc: "عبّئ نموذج بسيط ببيانات النشاط ورقم الهاتف — بدون اختيار باقات مسبقاً.",
   },
   {
     num: "02",
     icon: <Store className="h-6 w-6" />,
-    title: "أضف تفاصيل نشاطك",
-    desc: "قم بتعبئة بيانات نشاطك التجاري، موقعه، صوره، وساعات عمله.",
+    title: "تواصل فريق المتابعة",
+    desc: "يتواصل معك فريقنا، يوضح الباقات المناسبة، ويجهّز حسابك.",
   },
   {
     num: "03",
     icon: <Zap className="h-6 w-6" />,
     title: "التفعيل والانطلاق",
-    desc: "يراجع فريقنا الطلب ويفعّل حسابك سريعاً. أنت جاهز للظهور!",
+    desc: "بعد الموافقة وتعيين الباقة يظهر نشاطك في الدليل ويصل لعملائك.",
   },
 ];
 
@@ -84,14 +84,14 @@ export default function JoinUsPage() {
         imageSrc={BRAND_PHOTOS.join}
         imageAlt="تاجر فلسطيني يدير نشاطه التجاري"
         title="أضف نشاطك التجاري وصِل إلى آلاف العملاء"
-        subtitle="انضم إلى أكبر دليل تجاري فلسطيني، واعرض متجرك ومنتجاتك وعروضك أمام جمهور واسع في مختلف المدن."
+        subtitle="أرسل طلب انضمام بسيط. فريق المتابعة يتواصل معك ويحدّد الباقة المناسبة عند التفعيل — بدون بطاقات أسعار على الصفحة."
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/register/merchant"
             className="group inline-flex items-center justify-center gap-3 rounded-2xl bg-[#1E7D4E] px-8 py-4 text-lg font-bold text-white shadow-2xl shadow-[#1E7D4E]/30 transition-all hover:-translate-y-1 hover:bg-[#15603A] hover:shadow-[#1E7D4E]/50"
           >
-            ابدأ التسجيل مجاناً
+            ابدأ طلب الانضمام
             <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
           </Link>
           <a
@@ -154,7 +154,7 @@ export default function JoinUsPage() {
               3 خطوات بسيطة للانطلاق
             </h2>
             <p className="mt-3 text-lg text-[#6C8478]">
-              عملية تسجيل سهلة وسريعة، تستغرق أقل من دقيقتين
+              طلب بسيط عبر الهاتف، ثم المتابعة تختار الباقة المناسبة لنشاطك
             </p>
           </div>
 

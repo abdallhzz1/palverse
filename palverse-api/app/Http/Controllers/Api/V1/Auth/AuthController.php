@@ -6,8 +6,8 @@ use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
 use App\Services\AuthTokenService;
+use App\Support\LoginIdentifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,9 +22,7 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
 
-        $user = User::query()
-            ->where('email', $credentials['email'])
-            ->first();
+        $user = LoginIdentifier::findUser($request->loginIdentifier());
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return response()->json([
